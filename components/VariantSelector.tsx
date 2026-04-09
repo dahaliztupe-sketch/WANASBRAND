@@ -1,0 +1,99 @@
+'use client';
+
+import { useState } from 'react';
+import { ShoppingBag, Clock } from 'lucide-react';
+import { Product } from '@/types';
+import { WaitlistModal } from './WaitlistModal';
+import { useSelectionStore } from '@/store/useSelectionStore';
+import { triggerHaptic } from '@/lib/utils/haptics';
+import { toast } from 'sonner';
+
+export function VariantSelector({ product }: { product: Product }) {
+  const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
+  const { addItem, openBag } = useSelectionStore();
+
+  const variants = product.variants || [];
+  const allOutOfStock = variants.length > 0 && variants.every(v => v.stock === 0);
+
+  const handleAddToBag = () => {
+    if (!selectedVariant) {
+      toast.error('Please select a size');
+      return;
+    }
+    addItem({
+      productId: product.id,
+      variantId: selectedVariant.sku,
+      name: product.name,
+      price: product.price,
+      image: product.images[0],
+      size: selectedVariant.size,
+      color: selectedVariant.color,
+      quantity: 1,
+    });
+    triggerHaptic();
+    toast.success('Added to your selection');
+    openBag();
+  };
+
+  return (
+    <div className="space-y-6 pt-6">
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-[10px] uppercase tracking-[0.3em] text-secondary font-bold">Select Silhouette Size</h3>
+          <button className="text-[10px] uppercase tracking-[0.2em] text-primary/40 border-b border-primary/10 pb-1 hover:text-primary transition-colors">Size Guide</button>
+        </div>
+        <div className="flex flex-wrap gap-4">
+          {variants.filter(v => v.isActive !== false).map((variant) => (
+            <button
+              key={variant.sku}
+              onClick={() => setSelectedVariant(variant)}
+              className={`min-w-[64px] h-[64px] border text-xs font-sans tracking-widest transition-all duration-500 flex items-center justify-center ${
+                selectedVariant?.sku === variant.sku ? 'border-primary bg-primary text-primary-foreground invert dark:invert-0' : 'border-primary/20 hover:border-primary/50'
+              } ${variant.stock === 0 ? 'opacity-30 cursor-not-allowed relative overflow-hidden' : ''}`}
+            >
+              {variant.size}
+              {variant.stock === 0 && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-[120%] h-px bg-primary/30 rotate-[35deg]"></div>
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+      <button 
+        disabled={!selectedVariant && !allOutOfStock}
+        onClick={() => {
+          if (allOutOfStock || (selectedVariant && selectedVariant.stock === 0)) {
+            setIsWaitlistModalOpen(true);
+          } else {
+            handleAddToBag();
+          }
+        }}
+        className="w-full py-6 bg-primary text-primary-foreground text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-accent-primary hover:text-white transition-all active:scale-[0.98] flex items-center justify-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed invert dark:invert-0"
+      >
+        {(allOutOfStock || (selectedVariant && selectedVariant.stock === 0)) ? (
+          <>
+            <Clock strokeWidth={1} className="w-4 h-4" />
+            Join The Waitlist
+          </>
+        ) : (
+          <>
+            <ShoppingBag strokeWidth={1} className="w-4 h-4" />
+            Place in Basket
+          </>
+        )}
+      </button>
+
+      <WaitlistModal
+        isOpen={isWaitlistModalOpen}
+        onClose={() => setIsWaitlistModalOpen(false)}
+        productId={product.id}
+        variantId={selectedVariant?.sku || ''}
+        productName={product.name}
+        variantName={selectedVariant ? `${selectedVariant.size} ${selectedVariant.color ? `- ${selectedVariant.color}` : ''}` : ''}
+      />
+    </div>
+  );
+}

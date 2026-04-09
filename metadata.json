@@ -1,0 +1,5 @@
+{
+  "name": "WANAS",
+  "description": "WANAS is a luxury fashion house dedicated to handcrafted excellence and timeless elegance. Based in Egypt, serving the world.",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"]
+}

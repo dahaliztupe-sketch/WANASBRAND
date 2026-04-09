@@ -1,0 +1,101 @@
+'use client';
+
+import { useState } from 'react';
+import { X } from 'lucide-react';
+import { toast } from 'sonner';
+
+interface WaitlistModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  productId: string;
+  variantId: string;
+  productName: string;
+  variantName: string;
+}
+
+export function WaitlistModal({ isOpen, onClose, productId, variantId, productName, variantName }: WaitlistModalProps) {
+  const [contactInfo, setContactInfo] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!contactInfo.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId,
+          variantId,
+          productName,
+          variantName,
+          contactInfo,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to join waitlist');
+      }
+
+      toast.success('You have been added to the waitlist.');
+      onClose();
+      setContactInfo('');
+    } catch (error) {
+      console.error('Error joining waitlist:', error);
+      toast.error('Failed to join waitlist. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverted/50 backdrop-blur-sm p-4">
+      <div className="bg-primary w-full max-w-md p-8 relative shadow-2xl">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-2 text-primary/50 hover:text-primary transition-colors"
+        >
+          <X strokeWidth={1} className="w-5 h-5" />
+        </button>
+
+        <div className="text-center mb-8">
+          <h2 className="font-serif text-3xl font-light text-primary mb-2">Join the Waitlist</h2>
+          <p className="text-primary/60 font-light">
+            {productName} - {variantName}
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="contact" className="block text-[10px] uppercase tracking-widest text-primary/50 mb-2">
+              Email or Phone Number
+            </label>
+            <input
+              type="text"
+              id="contact"
+              value={contactInfo}
+              onChange={(e) => setContactInfo(e.target.value)}
+              placeholder="Enter your contact info"
+              className="w-full border-b border-primary/50 py-3 px-0 bg-transparent focus:border-primary focus:ring-0 transition-colors text-sm font-light placeholder:text-primary/30"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting || !contactInfo.trim()}
+            className="w-full py-4 bg-inverted text-inverted text-xs uppercase tracking-[0.2em] font-semibold hover:bg-inverted/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? 'Joining...' : 'Join Waitlist'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}

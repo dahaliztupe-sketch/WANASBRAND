@@ -69,8 +69,12 @@ export async function validateCartItems(items: ReservationItem[]): Promise<{ val
           const variant = productData.variants.find(v => v.sku === item.variant.sku);
           
           if (variant && variant.stock > 0 && variant.isActive !== false) {
+            // Cap the requested quantity to the available stock
+            const cappedQuantity = Math.min(item.quantity, variant.stock);
+            
             validItems.push({
               ...item,
+              quantity: cappedQuantity,
               productName: productData.name, // Snapshot update
               priceAtPurchase: productData.price, // Update to current price
               variant: {

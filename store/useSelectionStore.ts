@@ -57,6 +57,12 @@ export const useSelectionStore = create<SelectionState>()(
         const userId = auth.currentUser?.uid;
         if (userId) {
           get().syncWithCloud(userId);
+        } else {
+          import('@/lib/services/cart.service').then(({ validateCartItems }) => {
+            validateCartItems(get().items).then(({ validatedItems }) => {
+              set({ items: validatedItems });
+            });
+          });
         }
       },
       removeItem: (variantSku) => {
@@ -77,6 +83,12 @@ export const useSelectionStore = create<SelectionState>()(
         const userId = auth.currentUser?.uid;
         if (userId) {
           get().syncWithCloud(userId);
+        } else {
+          import('@/lib/services/cart.service').then(({ validateCartItems }) => {
+            validateCartItems(get().items).then(({ validatedItems }) => {
+              set({ items: validatedItems });
+            });
+          });
         }
       },
       clearSelection: () => {

@@ -1,0 +1,195 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the WANAS boutique.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "fullName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "role": { "type": "string", "enum": ["customer", "admin"] },
+        "tier": { "type": "string", "enum": ["customer", "member", "inner_circle"] },
+        "styleProfile": {
+          "type": "object",
+          "properties": {
+            "preferredColors": { "type": "array", "items": { "type": "string" } },
+            "preferredSilhouettes": { "type": "array", "items": { "type": "string" } },
+            "lastQuizDate": { "type": "string", "format": "date-time" }
+          }
+        }
+      },
+      "required": ["uid", "fullName", "email", "role", "tier"]
+    },
+    "ProductVariant": {
+      "title": "ProductVariant",
+      "description": "A specific variant of a product.",
+      "type": "object",
+      "properties": {
+        "sku": { "type": "string" },
+        "size": { "type": "string" },
+        "color": { "type": "string" },
+        "stock": { "type": "number" }
+      },
+      "required": ["sku", "size", "color", "stock"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "A ready-to-wear product.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "variants": { "type": "array", "items": { "$ref": "#/entities/ProductVariant" } },
+        "isArchived": { "type": "boolean" },
+        "requiredTier": { "type": "string", "enum": ["customer", "member", "inner_circle"] }
+      },
+      "required": ["id", "name", "description", "price", "category", "images", "variants", "isArchived"]
+    },
+    "ReservationItem": {
+      "title": "ReservationItem",
+      "description": "An item in a reservation.",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "variantSku": { "type": "string" },
+        "name": { "type": "string" },
+        "quantity": { "type": "number" },
+        "price": { "type": "number" }
+      },
+      "required": ["productId", "variantSku", "name", "quantity", "price"]
+    },
+    "Reservation": {
+      "title": "Reservation",
+      "description": "A reservation request for products.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "reservationNumber": { "type": "string" },
+        "customerInfo": {
+          "type": "object",
+          "properties": {
+            "fullName": { "type": "string" },
+            "phone": { "type": "string" },
+            "city": { "type": "string" },
+            "address": { "type": "string" },
+            "preferredContactTime": { "type": "string" }
+          },
+          "required": ["fullName", "phone", "city", "address", "preferredContactTime"]
+        },
+        "items": { "type": "array", "items": { "$ref": "#/entities/ReservationItem" } },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending_contact", "deposit_paid", "in_production", "shipped", "delivered"] },
+        "trackingNumber": { "type": "string" },
+        "shippingProvider": { "type": "string" },
+        "userId": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "reservationNumber", "customerInfo", "items", "totalAmount", "status", "userId", "createdAt"]
+    },
+    "Return": {
+      "title": "Return",
+      "description": "A customer return request.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "orderId": { "type": "string" },
+        "reason": { "type": "string" },
+        "notes": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "orderId", "reason", "status", "createdAt"]
+    },
+    "WaitlistEntry": {
+      "title": "WaitlistEntry",
+      "description": "A waitlist request for an out-of-stock product.",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string" },
+        "variantId": { "type": "string" },
+        "productName": { "type": "string" },
+        "variantName": { "type": "string" },
+        "contactInfo": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "notified"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "variantId", "productName", "variantName", "contactInfo", "status", "createdAt"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "Global site settings.",
+      "type": "object",
+      "properties": {
+        "announcementBanner": { "type": "string" },
+        "enableCOD": { "type": "boolean" },
+        "taxRate": { "type": "number" },
+        "shippingFee": { "type": "number" },
+        "contactEmail": { "type": "string" },
+        "contactPhone": { "type": "string" },
+        "maintenanceMode": { "type": "boolean" },
+        "currency": { "type": "string" }
+      },
+      "required": ["announcementBanner", "enableCOD", "taxRate", "shippingFee", "contactEmail", "contactPhone", "maintenanceMode", "currency"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "A single message in a chat.",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string", "enum": ["user", "assistant"] },
+        "content": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["role", "content", "timestamp"]
+    },
+    "ConciergeChat": {
+      "title": "ConciergeChat",
+      "description": "A chat session between a user and the concierge AI.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "messages": { "type": "array", "items": { "$ref": "#/entities/ChatMessage" } },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "messages", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "#/entities/User",
+      "description": "Stores user profiles."
+    },
+    "products/{productId}": {
+      "schema": "#/entities/Product",
+      "description": "Stores product catalog."
+    },
+    "reservations/{reservationId}": {
+      "schema": "#/entities/Reservation",
+      "description": "Stores customer reservations."
+    },
+    "returns/{returnId}": {
+      "schema": "#/entities/Return",
+      "description": "Stores customer return requests."
+    },
+    "waitlist/{entryId}": {
+      "schema": "#/entities/WaitlistEntry",
+      "description": "Stores waitlist requests."
+    },
+    "settings/global": {
+      "schema": "#/entities/Settings",
+      "description": "Stores global site settings."
+    },
+    "concierge_chats/{chatId}": {
+      "schema": "#/entities/ConciergeChat",
+      "description": "Stores concierge AI chat sessions."
+    }
+  }
+}
