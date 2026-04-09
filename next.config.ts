@@ -69,10 +69,15 @@ const nextConfig = {
         https: false,
         crypto: false,
         os: false,
+        path: false,
+        stream: false,
+        dns: false,
+        child_process: false,
       };
     }
     return config;
   },
+  serverExternalPackages: ['firebase-admin', 'nodemailer'],
 };
 
 export default withSentryConfig(nextConfig, {

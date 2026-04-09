@@ -1,4 +1,4 @@
-import { db } from '../firebase/server';
+import { db } from '@/lib/firebase/server';
 import { Log } from '@/types';
 import crypto from 'crypto';
 
