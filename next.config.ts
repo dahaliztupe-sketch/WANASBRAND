@@ -58,26 +58,6 @@ const nextConfig = {
       },
     ];
   },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-        http: false,
-        https: false,
-        crypto: false,
-        os: false,
-        path: false,
-        stream: false,
-        dns: false,
-        child_process: false,
-      };
-    }
-    return config;
-  },
-  serverExternalPackages: ['firebase-admin', 'nodemailer'],
 };
 
 export default withSentryConfig(nextConfig, {

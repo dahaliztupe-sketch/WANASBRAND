@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Playfair_Display, Montserrat } from "next/font/google";
 import "./globals.css";
 import { StructuredData } from "@/components/StructuredData";
-import { useEffect } from "react";
-import { useSelectionStore } from "@/store/useSelectionStore";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-serif", display: "swap" });
