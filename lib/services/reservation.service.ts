@@ -32,10 +32,12 @@ export const createReservation = async (
   };
 
   try {
+    const idempotencyKey = crypto.randomUUID();
     const response = await fetch('/api/reserve', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Idempotency-Key': idempotencyKey,
         ...(idToken ? { 'Authorization': `Bearer ${idToken}` } : {})
       },
       body: JSON.stringify({

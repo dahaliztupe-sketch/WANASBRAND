@@ -3,23 +3,23 @@
 
 @layer base {
   :root {
-    --bg-primary: #FAF9F6; /* Alabaster */
-    --bg-secondary: #F3EFEA; /* Cashmere Cream */
-    --text-primary: #1A1919; /* Rich Charcoal */
-    --text-secondary: #5C5555; /* Warm Gray */
-    --accent-primary: #C8A2A2; /* Dusty Rose */
-    --accent-hover: #B88686;
-    --border-primary: #E8E3DD;
+    --bg-primary: #F7F5F0; /* Alabaster / Linen */
+    --bg-secondary: #EFEBE4; /* Cashmere */
+    --text-primary: #1C1B1A; /* Obsidian / Deep Basalt */
+    --text-secondary: #5A5652; /* Warm Gray */
+    --accent-primary: #9C4A36; /* Nile Clay / Terracotta */
+    --accent-hover: #B85D43;
+    --border-primary: #E5DFD5; /* Muted Gold/Sand */
   }
 
   .dark {
-    --bg-primary: #1A1416; /* Midnight Plum */
-    --bg-secondary: #241C1E; /* Dark Truffle */
-    --text-primary: #F4EFE6; /* Soft Ivory */
-    --text-secondary: #A89F9F; /* Muted Rose Gray */
-    --accent-primary: #B88686; /* Vintage Rose */
-    --accent-hover: #C8A2A2;
-    --border-primary: #3A2E32;
+    --bg-primary: #141312; /* Midnight Basalt */
+    --bg-secondary: #1C1B1A; /* Obsidian */
+    --text-primary: #F7F5F0; /* Alabaster */
+    --text-secondary: #A39E99; /* Muted Sand */
+    --accent-primary: #B85D43; /* Nile Clay */
+    --accent-hover: #9C4A36;
+    --border-primary: #2A2826;
   }
 
   /* Custom Scrollbar */
@@ -62,4 +62,10 @@ body {
 .linen-texture {
   background-image: url("https://www.transparenttextures.com/patterns/linen.png");
   opacity: 0.05;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
 }

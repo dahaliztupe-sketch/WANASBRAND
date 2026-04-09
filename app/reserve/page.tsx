@@ -18,10 +18,12 @@ export default function ReservePage() {
   const [settings, setSettings] = useState<any>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userData, setUserData] = useState<any>(null);
+  const [idempotencyKey, setIdempotencyKey] = useState('');
 
   const subtotal = items.reduce((acc, item) => acc + item.priceAtPurchase * item.quantity, 0);
 
   useEffect(() => {
+    setIdempotencyKey(crypto.randomUUID());
     const fetchSettings = async () => {
       const docRef = doc(db, 'settings', 'global');
       const docSnap = await getDoc(docRef);
@@ -83,12 +85,16 @@ export default function ReservePage() {
         priceAtPurchase: item.priceAtPurchase,
         quantity: item.quantity,
         variant: item.variant,
-        coverImageURL: item.coverImageURL || '', // Ensure we have a snapshot of the image
+        coverImageURL: item.image || '', // Ensure we have a snapshot of the image
+        recommendedByAI: item.recommendedByAI || false,
       }));
 
       const response = await fetch('/api/reserve', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Idempotency-Key': idempotencyKey
+        },
         body: JSON.stringify({
           customerData: {
             fullName: (e.target as any).fullName.value,

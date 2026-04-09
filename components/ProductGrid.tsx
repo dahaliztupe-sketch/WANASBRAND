@@ -73,9 +73,23 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
 
   if (loading) {
     return (
-      <div className={`grid gap-x-8 gap-y-16 ${viewMode === 'grid' ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 md:grid-cols-2'}`}>
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-          <ProductSkeleton key={i} />
+      <div className={`grid gap-y-24 gap-x-8 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-12' : 'grid-cols-1 md:grid-cols-2'}`}>
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className={viewMode === 'grid' ? `flex flex-col items-start ${
+            i % 3 === 0 ? 'md:col-span-6 md:col-start-1' :
+            i % 3 === 1 ? 'md:col-span-4 md:col-start-8 md:mt-48' :
+            'md:col-span-8 md:col-start-3 md:mt-32'
+          }` : 'flex flex-col items-center'}>
+            <div className={`w-full ${
+              viewMode === 'grid' ? (
+                i % 3 === 0 ? 'aspect-[3/4]' :
+                i % 3 === 1 ? 'aspect-[4/5]' :
+                'aspect-[16/9]'
+              ) : 'aspect-[3/4]'
+            } mb-8 bg-primary/5 animate-pulse rounded-sm`}></div>
+            <div className="h-6 bg-primary/5 animate-pulse rounded-sm w-3/4 mb-2"></div>
+            <div className="h-4 bg-primary/5 animate-pulse rounded-sm w-1/4"></div>
+          </div>
         ))}
       </div>
     );
@@ -96,14 +110,28 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
 
   return (
     <div className="flex flex-col items-center">
-      <div className={`grid gap-x-8 gap-y-16 w-full ${viewMode === 'grid' ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 md:grid-cols-2'}`}>
+      <div className={`grid gap-y-32 gap-x-8 w-full ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-12' : 'grid-cols-1 md:grid-cols-2'}`}>
         {products.map((product, idx) => (
-          <RevealOnScroll key={product.id} delay={(idx % 4) * 0.1}>
+          <RevealOnScroll 
+            key={product.id} 
+            delay={(idx % 3) * 0.1}
+            className={viewMode === 'grid' ? `group flex flex-col items-start cursor-pointer ${
+              idx % 3 === 0 ? 'md:col-span-6 md:col-start-1' :
+              idx % 3 === 1 ? 'md:col-span-4 md:col-start-8 md:mt-48' :
+              'md:col-span-8 md:col-start-3 md:mt-32'
+            }` : 'group flex flex-col items-center cursor-pointer'}
+          >
             <Link 
               href={`/product/${product.slug}`} 
-              className="group flex flex-col cursor-pointer"
+              className="w-full"
             >
-              <div className={`relative w-full mb-6 overflow-hidden bg-primary shadow-sm group-hover:shadow-md transition-all duration-700 ${viewMode === 'grid' ? 'aspect-[3/4]' : 'aspect-[4/5]'}`}>
+              <div className={`relative w-full mb-8 overflow-hidden bg-primary shadow-sm group-hover:shadow-xl transition-all duration-700 ${
+                viewMode === 'grid' ? (
+                  idx % 3 === 0 ? 'aspect-[3/4]' :
+                  idx % 3 === 1 ? 'aspect-[4/5]' :
+                  'aspect-[16/9]'
+                ) : 'aspect-[3/4]'
+              }`}>
                 <Image
                   src={product.images[0] || `https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=800&auto=format&fit=crop`}
                   alt={product.name}
@@ -111,37 +139,40 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
                   quality={100}
                   placeholder="blur"
                   blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
-                  className="object-cover object-center transition-transform duration-1000 group-hover:scale-105"
+                  className="object-cover object-center transition-transform duration-[2s] group-hover:scale-110"
                   referrerPolicy="no-referrer"
                 />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700" />
                 <button 
                   onClick={(e) => handleWishlistToggle(e, product)} 
-                  className="absolute top-4 right-4 z-10 p-2 bg-primary/80 rounded-full hover:bg-primary transition-colors"
+                  className="absolute top-6 right-6 z-10 p-3 bg-primary/90 backdrop-blur-md rounded-full hover:bg-primary transition-colors opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-500"
                 >
                   <Heart strokeWidth={1} className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-accent-primary text-accent-primary' : 'text-primary'}`} />
                 </button>
                 {/* Quick Add Overlay */}
-                <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 bg-primary/80 backdrop-blur-sm">
+                <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-out bg-primary/90 backdrop-blur-md">
                   <button 
                     onClick={(e) => { 
                       e.preventDefault(); 
                       triggerHaptic();
                       toast('Quick Add coming soon.'); 
                     }}
-                    className="w-full py-3 bg-primary text-primary-foreground text-[10px] uppercase tracking-widest hover:bg-accent-primary transition-colors invert dark:invert-0"
+                    className="w-full py-4 bg-transparent border border-primary/20 text-primary text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-primary hover:text-primary-foreground hover:invert dark:hover:invert-0 transition-all"
                   >
                     Quick Add
                   </button>
                 </div>
               </div>
-              <div className="flex flex-col gap-1">
-                <h2 className="font-serif text-lg tracking-tight group-hover:text-accent-primary transition-colors text-primary">
-                  {product.name}
-                </h2>
-                <p className="text-primary/50 text-[10px] uppercase tracking-[0.2em] font-light">
-                  {product.category}
-                </p>
-                <p className="text-primary/70 text-xs tracking-widest font-medium mt-1">
+              <div className={`flex ${viewMode === 'grid' ? 'flex-col md:flex-row md:items-end justify-between gap-4' : 'flex-col items-center text-center gap-2'}`}>
+                <div className="space-y-1">
+                  <h2 className={`font-serif tracking-tight group-hover:text-accent-primary transition-colors text-primary ${viewMode === 'grid' ? 'text-3xl md:text-4xl leading-snug' : 'text-2xl'}`}>
+                    {product.name}
+                  </h2>
+                  <p className="text-primary/50 text-[10px] uppercase tracking-[0.3em] font-bold">
+                    {product.category}
+                  </p>
+                </div>
+                <p className="text-secondary text-[10px] uppercase tracking-[0.3em] font-bold">
                   {formatPrice(product.price)}
                 </p>
               </div>

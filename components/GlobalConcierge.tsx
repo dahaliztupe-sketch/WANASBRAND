@@ -1,9 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Bot } from 'lucide-react';
-import ConciergeChat from './ConciergeChat';
+import { MessageCircle } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { AnimatePresence, motion } from 'motion/react';
+
+const ConciergeChat = dynamic(() => import('./ConciergeChat'), {
+  ssr: false,
+});
 
 export function GlobalConcierge() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,10 +16,10 @@ export function GlobalConcierge() {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 lg:bottom-8 right-6 z-40 w-14 h-14 bg-accent-primary text-inverted rounded-full shadow-2xl flex items-center justify-center hover:scale-105 transition-transform"
+        className="fixed bottom-24 lg:bottom-8 right-6 z-40 w-14 h-14 bg-primary text-inverted rounded-full shadow-2xl flex items-center justify-center hover:scale-105 transition-transform border border-inverted/10"
         aria-label="Open Concierge"
       >
-        <Bot size={24} />
+        <MessageCircle size={24} strokeWidth={1.5} fill="none" />
       </button>
 
       <AnimatePresence>

@@ -5,7 +5,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { Reservation } from '@/types';
 import { updateReservationStatus } from '@/app/admin/actions';
 import { toast } from 'sonner';
-import { Package, User, DollarSign, ChevronRight, AlertCircle, Gift } from 'lucide-react';
+import { Package, User, DollarSign, ChevronRight, AlertCircle, Gift, Eye, EyeOff, Bot } from 'lucide-react';
 import Link from 'next/link';
 
 const COLUMNS = [
@@ -111,6 +111,11 @@ export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
                                 <p className="text-[10px] text-primary/40 uppercase tracking-widest mt-1">
                                   {res.items.length} {res.items.length === 1 ? 'Piece' : 'Pieces'}
                                 </p>
+                                {res.items.some(item => item.recommendedByAI) && (
+                                  <div className="mt-2 inline-flex items-center gap-1 bg-accent-primary/10 text-accent-primary px-2 py-0.5 rounded-sm text-[8px] uppercase tracking-widest">
+                                    <Bot size={10} /> AI Recommended
+                                  </div>
+                                )}
                               </div>
 
                               {res.giftingDetails?.isGift && res.giftingDetails.giftNote && (

@@ -7,7 +7,11 @@ import Image from 'next/image';
 import { useSelectionStore } from '@/store/useSelectionStore';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/utils';
-import ConciergeChat from './ConciergeChat';
+import dynamic from 'next/dynamic';
+
+const ConciergeChat = dynamic(() => import('./ConciergeChat'), {
+  ssr: false,
+});
 
 interface ProductDrawerProps {
   product: Product | null;

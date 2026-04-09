@@ -13,9 +13,11 @@ export default function CollectionsPage() {
   return (
     <div className="flex flex-col w-full min-h-screen bg-primary">
       {/* Header */}
-      <section className="pt-32 pb-12 px-6 text-center max-w-4xl mx-auto">
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif tracking-tight break-words whitespace-normal text-balance leading-tight text-primary">The Collection</h1>
-        <p className="text-primary/50 text-[10px] uppercase tracking-[0.4em] mt-6 font-light">
+      <section className="pt-48 pb-24 px-6 text-center max-w-6xl mx-auto">
+        <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-serif tracking-tighter break-words whitespace-normal text-balance leading-[0.85] text-primary mix-blend-difference dark:mix-blend-normal">
+          The <br /><span className="italic text-accent-primary">Collection</span>
+        </h1>
+        <p className="text-primary/50 text-[10px] uppercase tracking-[0.6em] mt-12 font-bold">
           Curated silhouettes for the modern atelier.
         </p>
       </section>

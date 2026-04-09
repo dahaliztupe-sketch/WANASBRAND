@@ -78,6 +78,9 @@ export async function POST(req: Request) {
     // Generate Magic Link Token
     const magicLinkToken = crypto.randomBytes(16).toString('hex');
 
+    // Idempotency Key from headers
+    const idempotencyKey = req.headers.get('Idempotency-Key');
+
     // Firestore Transaction for Sequential ID, Inventory, and Reservation
     if (!db) throw new Error('Database not initialized');
     const counterRef = db.collection('counters').doc('reservations');
@@ -85,6 +88,22 @@ export async function POST(req: Request) {
     const id = reservationRef.id;
 
     const result = await db.runTransaction(async (transaction) => {
+      // 0. Check Idempotency Key
+      if (idempotencyKey) {
+        const existingQuery = await db!.collection('reservations').where('idempotencyKey', '==', idempotencyKey).limit(1).get();
+        if (!existingQuery.empty) {
+          const existingDoc = existingQuery.docs[0].data();
+          return {
+            isDuplicate: true,
+            orderNumber: existingDoc.reservationNumber,
+            id: existingDoc.id,
+            calculatedTotal: existingDoc.financials.total,
+            validatedItems: existingDoc.items,
+            magicLinkToken: existingDoc.magicLinkToken
+          };
+        }
+      }
+
       // 1. Get Counter for Sequential ID
       const counterDoc = await transaction.get(counterRef);
       let nextId = 10001;
@@ -135,7 +154,8 @@ export async function POST(req: Request) {
         validatedItems.push({
           ...item,
           priceAtPurchase: truePrice,
-          productName: productData.name
+          productName: productData.name,
+          recommendedByAI: item.recommendedByAI || false,
         });
       }
 
@@ -169,33 +189,34 @@ export async function POST(req: Request) {
         status: 'pending_contact',
         userId: userId || 'guest',
         magicLinkToken,
+        idempotencyKey: idempotencyKey || null,
         createdAt: new Date().toISOString(),
         emailDeliveryStatus: 'pending',
       };
 
       transaction.set(reservationRef, reservation);
 
-      return { orderNumber, id, calculatedTotal, validatedItems };
+      return { isDuplicate: false, orderNumber, id, calculatedTotal, validatedItems, magicLinkToken };
     });
 
-    const { orderNumber, calculatedTotal, validatedItems } = result;
+    const { isDuplicate, orderNumber, calculatedTotal, validatedItems, magicLinkToken: savedMagicLinkToken } = result;
 
-    // Send Email
-    if (customerData.email) {
+    // Send Email only if it's not a duplicate
+    if (!isDuplicate && customerData.email) {
       await sendReservationEmail(
         id,
         customerData.email,
         orderNumber,
         validatedItems,
         calculatedTotal,
-        magicLinkToken
+        savedMagicLinkToken
       );
     }
 
     const whatsappMessage = `Hello ${customerData.fullName}, I am your WANAS Ambassador. I have received your reservation ${orderNumber}. Let us begin your journey...`;
     const whatsappLink = `https://wa.me/201000000000?text=${encodeURIComponent(whatsappMessage)}`;
 
-    return NextResponse.json({ success: true, id, orderNumber, magicLinkToken, whatsappLink });
+    return NextResponse.json({ success: true, id, orderNumber, magicLinkToken: savedMagicLinkToken, whatsappLink });
   } catch (error: any) {
     console.error('Reservation Error:', error);
     const message = error instanceof Error ? error.message : 'Failed to create reservation';

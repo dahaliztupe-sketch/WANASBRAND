@@ -7,8 +7,13 @@ import { MessageCircle, ShieldCheck, Truck, RotateCcw, Wind, Layers, Feather, Ca
 import { VariantSelector } from '@/components/VariantSelector';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import { RevealOnScroll } from '@/components/RevealOnScroll';
-import ARViewer from '@/components/ARViewer';
+import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'motion/react';
+
+const ARViewer = dynamic(() => import('@/components/ARViewer'), {
+  ssr: false,
+  loading: () => <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/40 text-[10px] uppercase tracking-widest">Loading Virtual Sanctuary...</div>
+});
 
 import { db } from '@/lib/firebase/client';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -47,144 +52,150 @@ export default function ProductPage() {
   const whatsappLink = `https://wa.me/201090946772?text=Greetings WANAS Atelier. I am inquiring about ${product.name} (Ref: ${product.id}).`;
 
   return (
-    <main className="min-h-screen bg-primary font-serif selection:bg-accent-primary selection:text-white">
-      <div className="max-w-7xl mx-auto px-6 py-12 lg:py-24 grid lg:grid-cols-2 gap-16 lg:gap-24">
-        {/* Image Section - Fabric Loupe */}
-        <div className="relative aspect-[3/4] bg-primary overflow-hidden rounded-sm group cursor-crosshair">
-          <Image
-            src={mainImage}
-            alt={product.name}
-            fill
-            className="object-cover transition-transform duration-1000 ease-out group-hover:scale-150 origin-center"
-            priority
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 linen-texture opacity-20 pointer-events-none" />
-          <div className="absolute bottom-6 left-6 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full text-[8px] uppercase tracking-[0.3em] text-white opacity-0 group-hover:opacity-100 transition-opacity">
-            Fabric Loupe Active
-          </div>
-        </div>
-
-        {/* Content Section */}
-        <div className="flex flex-col justify-center space-y-12">
+    <main className="min-h-screen bg-primary font-serif selection:bg-accent-primary selection:text-white pb-32">
+      <div className="w-full max-w-[1600px] mx-auto px-6 pt-12 lg:pt-24 grid lg:grid-cols-12 gap-12 lg:gap-24 items-start">
+        
+        {/* Left Content Section - Sticky */}
+        <div className="lg:col-span-5 flex flex-col justify-center space-y-16 lg:sticky lg:top-24 z-20">
           <RevealOnScroll>
             <div className="space-y-8">
-              <div className="flex items-center gap-4">
-                <p className="text-[10px] uppercase tracking-[0.4em] text-accent-primary font-bold">Atelier Silhouette</p>
-                <span className="w-12 h-px bg-primary/10"></span>
+              <div className="flex items-center gap-6">
+                <p className="text-[10px] uppercase tracking-[0.6em] text-accent-primary font-bold">Atelier Silhouette</p>
+                <span className="w-16 h-px bg-primary/20"></span>
                 <p className="text-[10px] uppercase tracking-[0.4em] text-primary/40">{product.category}</p>
               </div>
-              <h1 className="text-5xl lg:text-8xl font-light tracking-tighter text-primary leading-[0.9] text-balance">{product.name}</h1>
-              <p className="text-3xl font-light text-primary/60 tracking-tight">EGP {product.price.toLocaleString()}</p>
+              <h1 className="text-6xl lg:text-[7rem] font-light tracking-tighter text-primary leading-[0.85] text-balance mix-blend-difference dark:mix-blend-normal">
+                {product.name}
+              </h1>
+              <p className="text-2xl font-serif italic text-primary/60 tracking-tight">EGP {product.price.toLocaleString()}</p>
             </div>
           </RevealOnScroll>
 
           <RevealOnScroll>
-            <div className="space-y-8">
-              <p className="text-xl leading-relaxed text-primary/80 max-w-xl font-light text-balance">
+            <div className="space-y-10">
+              <p className="text-lg leading-loose text-primary/80 max-w-md font-sans font-light">
                 {product.description}
               </p>
               
               {/* Stylist Note */}
-              <blockquote className="border-l-2 border-accent-primary pl-8 py-2 italic text-primary/60 text-lg font-light max-w-lg">
+              <blockquote className="border-l border-accent-primary pl-8 py-2 italic text-primary/60 text-lg font-serif max-w-sm">
                 &quot;This silhouette is designed to capture the essence of modern grace, blending architectural structure with fluid movement.&quot;
               </blockquote>
             </div>
           </RevealOnScroll>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 py-10 border-y border-primary/10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 py-8 border-y border-primary/10">
             <div className="flex items-center gap-4 text-primary/60">
               <ShieldCheck strokeWidth={1} className="w-5 h-5 text-accent-primary" />
-              <span className="text-[10px] uppercase tracking-widest">Authenticity Guaranteed</span>
+              <span className="text-[9px] uppercase tracking-[0.2em] font-bold">Authenticity Guaranteed</span>
             </div>
             <div className="flex items-center gap-4 text-primary/60">
               <Truck strokeWidth={1} className="w-5 h-5 text-accent-primary" />
-              <span className="text-[10px] uppercase tracking-widest">Complimentary Shipping</span>
+              <span className="text-[9px] uppercase tracking-[0.2em] font-bold">Complimentary Shipping</span>
             </div>
           </div>
 
-          <VariantSelector product={product} />
-          
-          <div className="pt-6 space-y-4">
-            {product.glbModelUrl && (
-              <div className="space-y-3">
-                <button 
-                  onClick={() => setIsAROpen(true)}
-                  className="w-full flex items-center justify-center gap-4 py-6 bg-[#E6B8B8]/10 text-[#3D2B1F] border border-[#E6B8B8]/30 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-[#E6B8B8]/20 transition-all active:scale-[0.98] group"
-                >
-                  <Camera strokeWidth={1} className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                  View in Your Sanctuary
-                </button>
-                <p className="text-[9px] text-primary/40 uppercase tracking-[0.2em] text-center italic">
-                  Visualize the silhouette and fabric drape in your own space before reserving.
-                </p>
-              </div>
-            )}
+          <div className="space-y-8">
+            <VariantSelector product={product} recommendedByAI={typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ref') === 'concierge'} />
+            
+            <div className="pt-4 space-y-4">
+              {product.glbModelUrl && (
+                <div className="space-y-3">
+                  <button 
+                    onClick={() => setIsAROpen(true)}
+                    className="w-full flex items-center justify-center gap-4 py-6 bg-secondary text-primary border border-primary/10 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-primary/5 transition-all active:scale-[0.98] group"
+                  >
+                    <Camera strokeWidth={1} className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                    View in Your Sanctuary
+                  </button>
+                  <p className="text-[9px] text-primary/40 uppercase tracking-[0.2em] text-center italic font-serif">
+                    Visualize the silhouette and fabric drape in your own space before reserving.
+                  </p>
+                </div>
+              )}
 
-            <a 
-              href={whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-4 py-6 border border-primary/20 text-primary text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-primary hover:text-primary-foreground hover:invert dark:hover:invert-0 transition-all active:scale-[0.98]"
-            >
-              <MessageCircle strokeWidth={1} className="w-4 h-4" />
-              Concierge Service
-            </a>
+              <a 
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-4 py-6 border border-primary/20 text-primary text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-primary hover:text-primary-foreground hover:invert dark:hover:invert-0 transition-all active:scale-[0.98]"
+              >
+                <MessageCircle strokeWidth={1} className="w-4 h-4" />
+                Concierge Service
+              </a>
+            </div>
           </div>
+        </div>
+
+        {/* Right Image Section - Massive Parallax */}
+        <div className="lg:col-span-7 relative">
+          <div className="relative w-full aspect-[3/4] lg:aspect-[2/3] bg-secondary overflow-hidden group cursor-crosshair shadow-2xl">
+            <Image
+              src={mainImage}
+              alt={product.name}
+              fill
+              className="object-cover object-top transition-transform duration-[2s] ease-out group-hover:scale-125 origin-center"
+              priority
+              referrerPolicy="no-referrer"
+            />
+            <div className="absolute inset-0 linen-texture opacity-20 pointer-events-none" />
+            <div className="absolute bottom-8 left-8 bg-primary/80 backdrop-blur-md px-6 py-3 rounded-none text-[8px] uppercase tracking-[0.4em] text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500 border border-primary/10">
+              Fabric Loupe Active
+            </div>
+          </div>
+          
+          {/* Secondary Image Overlap */}
+          {product.images && product.images.length > 1 && (
+            <motion.div 
+              initial={{ y: 100, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.5, delay: 0.5 }}
+              className="hidden lg:block absolute -bottom-32 -left-32 w-2/3 aspect-square bg-primary p-4 shadow-2xl z-30"
+            >
+              <div className="relative w-full h-full overflow-hidden bg-secondary">
+                <Image
+                  src={product.images[1]}
+                  alt={`${product.name} Detail`}
+                  fill
+                  className="object-cover transition-transform duration-[3s] hover:scale-110"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
 
       {/* Fabric Story Section */}
-      <section className="max-w-7xl mx-auto px-6 py-32 border-t border-primary/5">
-        <RevealOnScroll className="grid lg:grid-cols-2 gap-24 items-center">
-          <div className="relative aspect-square bg-secondary overflow-hidden rounded-sm">
+      <section className="max-w-[1400px] mx-auto px-6 py-48 mt-32 border-t border-primary/10">
+        <RevealOnScroll className="grid lg:grid-cols-12 gap-16 lg:gap-0 items-center">
+          <div className="lg:col-span-7 relative aspect-[4/3] bg-secondary overflow-hidden shadow-xl">
             <Image
               src="https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=1000&auto=format&fit=crop"
               alt="Fabric Macro"
               fill
-              className="object-cover opacity-80"
+              className="object-cover opacity-90 transition-transform duration-[4s] hover:scale-110"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 linen-texture opacity-30" />
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/40 to-transparent" />
           </div>
-          
-          <div className="space-y-12">
-            <div className="space-y-6">
-              <span className="text-[10px] uppercase tracking-[0.5em] text-accent-primary font-bold">Sensory Experience</span>
-              <h2 className="text-4xl md:text-6xl font-serif font-light text-primary">The Fabric Story</h2>
-              <p className="text-primary/60 leading-relaxed font-light text-lg">
-                Sourced from the finest mills, this silhouette features a unique blend of natural fibers that offer an unparalleled tactile experience.
-              </p>
-            </div>
-
-            <div className="space-y-10">
-              <div className="space-y-4">
-                <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-primary/40">
-                  <span className="flex items-center gap-2"><Feather size={14} /> Softness</span>
-                  <span>9.5/10</span>
-                </div>
-                <div className="h-px w-full bg-primary/10 relative">
-                  <div className="absolute inset-y-0 left-0 bg-accent-primary w-[95%]" />
-                </div>
+          <div className="lg:col-span-5 lg:-ml-16 z-10 bg-primary/95 backdrop-blur-xl p-12 lg:p-16 shadow-2xl space-y-8">
+            <span className="text-[10px] uppercase tracking-[0.4em] text-accent-primary font-bold flex items-center gap-4">
+              <span className="w-8 h-px bg-accent-primary"></span>
+              The Material
+            </span>
+            <h2 className="text-4xl lg:text-6xl font-serif text-primary leading-tight">Woven with <br/><span className="italic text-accent-primary">Intention</span></h2>
+            <p className="text-primary/70 font-sans leading-loose text-lg">
+              Every thread is selected for its drape, breathability, and enduring quality. We partner with heritage mills to source textiles that feel as luxurious as they look.
+            </p>
+            <div className="grid grid-cols-2 gap-8 pt-8 border-t border-primary/10">
+              <div className="space-y-3">
+                <Wind strokeWidth={1} className="w-6 h-6 text-accent-primary" />
+                <h3 className="text-[9px] uppercase tracking-[0.2em] font-bold">Breathable</h3>
               </div>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-primary/40">
-                  <span className="flex items-center gap-2"><Wind size={14} /> Breathability</span>
-                  <span>8.0/10</span>
-                </div>
-                <div className="h-px w-full bg-primary/10 relative">
-                  <div className="absolute inset-y-0 left-0 bg-accent-primary w-[80%]" />
-                </div>
-              </div>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center text-[10px] uppercase tracking-widest text-primary/40">
-                  <span className="flex items-center gap-2"><Layers size={14} /> Weight</span>
-                  <span>Lightweight</span>
-                </div>
-                <div className="h-px w-full bg-primary/10 relative">
-                  <div className="absolute inset-y-0 left-0 bg-accent-primary w-[30%]" />
-                </div>
+              <div className="space-y-3">
+                <Layers strokeWidth={1} className="w-6 h-6 text-accent-primary" />
+                <h3 className="text-[9px] uppercase tracking-[0.2em] font-bold">Structured Drape</h3>
               </div>
             </div>
           </div>

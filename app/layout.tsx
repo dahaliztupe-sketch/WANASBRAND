@@ -79,6 +79,8 @@ import { CustomCursor } from "@/components/CustomCursor";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { FirebaseBoot } from "@/components/FirebaseBoot";
 import { NetworkStatus } from "@/components/NetworkStatus";
+import { SmoothScrolling } from "@/components/SmoothScrolling";
+import { SelectionBag } from "@/components/SelectionBag";
 import { Toaster } from "sonner";
 
 export default function RootLayout({
@@ -109,24 +111,27 @@ export default function RootLayout({
     <html lang="en" className={`${montserrat.variable} ${playfair.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased pb-16 lg:pb-0 cursor-none md:cursor-auto">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <ErrorBoundary>
-            <NetworkStatus />
-            <FirebaseBoot />
-            <CustomCursor />
-            <StructuredData data={organizationJsonLd} />
-            <AnnouncementBar />
-            <Header />
-            {children}
-            <Footer />
-            <BottomNav />
-            <AtelierTour />
-            <CookieBanner />
-            <PushNotificationModal />
-            <ServiceWorkerRegistration />
-            <InstallPrompt />
-            <GlobalConcierge />
-            <Toaster position="bottom-center" toastOptions={{ className: 'font-sans text-sm rounded-sm border border-primary/10 shadow-xl' }} />
-          </ErrorBoundary>
+          <SmoothScrolling>
+            <ErrorBoundary>
+              <NetworkStatus />
+              <FirebaseBoot />
+              <CustomCursor />
+              <StructuredData data={organizationJsonLd} />
+              <AnnouncementBar />
+              <Header />
+              {children}
+              <Footer />
+              <BottomNav />
+              <SelectionBag />
+              <AtelierTour />
+              <CookieBanner />
+              <PushNotificationModal />
+              <ServiceWorkerRegistration />
+              <InstallPrompt />
+              <GlobalConcierge />
+              <Toaster position="bottom-center" toastOptions={{ className: 'font-sans text-sm rounded-sm border border-primary/10 shadow-xl' }} />
+            </ErrorBoundary>
+          </SmoothScrolling>
         </ThemeProvider>
       </body>
     </html>

@@ -46,132 +46,145 @@ export default function AccountDashboard() {
   const isInnerCircle = userData?.tier === 'InnerCircle';
 
   return (
-    <div className="space-y-16">
-      {/* Welcome Header */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-primary/5 pb-12">
-        <div className="flex items-center gap-8">
-          <div className={`relative w-24 h-24 rounded-full bg-accent-primary/5 flex items-center justify-center border border-primary/5 ${isInnerCircle ? 'shadow-[0_0_30px_rgba(212,165,165,0.3)] border-accent-primary/30' : ''}`}>
-            <span className="text-3xl font-serif text-accent-primary">
-              {auth.currentUser?.displayName?.[0] || 'A'}
-            </span>
-            {isInnerCircle && (
-              <div className="absolute -bottom-2 -right-2 bg-accent-primary text-inverted text-[8px] uppercase tracking-widest px-2 py-1 rounded-full">
-                Inner Circle
-              </div>
-            )}
-          </div>
-          <div>
-            <h1 className="text-4xl font-serif text-primary mb-2 tracking-wide">
-              Welcome back, {auth.currentUser?.displayName?.split(' ')[0] || 'Atelier Client'}
+    <div className="space-y-32 pb-32">
+      {/* Welcome Header - Editorial */}
+      <div className="relative pt-20">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-12 border-b border-primary/10 pb-16">
+          <div className="space-y-8">
+            <div className="flex items-center gap-6">
+              <span className="w-12 h-px bg-accent-primary"></span>
+              <span className="text-[10px] uppercase tracking-[0.4em] text-accent-primary font-bold">Private Atelier</span>
+            </div>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-light text-primary tracking-tighter leading-[0.9]">
+              Welcome, <br />
+              <span className="italic text-accent-primary">{auth.currentUser?.displayName?.split(' ')[0] || 'Client'}</span>
             </h1>
             {isInnerCircle ? (
-              <p className="text-accent-primary font-serif italic tracking-wide">
-                Your private concierge is on standby.
+              <p className="text-primary/60 font-sans text-lg max-w-md leading-loose">
+                Your private concierge is on standby. Explore your curated selections and recent acquisitions.
               </p>
             ) : (
-              <p className="text-primary/50 font-light tracking-wide">
-                Member of the WANAS Atelier
+              <p className="text-primary/60 font-sans text-lg max-w-md leading-loose">
+                Member of the WANAS Atelier. Explore your curated selections and recent acquisitions.
               </p>
             )}
           </div>
-        </div>
-        <div className="flex flex-col items-end gap-4">
-          <div className="flex items-center gap-4 text-xs uppercase tracking-[0.2em] text-primary/40">
-            <Clock strokeWidth={1} className="w-4 h-4 stroke-[1px]" />
-            Joined {new Date(auth.currentUser?.metadata.creationTime || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+          
+          <div className="flex flex-col items-start lg:items-end gap-6">
+            <div className={`relative w-32 h-32 rounded-full bg-secondary flex items-center justify-center border border-primary/10 ${isInnerCircle ? 'shadow-[0_0_40px_rgba(212,165,165,0.2)] border-accent-primary/50' : ''}`}>
+              <span className="text-5xl font-serif text-primary/40">
+                {auth.currentUser?.displayName?.[0] || 'A'}
+              </span>
+              {isInnerCircle && (
+                <div className="absolute -bottom-2 bg-accent-primary text-primary-foreground text-[9px] uppercase tracking-[0.3em] px-4 py-2 font-bold">
+                  Inner Circle
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-4 text-[9px] uppercase tracking-[0.3em] text-primary/40 font-bold">
+              <Clock strokeWidth={1} className="w-4 h-4" />
+              Joined {new Date(auth.currentUser?.metadata.creationTime || Date.now()).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Quick Stats - Minimalist */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-16">
         {[
-          { label: 'Active Orders', value: recentOrders.length, icon: Package, color: 'text-blue-500' },
-          { label: 'The Vault', value: '12', icon: Heart, color: 'text-accent-primary' },
-          { label: 'Returns Pending', value: '0', icon: RotateCcw, color: 'text-amber-500' },
+          { label: 'Active Orders', value: recentOrders.length, icon: Package },
+          { label: 'The Vault', value: '12', icon: Heart },
+          { label: 'Returns Pending', value: '0', icon: RotateCcw },
         ].map((stat, idx) => (
-          <div key={idx} className="bg-inverted/[0.02] p-8 border border-primary/5 group hover:border-accent-primary/30 transition-all duration-500">
-            <div className="flex items-center justify-between mb-6">
-              <stat.icon className={`w-6 h-6 stroke-[1.5px] ${stat.color}`} />
-              <span className="text-3xl font-serif text-primary">{stat.value}</span>
+          <div key={idx} className="group relative p-8 border border-primary/10 hover:border-accent-primary/50 transition-colors duration-700 bg-secondary/30">
+            <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:opacity-100 group-hover:text-accent-primary transition-all duration-700">
+              <stat.icon className="w-8 h-8 stroke-[1px]" />
             </div>
-            <p className="text-xs uppercase tracking-widest text-primary/40">{stat.label}</p>
+            <div className="space-y-6">
+              <span className="text-5xl font-serif text-primary block">{stat.value}</span>
+              <p className="text-[10px] uppercase tracking-[0.3em] text-primary/50 font-bold">{stat.label}</p>
+            </div>
           </div>
         ))}
       </div>
 
-      {/* Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+      {/* Recent Activity & Details - Asymmetrical */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
         {/* Recent Orders */}
-        <section>
-          <div className="flex items-center justify-between mb-10">
-            <h2 className="text-2xl font-serif text-primary tracking-wide">Recent Orders</h2>
-            <Link href="/account/orders" className="text-xs uppercase tracking-widest text-accent-primary hover:text-primary transition-colors">
-              View All
+        <section className="lg:col-span-7 space-y-12">
+          <div className="flex items-center justify-between border-b border-primary/10 pb-6">
+            <h2 className="text-3xl font-serif text-primary">Recent Acquisitions</h2>
+            <Link href="/account/orders" className="text-[9px] uppercase tracking-[0.3em] text-accent-primary hover:text-primary transition-colors font-bold flex items-center gap-2 group">
+              View Archive <ArrowRight strokeWidth={1} className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
           
-          <div className="space-y-6">
+          <div className="space-y-8">
             {loading ? (
-              [1, 2].map(i => <div key={i} className="h-32 bg-inverted/5 animate-pulse" />)
+              [1, 2].map(i => <div key={i} className="h-40 bg-secondary/50 animate-pulse" />)
             ) : recentOrders.length > 0 ? (
               recentOrders.map((order) => (
                 <Link 
                   key={order.id} 
                   href={`/account/orders/${order.id}`}
-                  className="block p-6 border border-primary/5 hover:border-accent-primary/30 transition-all group"
+                  className="block p-8 border border-primary/10 hover:border-accent-primary/50 transition-colors duration-700 group bg-secondary/20"
                 >
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <p className="text-xs uppercase tracking-widest text-primary/40 mb-1">Order {order.reservationNumber}</p>
-                      <p className="text-sm font-medium text-primary">{new Date(order.createdAt).toLocaleDateString()}</p>
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+                    <div className="space-y-2">
+                      <p className="text-[9px] uppercase tracking-[0.3em] text-primary/40 font-bold">Order {order.reservationNumber}</p>
+                      <p className="text-lg font-serif text-primary">{new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
                     </div>
-                    <span className="px-3 py-1 bg-accent-primary/10 text-accent-primary text-[10px] uppercase tracking-widest font-medium">
+                    <span className="px-4 py-2 bg-primary/5 text-primary text-[9px] uppercase tracking-[0.3em] font-bold border border-primary/10">
                       {order.status.replace('_', ' ')}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-lg font-serif text-primary">${order.totalAmount.toLocaleString()}</p>
-                    <ArrowRight strokeWidth={1} className="w-4 h-4 text-primary/20 group-hover:text-accent-primary group-hover:translate-x-1 transition-all" />
+                  <div className="flex justify-between items-end pt-6 border-t border-primary/10">
+                    <p className="text-2xl font-serif text-primary">{order.totalAmount.toLocaleString()} EGP</p>
+                    <span className="text-[9px] uppercase tracking-[0.3em] text-accent-primary font-bold group-hover:text-primary transition-colors">View Details</span>
                   </div>
                 </Link>
               ))
             ) : (
-              <div className="py-12 text-center border border-dashed border-primary/10">
-                <p className="text-primary/40 text-sm font-light italic">No recent orders found.</p>
+              <div className="py-24 text-center border border-primary/10 bg-secondary/20">
+                <p className="text-primary/40 text-lg font-serif italic">Your archive is currently empty.</p>
+                <Link href="/collections" className="inline-block mt-6 text-[9px] uppercase tracking-[0.3em] text-accent-primary font-bold hover:text-primary transition-colors border-b border-accent-primary/30 pb-1">
+                  Explore the Collection
+                </Link>
               </div>
             )}
           </div>
         </section>
 
         {/* Atelier Details Summary */}
-        <section>
-          <div className="flex items-center justify-between mb-10">
-            <h2 className="text-2xl font-serif text-primary tracking-wide">Atelier Details</h2>
-            <button className="text-xs uppercase tracking-widest text-accent-primary hover:text-primary transition-colors">
-              Edit
+        <section className="lg:col-span-5 space-y-12">
+          <div className="flex items-center justify-between border-b border-primary/10 pb-6">
+            <h2 className="text-3xl font-serif text-primary">Atelier Profile</h2>
+            <button className="text-[9px] uppercase tracking-[0.3em] text-accent-primary hover:text-primary transition-colors font-bold">
+              Edit Details
             </button>
           </div>
           
-          <div className="bg-inverted/[0.02] p-8 border border-primary/5 space-y-8">
-            <div className="flex items-start gap-6">
-              <MapPin strokeWidth={1} className="w-5 h-5 text-primary/30 mt-1" />
-              <div>
-                <p className="text-xs uppercase tracking-widest text-primary/40 mb-2">Primary Atelier Address</p>
-                <p className="text-sm text-primary leading-relaxed font-light">
+          <div className="bg-secondary/30 p-10 border border-primary/10 space-y-12">
+            <div className="flex items-start gap-6 group">
+              <MapPin strokeWidth={1} className="w-6 h-6 text-primary/30 mt-1 group-hover:text-accent-primary transition-colors" />
+              <div className="space-y-4">
+                <p className="text-[9px] uppercase tracking-[0.3em] text-primary/40 font-bold">Primary Address</p>
+                <p className="text-base text-primary leading-loose font-sans font-light">
                   {auth.currentUser?.displayName || 'Guest User'}<br />
-                  Add your address to expedite your next acquisition.
+                  <span className="text-primary/60 italic">Add your address to expedite your next acquisition.</span>
                 </p>
               </div>
             </div>
             
-            <div className="flex items-start gap-6">
-              <CreditCard strokeWidth={1} className="w-5 h-5 text-primary/30 mt-1" />
-              <div>
-                <p className="text-xs uppercase tracking-widest text-primary/40 mb-2">Payment Method</p>
-                <p className="text-sm text-primary leading-relaxed font-light">
+            <div className="w-full h-px bg-primary/10"></div>
+            
+            <div className="flex items-start gap-6 group">
+              <CreditCard strokeWidth={1} className="w-6 h-6 text-primary/30 mt-1 group-hover:text-accent-primary transition-colors" />
+              <div className="space-y-4">
+                <p className="text-[9px] uppercase tracking-[0.3em] text-primary/40 font-bold">Payment Method</p>
+                <p className="text-base text-primary leading-loose font-sans font-light">
                   No payment methods saved.<br />
-                  Securely save your details for a seamless boutique experience.
+                  <span className="text-primary/60 italic">Securely save your details for a seamless boutique experience.</span>
                 </p>
               </div>
             </div>

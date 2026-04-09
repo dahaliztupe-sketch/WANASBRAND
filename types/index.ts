@@ -67,6 +67,7 @@ export interface ReservationItem {
   priceAtPurchase: number;
   image: string; // Keeping image for UI convenience
   holdExpiresAt?: string; // ISO string
+  recommendedByAI?: boolean;
 }
 
 export interface Reservation {

@@ -7,8 +7,9 @@ import { WaitlistModal } from './WaitlistModal';
 import { useSelectionStore } from '@/store/useSelectionStore';
 import { triggerHaptic } from '@/lib/utils/haptics';
 import { toast } from 'sonner';
+import { motion } from 'motion/react';
 
-export function VariantSelector({ product }: { product: Product }) {
+export function VariantSelector({ product, recommendedByAI }: { product: Product, recommendedByAI?: boolean }) {
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const { addItem, openBag } = useSelectionStore();
@@ -23,13 +24,12 @@ export function VariantSelector({ product }: { product: Product }) {
     }
     addItem({
       productId: product.id,
-      variantId: selectedVariant.sku,
-      name: product.name,
-      price: product.price,
-      image: product.images[0],
-      size: selectedVariant.size,
-      color: selectedVariant.color,
+      productName: product.name,
+      variant: selectedVariant,
       quantity: 1,
+      priceAtPurchase: product.price,
+      image: product.images[0],
+      recommendedByAI,
     });
     triggerHaptic();
     toast.success('Added to your selection');
@@ -48,6 +48,9 @@ export function VariantSelector({ product }: { product: Product }) {
             <button
               key={variant.sku}
               onClick={() => setSelectedVariant(variant)}
+              aria-label={`Select size ${variant.size}${variant.stock === 0 ? ' (Out of stock)' : ''}`}
+              aria-pressed={selectedVariant?.sku === variant.sku}
+              aria-disabled={variant.stock === 0}
               className={`min-w-[64px] h-[64px] border text-xs font-sans tracking-widest transition-all duration-500 flex items-center justify-center ${
                 selectedVariant?.sku === variant.sku ? 'border-primary bg-primary text-primary-foreground invert dark:invert-0' : 'border-primary/20 hover:border-primary/50'
               } ${variant.stock === 0 ? 'opacity-30 cursor-not-allowed relative overflow-hidden' : ''}`}
@@ -62,7 +65,8 @@ export function VariantSelector({ product }: { product: Product }) {
           ))}
         </div>
       </div>
-      <button 
+      <motion.button 
+        whileTap={{ scale: 0.98 }}
         disabled={!selectedVariant && !allOutOfStock}
         onClick={() => {
           if (allOutOfStock || (selectedVariant && selectedVariant.stock === 0)) {
@@ -71,7 +75,7 @@ export function VariantSelector({ product }: { product: Product }) {
             handleAddToBag();
           }
         }}
-        className="w-full py-6 bg-primary text-primary-foreground text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-accent-primary hover:text-white transition-all active:scale-[0.98] flex items-center justify-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed invert dark:invert-0"
+        className="w-full py-6 bg-primary text-primary-foreground text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-accent-primary hover:text-white transition-all flex items-center justify-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed invert dark:invert-0"
       >
         {(allOutOfStock || (selectedVariant && selectedVariant.stock === 0)) ? (
           <>
@@ -84,7 +88,7 @@ export function VariantSelector({ product }: { product: Product }) {
             Place in Basket
           </>
         )}
-      </button>
+      </motion.button>
 
       <WaitlistModal
         isOpen={isWaitlistModalOpen}
