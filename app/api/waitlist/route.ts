@@ -19,6 +19,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid data', details: validation.error.errors }, { status: 400 });
     }
 
+    if (!db) throw new Error('Database not initialized');
+
     const waitlistRef = db.collection('waitlist').doc();
     await waitlistRef.set({
       ...validation.data,

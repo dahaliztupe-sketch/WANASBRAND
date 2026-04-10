@@ -90,7 +90,7 @@ export async function POST(req: Request) {
     const result = await db.runTransaction(async (transaction) => {
       // 0. Check Idempotency Key
       if (idempotencyKey) {
-        const existingQuery = await db!.collection('reservations').where('idempotencyKey', '==', idempotencyKey).limit(1).get();
+        const existingQuery = await db.collection('reservations').where('idempotencyKey', '==', idempotencyKey).limit(1).get();
         if (!existingQuery.empty) {
           const existingDoc = existingQuery.docs[0].data();
           return {

@@ -16,6 +16,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'ID token is required' }, { status: 400 });
     }
 
+    if (!auth || !db) {
+      throw new Error('Firebase Admin not initialized');
+    }
+
     // Verify ID token
     const decodedToken = await auth.verifyIdToken(idToken);
     const uid = decodedToken.uid;
