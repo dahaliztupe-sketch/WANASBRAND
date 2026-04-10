@@ -6,6 +6,7 @@ import { Reservation } from '@/types';
 
 export async function getAdminReservations(statusFilter: string = 'all') {
   try {
+    if (!db) throw new Error('Database not initialized');
     let query: FirebaseFirestore.Query = db.collection('reservations').orderBy('createdAt', 'desc');
     
     if (statusFilter !== 'all') {
@@ -34,6 +35,7 @@ export async function getAdminReservations(statusFilter: string = 'all') {
 
 export async function getAdminReservationById(id: string) {
   try {
+    if (!db) throw new Error('Database not initialized');
     const doc = await db.collection('reservations').doc(id).get();
     if (!doc.exists) return null;
 
@@ -55,6 +57,7 @@ export async function getAdminReservationById(id: string) {
 
 export async function updateConciergeNotes(id: string, notes: string) {
   try {
+    if (!db) throw new Error('Database not initialized');
     await db.collection('reservations').doc(id).update({
       conciergeNotes: notes,
       updatedAt: new Date().toISOString()
@@ -68,6 +71,7 @@ export async function updateConciergeNotes(id: string, notes: string) {
 
 export async function initializeProductionDatabase() {
   try {
+    if (!db) throw new Error('Database not initialized');
     const counterRef = db.collection('counters').doc('reservations');
     const counterDoc = await counterRef.get();
 
@@ -84,6 +88,7 @@ export async function initializeProductionDatabase() {
 
 export async function getAdminCustomers() {
   try {
+    if (!db) throw new Error('Database not initialized');
     const snapshot = await db.collection('reservations').get();
     const customersMap = new Map<string, any>();
 
@@ -129,6 +134,7 @@ import { sendPushNotification } from '@/lib/services/push.service';
 
 export async function updateReservationStatus(id: string, status: Reservation['status']) {
   try {
+    if (!db) throw new Error('Database not initialized');
     const ref = db.collection('reservations').doc(id);
     await ref.update({ 
       status, 
@@ -179,6 +185,7 @@ export async function updateReservationStatus(id: string, status: Reservation['s
 
 export async function bulkUpdateReservations(ids: string[], status: Reservation['status']) {
   try {
+    if (!db) throw new Error('Database not initialized');
     const batch = db.batch();
     const now = new Date().toISOString();
 
