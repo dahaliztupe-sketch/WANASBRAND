@@ -24,6 +24,7 @@ export const ReservationSchema = z.object({
     quantity: z.number().min(1),
     priceAtPurchase: z.number(),
     coverImageURL: z.string().optional(),
+    recommendedByAI: z.boolean().optional(),
   })),
   subtotal: z.number().min(0),
   shippingFee: z.number().min(0),

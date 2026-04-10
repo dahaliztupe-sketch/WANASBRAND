@@ -2,23 +2,26 @@ import { NextResponse } from 'next/server';
 import { db, auth } from '@/lib/firebase/server';
 
 export async function GET(request: Request) {
-  if (!db || !auth) {
+  const firestore = db;
+  const firebaseAuth = auth;
+
+  if (!firestore || !firebaseAuth) {
     return NextResponse.json({ error: 'Firebase Admin not initialized' }, { status: 500 });
   }
 
   try {
     console.log('Seeding counters/reservations...');
-    await db.collection('counters').doc('reservations').set({ current: 10000 });
+    await firestore.collection('counters').doc('reservations').set({ current: 10000 });
 
     console.log('Seeding settings/global...');
-    await db.collection('settings').doc('global').set({
+    await firestore.collection('settings').doc('global').set({
       shipping_cairo: 150,
       shipping_other: 250,
       instapay_handle: "wanas@instapay"
     });
 
     console.log('Seeding products/sample-product...');
-    await db.collection('products').doc('sample-product').set({
+    await firestore.collection('products').doc('sample-product').set({
       name: 'The Signature Silk Dress',
       slug: 'signature-silk-dress',
       description: 'A timeless piece crafted from the finest silk.',
@@ -48,8 +51,8 @@ export async function GET(request: Request) {
 
     // Admin Promotion Logic
     try {
-      const user = await auth.getUserByEmail('abdalrahman32008@gmail.com');
-      await auth.setCustomUserClaims(user.uid, { admin: true });
+      const user = await firebaseAuth.getUserByEmail('abdalrahman32008@gmail.com');
+      await firebaseAuth.setCustomUserClaims(user.uid, { admin: true });
       console.log('Admin claim set for abdalrahman32008@gmail.com');
     } catch (e: any) {
       console.log('User abdalrahman32008@gmail.com not found yet, skipping admin promotion:', e.message);
