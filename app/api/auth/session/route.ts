@@ -17,12 +17,10 @@ export async function POST(req: Request) {
     }
 
     // Verify ID token
-    if (!auth) throw new Error('Auth not initialized');
     const decodedToken = await auth.verifyIdToken(idToken);
     const uid = decodedToken.uid;
 
     // Check for admin role in Firestore
-    if (!db) throw new Error('Database not initialized');
     const userDoc = await db.collection('users').doc(uid).get();
     const userData = userDoc.data();
     const isAdmin = userData?.role === 'admin';
