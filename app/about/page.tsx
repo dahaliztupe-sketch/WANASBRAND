@@ -10,7 +10,7 @@ export default function AboutPage() {
       <section className="relative min-h-screen flex items-center justify-center pt-20 px-6">
         <div className="absolute inset-0 z-0">
           <Image
-            src="https://images.unsplash.com/photo-1550614000-4b95d415dc96?q=80&w=2000&auto=format&fit=crop"
+            src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=2000&auto=format&fit=crop"
             alt="The WANAS Atelier"
             fill
             className="object-cover opacity-40"
@@ -90,7 +90,7 @@ export default function AboutPage() {
             <RevealOnScroll delay={0.2}>
               <div className="relative aspect-[3/4] w-full bg-secondary overflow-hidden shadow-xl">
                 <Image
-                  src="https://images.unsplash.com/photo-1558769132-cb1fac084092?q=80&w=1200&auto=format&fit=crop"
+                  src="https://images.unsplash.com/photo-1516762689617-e1cffcef479d?q=80&w=1200&auto=format&fit=crop"
                   alt="Craftsmanship Detail"
                   fill
                   className="object-cover transition-transform duration-[4s] hover:scale-110"
