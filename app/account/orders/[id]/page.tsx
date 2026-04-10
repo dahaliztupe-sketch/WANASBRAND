@@ -50,7 +50,7 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
       <div className="flex flex-col lg:flex-row justify-between items-start gap-12 border-b border-primary/5 pb-12">
         <div className="space-y-4">
           <h1 className="text-5xl font-serif text-primary tracking-wide italic">
-            Order {order.orderNumber || order.reservationNumber}
+            Order {order.orderNumber}
           </h1>
           <p className="text-primary/50 font-light tracking-widest uppercase text-xs">
             Acquired on {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
@@ -124,15 +124,15 @@ export default function OrderDetailsPage({ params }: { params: Promise<{ id: str
             <div className="space-y-4 text-sm">
               <div className="flex justify-between text-primary/60">
                 <span>Subtotal</span>
-                <span>EGP {order.financials?.subtotal.toLocaleString()}</span>
+                <span>EGP {order.financials.subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-primary/60">
                 <span>VAT (14%)</span>
-                <span>EGP {order.financials?.vat.toLocaleString()}</span>
+                <span>EGP {order.financials.vat.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-primary/60">
                 <span>Shipping</span>
-                <span>EGP {order.financials?.shippingFee?.toLocaleString() || '0'}</span>
+                <span>EGP {order.financials.shippingFee.toLocaleString()}</span>
               </div>
               <div className="h-[1px] bg-primary/5 w-full my-4" />
               <div className="flex justify-between text-xl font-serif text-primary">

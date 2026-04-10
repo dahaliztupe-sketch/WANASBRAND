@@ -29,7 +29,7 @@ export default async function ReservationDetailsAdminPage({ params }: { params: 
         <div className="space-y-4">
           <div className="flex items-center gap-4">
             <h1 className="text-5xl font-serif text-primary tracking-wide italic">
-              Order #{reservation.orderNumber || reservation.reservationNumber}
+              Order #{reservation.orderNumber}
             </h1>
             {reservation.totalAmount > 10000 && (
               <span className="bg-accent-primary/10 text-accent-primary text-[10px] uppercase tracking-[0.3em] px-4 py-1.5 rounded-full border border-accent-primary/20">
@@ -180,15 +180,15 @@ export default async function ReservationDetailsAdminPage({ params }: { params: 
             <div className="space-y-4 text-sm">
               <div className="flex justify-between text-primary/60">
                 <span>Subtotal</span>
-                <span>EGP {reservation.financials?.subtotal.toLocaleString()}</span>
+                <span>EGP {reservation.financials.subtotal.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-primary/60">
                 <span>VAT (14%)</span>
-                <span>EGP {reservation.financials?.vat.toLocaleString()}</span>
+                <span>EGP {reservation.financials.vat.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-primary/60">
                 <span>Shipping</span>
-                <span>EGP {reservation.financials?.shippingFee?.toLocaleString() || '0'}</span>
+                <span>EGP {reservation.financials.shippingFee.toLocaleString()}</span>
               </div>
               <div className="h-[1px] bg-primary/5 w-full my-4" />
               <div className="flex justify-between text-xl font-serif text-primary">

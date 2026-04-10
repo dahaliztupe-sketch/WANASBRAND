@@ -73,7 +73,7 @@ export interface ReservationItem {
 export interface Reservation {
   id: string;
   orderNumber: string; // Sequential
-  reservationNumber?: string; // Added to support legacy/alternative order identification
+  reservationNumber: string; // Mandatory
   customerInfo: {
     fullName: string;
     phone: string; // MUST BE ENCRYPTED
@@ -85,10 +85,11 @@ export interface Reservation {
   };
   items: ReservationItem[];
   totalAmount: number;
-  financials?: {
+  financials: {
     subtotal: number;
     vat: number;
     total: number;
+    shippingFee: number;
   };
   status: 'pending_contact' | 'contacted' | 'deposit_paid' | 'in_production' | 'shipped' | 'delivered' | 'cancelled' | 'returned';
   userId: string;
