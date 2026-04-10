@@ -73,6 +73,7 @@ export interface ReservationItem {
 export interface Reservation {
   id: string;
   orderNumber: string; // Sequential
+  reservationNumber?: string; // Added to support legacy/alternative order identification
   customerInfo: {
     fullName: string;
     phone: string; // MUST BE ENCRYPTED
