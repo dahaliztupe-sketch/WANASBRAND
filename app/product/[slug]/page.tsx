@@ -231,7 +231,7 @@ export default function ProductPage() {
             </div>
             
             <div className="flex-1 relative">
-              <ARViewer src={product.glbModelUrl} alt={product.name} poster={mainImage} />
+              <ARViewer modelUrl={product.glbModelUrl} onClose={() => setIsAROpen(false)} />
             </div>
 
             <div className="p-8 text-center border-t border-primary/5">

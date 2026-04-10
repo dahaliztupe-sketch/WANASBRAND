@@ -13,7 +13,7 @@ interface ARViewerProps {
   onClose: () => void;
 }
 
-export function ARViewer({ modelUrl, onClose }: ARViewerProps) {
+export default function ARViewer({ modelUrl, onClose }: ARViewerProps) {
   return (
     <motion.div 
       initial={{ opacity: 0 }}

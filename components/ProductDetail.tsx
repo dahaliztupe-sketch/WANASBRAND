@@ -9,7 +9,7 @@ import { ProductInfo } from '@/components/ProductInfo';
 import { RevealOnScroll } from './RevealOnScroll';
 import { notFound } from 'next/navigation';
 import { toast } from 'sonner';
-import { ARViewer } from './ARViewer';
+import ARViewer from './ARViewer';
 
 import { triggerHaptic } from '@/lib/utils/haptics';
 
