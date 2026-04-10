@@ -17,6 +17,7 @@ export async function POST(req: Request) {
     }
 
     // Verify ID token
+    if (!auth) throw new Error('Auth not initialized');
     const decodedToken = await auth.verifyIdToken(idToken);
     const uid = decodedToken.uid;
 
