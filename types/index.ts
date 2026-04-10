@@ -101,6 +101,7 @@ export interface Reservation {
     isGift: boolean;
     recipientName?: string;
     handwrittenNote?: string;
+    giftNote?: string;
   };
   emailDeliveryStatus?: 'pending' | 'sent' | 'failed';
 }
