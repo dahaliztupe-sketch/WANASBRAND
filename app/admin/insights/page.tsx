@@ -29,7 +29,6 @@ export default function InsightsPage() {
       const chatsSnap = await getDocs(query(collection(db, 'concierge_chats'), limit(10)));
       const chatLogs = chatsSnap.docs.map(doc => doc.data().messages.map((m: any) => `${m.role}: ${m.content}`).join('\n')).join('\n---\n');
       
-      const model = ai.getGenerativeModel({ model: 'gemini-2.0-flash' });
       const prompt = `
         You are a strategic fashion consultant for WANAS, a luxury fashion house.
         Analyze the following data and provide a concise, sophisticated report for the management.
@@ -48,8 +47,11 @@ export default function InsightsPage() {
         Keep the tone professional, elegant, and insightful.
       `;
 
-      const result = await model.generateContent(prompt);
-      setAiReport(result.response.text());
+      const result = await ai.models.generateContent({
+        model: 'gemini-2.0-flash',
+        contents: prompt,
+      });
+      setAiReport(result.text || '');
     } catch (error) {
       console.error('Error generating AI report:', error);
     } finally {
