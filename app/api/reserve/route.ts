@@ -82,15 +82,17 @@ export async function POST(req: Request) {
     const idempotencyKey = req.headers.get('Idempotency-Key');
 
     // Firestore Transaction for Sequential ID, Inventory, and Reservation
-    if (!db) throw new Error('Database not initialized');
-    const counterRef = db.collection('counters').doc('reservations');
-    const reservationRef = db.collection('reservations').doc();
+    const firestore = db;
+    if (!firestore) throw new Error('Database not initialized');
+    
+    const counterRef = firestore.collection('counters').doc('reservations');
+    const reservationRef = firestore.collection('reservations').doc();
     const id = reservationRef.id;
 
-    const result = await db.runTransaction(async (transaction) => {
+    const result = await firestore.runTransaction(async (transaction) => {
       // 0. Check Idempotency Key
       if (idempotencyKey) {
-        const existingQuery = await db.collection('reservations').where('idempotencyKey', '==', idempotencyKey).limit(1).get();
+        const existingQuery = await firestore.collection('reservations').where('idempotencyKey', '==', idempotencyKey).limit(1).get();
         if (!existingQuery.empty) {
           const existingDoc = existingQuery.docs[0].data();
           return {
@@ -117,8 +119,7 @@ export async function POST(req: Request) {
       const validatedItems = [];
 
       for (const item of items) {
-        if (!db) throw new Error('Database not initialized');
-        const productRef = db.collection('products').doc(item.productId);
+        const productRef = firestore.collection('products').doc(item.productId);
         const productDoc = await transaction.get(productRef);
 
         if (!productDoc.exists) {
