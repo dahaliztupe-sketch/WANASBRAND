@@ -20,9 +20,10 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const { id, updates } = body;
-    if (!db) throw new Error('Database not initialized');
+    const firestore = db;
+    if (!firestore) throw new Error('Database not initialized');
 
-    const productRef = db.collection('products').doc(id);
+    const productRef = firestore.collection('products').doc(id);
     const productDoc = await productRef.get();
 
     if (!productDoc.exists) {

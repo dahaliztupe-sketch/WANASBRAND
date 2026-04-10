@@ -3,13 +3,14 @@ import { db } from '@/lib/firebase/server';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
+  const firestore = db;
   
-  if (!db) {
+  if (!firestore) {
     return { title: 'Product Not Found' };
   }
 
   try {
-    const snapshot = await db.collection('products').where('slug', '==', slug).limit(1).get();
+    const snapshot = await firestore.collection('products').where('slug', '==', slug).limit(1).get();
     
     if (snapshot.empty) {
       return { title: 'Product Not Found' };

@@ -8,9 +8,10 @@ export async function POST(req: Request) {
     if (!userId || !status) {
       return NextResponse.json({ error: 'Missing userId or status' }, { status: 400 });
     }
-    if (!db) throw new Error('Database not initialized');
+    const firestore = db;
+    if (!firestore) throw new Error('Database not initialized');
 
-    await db.collection('users').doc(userId).update({
+    await firestore.collection('users').doc(userId).update({
       tourStatus: status,
     });
 

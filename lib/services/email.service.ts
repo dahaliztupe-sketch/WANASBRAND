@@ -106,13 +106,19 @@ export async function sendReservationEmail(
         subject: `Your WANAS Reservation ${orderNumber}`,
         html: htmlContent,
       });
-      await db.collection('reservations').doc(reservationId).update({ emailDeliveryStatus: 'sent' });
+      const firestore = db;
+      if (firestore) {
+        await firestore.collection('reservations').doc(reservationId).update({ emailDeliveryStatus: 'sent' });
+      }
       return;
     } catch (error) {
       attempts++;
       console.error(`Error sending email (attempt ${attempts}):`, error);
       if (attempts >= maxAttempts) {
-        await db.collection('reservations').doc(reservationId).update({ emailDeliveryStatus: 'failed' });
+        const firestore = db;
+        if (firestore) {
+          await firestore.collection('reservations').doc(reservationId).update({ emailDeliveryStatus: 'failed' });
+        }
       } else {
         await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
       }

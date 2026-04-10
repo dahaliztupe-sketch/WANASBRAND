@@ -11,10 +11,11 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
     }
 
-    if (!db) throw new Error('Database not initialized');
+    const firestore = db;
+    if (!firestore) throw new Error('Database not initialized');
 
     // Fetch all products
-    const productsSnapshot = await db.collection('products').where('isArchived', '==', false).get();
+    const productsSnapshot = await firestore.collection('products').where('isArchived', '==', false).get();
     const products = productsSnapshot.docs.map(doc => {
       const data = doc.data() as Product;
       return { ...data, id: doc.id };

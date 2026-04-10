@@ -19,9 +19,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid data', details: validation.error.errors }, { status: 400 });
     }
 
-    if (!db) throw new Error('Database not initialized');
+    const firestore = db;
+    if (!firestore) throw new Error('Database not initialized');
 
-    const conciergeRef = db.collection('concierge_requests').doc();
+    const conciergeRef = firestore.collection('concierge_requests').doc();
     await conciergeRef.set({
       ...validation.data,
       status: 'pending',
