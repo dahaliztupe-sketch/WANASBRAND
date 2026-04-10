@@ -78,6 +78,7 @@ export interface Reservation {
     fullName: string;
     phone: string; // MUST BE ENCRYPTED
     address?: string; // MUST BE ENCRYPTED
+    city?: string;
     contactMethod: "whatsapp" | "phone";
     vibe: "styling" | "sizing";
     consent: boolean;
