@@ -185,15 +185,16 @@ export async function updateReservationStatus(id: string, status: Reservation['s
 
 export async function bulkUpdateReservations(ids: string[], status: Reservation['status']) {
   try {
-    if (!db) throw new Error('Database not initialized');
-    const batch = db.batch();
+    const database = db;
+    if (!database) throw new Error('Database not initialized');
+    const batch = database.batch();
     const now = new Date().toISOString();
 
     // Fetch reservations first to get customer info
-    const reservations = await Promise.all(ids.map(id => db.collection('reservations').doc(id).get()));
+    const reservations = await Promise.all(ids.map(id => database.collection('reservations').doc(id).get()));
     
     ids.forEach((id, index) => {
-      const ref = db.collection('reservations').doc(id);
+      const ref = database.collection('reservations').doc(id);
       batch.update(ref, { status, updatedAt: now });
     });
 
