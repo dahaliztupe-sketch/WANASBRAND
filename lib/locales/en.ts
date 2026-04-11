@@ -29,5 +29,31 @@ export const en = {
     language: 'Language',
     english: 'English',
     arabic: 'Arabic',
+  },
+  about: {
+    est: 'Est. 2024',
+    titleLine1: 'The',
+    titleLine2: 'Atelier',
+    founder: 'Founder & Creative Director',
+    story: 'Our Journey',
+    philosophy: {
+      number: '01. Philosophy',
+      titleLine1: 'Quiet',
+      titleLine2: 'Confidence',
+      p1: 'At WANAS, we believe that true luxury lies in the quiet confidence of a timeless silhouette. Our design ethos is rooted in the pursuit of understated elegance—where every line is intentional, and every curve serves a purpose.',
+      p2: 'We reject the fleeting nature of trends in favor of garments that transcend seasons, becoming cherished staples in the modern woman\'s wardrobe.',
+    },
+    craftsmanship: {
+      number: '02. Craftsmanship',
+      titleLine1: 'The Art of',
+      titleLine2: 'Tailoring',
+      p1: 'Our dedication to excellence begins with the source. We meticulously curate the finest natural fibers—from the lustrous drape of heritage silk to the breathable, structured refinement of artisanal linen.',
+    },
+    experience: {
+      number: '03. The Experience',
+      titleLine1: 'A Personal',
+      titleLine2: 'Dialogue',
+      p1: 'To ensure that every WANAS garment is a perfect extension of the wearer, we operate exclusively through a concierge-led reservation model. By bypassing direct checkout, we invite a personal dialogue, allowing our team to guide you through sizing and bespoke considerations.',
+    }
   }
 };

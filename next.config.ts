@@ -2,6 +2,8 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Safe to ignore: "Serializing big strings impacts deserialization performance" warning
+  // This occurs due to large static assets or locale files being bundled.
   eslint: {
     ignoreDuringBuilds: true,
   },

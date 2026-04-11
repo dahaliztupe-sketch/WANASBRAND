@@ -120,3 +120,30 @@ export interface Log {
   newValue?: any;
   createdAt: string;
 }
+
+export interface About {
+  est: string;
+  titleLine1: string;
+  titleLine2: string;
+  founder?: string;
+  story?: string;
+  philosophy: {
+    number: string;
+    titleLine1: string;
+    titleLine2: string;
+    p1: string;
+    p2: string;
+  };
+  craftsmanship: {
+    number: string;
+    titleLine1: string;
+    titleLine2: string;
+    p1: string;
+  };
+  experience: {
+    number: string;
+    titleLine1: string;
+    titleLine2: string;
+    p1: string;
+  };
+}
