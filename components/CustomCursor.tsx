@@ -6,16 +6,13 @@ import { motion } from 'motion/react';
 export function CustomCursor() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
-  // Initialize state based on window object if available, otherwise default to true (mobile first)
-  const [isTouchDevice, setIsTouchDevice] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return !window.matchMedia('(pointer: fine)').matches;
-    }
-    return true;
-  });
+  const [isTouchDevice, setIsTouchDevice] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const isFinePointer = window.matchMedia('(pointer: fine)').matches;
+    setIsTouchDevice(!isFinePointer);
 
     const updateMousePosition = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
@@ -49,7 +46,7 @@ export function CustomCursor() {
     };
   }, []);
 
-  if (isTouchDevice) return null;
+  if (!mounted || isTouchDevice) return null;
 
   return (
     <motion.div

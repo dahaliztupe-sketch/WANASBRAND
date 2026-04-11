@@ -10,10 +10,13 @@ import { useWishlistStore } from '@/store/useWishlistStore';
 import { toast } from 'sonner';
 import { getProducts } from '@/lib/services/product.service';
 import { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
+import { auth } from '@/lib/firebase/client';
 
 import { RevealOnScroll } from './RevealOnScroll';
 import { ProductSkeleton } from './ProductSkeleton';
 import { triggerHaptic } from '@/lib/utils/haptics';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' | 'model' }) {
   const [products, setProducts] = useState<Product[]>([]);
@@ -23,16 +26,17 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
   const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const { items: wishlistItems, addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+  const { t } = useTranslation();
 
   const handleWishlistToggle = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     if (isInWishlist(product.id)) {
       removeFromWishlist(product.id);
-      toast('Removed from The Vault');
+      toast(t.featuredProducts.removedFromVault);
     } else {
       addToWishlist(product);
       triggerHaptic();
-      toast('Added to The Vault');
+      toast(t.featuredProducts.addedToVault);
     }
   };
 
@@ -43,9 +47,7 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
       setLastDoc(lastVisible);
       if (initialProducts.length < 12) setHasMore(false);
     } catch (err: unknown) {
-      console.error("Error fetching products:", err);
-      const message = err instanceof Error ? err.message : "Permission Denied";
-      setError(message);
+      handleFirestoreError(err, OperationType.LIST, 'products', auth);
     } finally {
       setLoading(false);
     }
@@ -60,8 +62,7 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
       setLastDoc(lastVisible);
       if (moreProducts.length < 12) setHasMore(false);
     } catch (err: unknown) {
-      console.error("Error loading more products:", err);
-      toast.error("Failed to load more pieces");
+      handleFirestoreError(err, OperationType.LIST, 'products', auth);
     } finally {
       setLoadingMore(false);
     }
@@ -98,11 +99,9 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
   if (error || products.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-32 px-4 text-center max-w-2xl mx-auto">
-        <h3 className="font-serif text-3xl text-primary mb-4 italic">Our collection is being prepared</h3>
+        <h3 className="font-serif text-3xl text-primary mb-4 italic">{t.productGrid.emptyTitle}</h3>
         <p className="text-primary/60 font-light leading-relaxed tracking-wide">
-          Each piece in the WANAS collection is crafted with intentionality and care. 
-          We are currently preparing our next selection of ready-to-wear essentials. 
-          Please check back shortly or contact our customer care team for private viewings.
+          {t.productGrid.emptyDescription}
         </p>
       </div>
     );
@@ -145,7 +144,7 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700" />
                 <button 
                   onClick={(e) => handleWishlistToggle(e, product)} 
-                  className="absolute top-6 right-6 z-10 p-3 bg-primary/90 backdrop-blur-md rounded-full hover:bg-primary transition-colors opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-500"
+                  className="absolute top-6 end-6 z-10 p-3 bg-primary/90 backdrop-blur-md rounded-full hover:bg-primary transition-colors opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-500"
                 >
                   <Heart strokeWidth={1} className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-accent-primary text-accent-primary' : 'text-primary'}`} />
                 </button>
@@ -155,11 +154,11 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
                     onClick={(e) => { 
                       e.preventDefault(); 
                       triggerHaptic();
-                      toast('Quick Add coming soon.'); 
+                      toast(t.productGrid.quickAddComingSoon); 
                     }}
                     className="w-full py-4 bg-transparent border border-primary/20 text-primary text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-primary hover:text-primary-foreground hover:invert dark:hover:invert-0 transition-all"
                   >
-                    Quick Add
+                    {t.productGrid.quickAdd}
                   </button>
                 </div>
               </div>
@@ -173,7 +172,7 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
                   </p>
                 </div>
                 <p className="text-secondary text-[10px] uppercase tracking-[0.3em] font-bold">
-                  {formatPrice(product.price)}
+                  <bdi>{formatPrice(product.price)}</bdi>
                 </p>
               </div>
             </Link>
@@ -191,10 +190,10 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
             {loadingMore ? (
               <>
                 <span className="w-4 h-4 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></span>
-                Loading...
+                {t.productGrid.loading}
               </>
             ) : (
-              'Load More Pieces'
+              t.productGrid.loadMore
             )}
           </button>
         </div>

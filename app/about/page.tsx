@@ -2,8 +2,11 @@
 
 import { RevealOnScroll } from '@/components/RevealOnScroll';
 import Image from 'next/image';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function AboutPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="min-h-screen bg-primary text-primary overflow-hidden pb-32">
       {/* Hero Editorial Section */}
@@ -23,12 +26,12 @@ export default function AboutPage() {
         <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-center text-center">
           <RevealOnScroll>
             <p className="text-[10px] uppercase tracking-[0.8em] text-accent-primary font-bold mb-8">
-              Est. 2024
+              {t.about.est}
             </p>
           </RevealOnScroll>
           <RevealOnScroll delay={0.2}>
             <h1 className="text-6xl md:text-8xl lg:text-[12rem] font-serif font-light tracking-tighter leading-[0.85] text-primary mix-blend-difference dark:mix-blend-normal">
-              The <span className="italic text-accent-primary">Atelier</span>
+              {t.about.titleLine1} <span className="italic text-accent-primary">{t.about.titleLine2}</span>
             </h1>
           </RevealOnScroll>
         </div>
@@ -51,16 +54,16 @@ export default function AboutPage() {
               <div className="space-y-8">
                 <div className="flex items-center gap-6">
                   <span className="w-16 h-px bg-accent-primary"></span>
-                  <span className="text-[10px] uppercase tracking-[0.4em] text-accent-primary font-bold">01. Philosophy</span>
+                  <span className="text-[10px] uppercase tracking-[0.4em] text-accent-primary font-bold">{t.about.philosophy.number}</span>
                 </div>
                 <h2 className="text-4xl lg:text-6xl font-serif text-primary leading-tight">
-                  Quiet <br/><span className="italic text-accent-primary">Confidence</span>
+                  {t.about.philosophy.titleLine1} <br/><span className="italic text-accent-primary">{t.about.philosophy.titleLine2}</span>
                 </h2>
                 <p className="text-lg font-light leading-loose text-primary/80 font-sans">
-                  At WANAS, we believe that true luxury lies in the quiet confidence of a timeless silhouette. Our design ethos is rooted in the pursuit of understated elegance—where every line is intentional, and every curve serves a purpose.
+                  {t.about.philosophy.p1}
                 </p>
                 <p className="text-lg font-light leading-loose text-primary/80 font-sans">
-                  We reject the fleeting nature of trends in favor of garments that transcend seasons, becoming cherished staples in the modern woman&apos;s wardrobe.
+                  {t.about.philosophy.p2}
                 </p>
               </div>
             </RevealOnScroll>
@@ -74,13 +77,13 @@ export default function AboutPage() {
               <div className="space-y-8">
                 <div className="flex items-center gap-6">
                   <span className="w-16 h-px bg-accent-primary"></span>
-                  <span className="text-[10px] uppercase tracking-[0.4em] text-accent-primary font-bold">02. Craftsmanship</span>
+                  <span className="text-[10px] uppercase tracking-[0.4em] text-accent-primary font-bold">{t.about.craftsmanship.number}</span>
                 </div>
                 <h2 className="text-4xl lg:text-6xl font-serif text-primary leading-tight">
-                  The Art of <br/><span className="italic text-accent-primary">Tailoring</span>
+                  {t.about.craftsmanship.titleLine1} <br/><span className="italic text-accent-primary">{t.about.craftsmanship.titleLine2}</span>
                 </h2>
                 <p className="text-lg font-light leading-loose text-primary/80 font-sans">
-                  Our dedication to excellence begins with the source. We meticulously curate the finest natural fibers—from the lustrous drape of heritage silk to the breathable, structured refinement of artisanal linen.
+                  {t.about.craftsmanship.p1}
                 </p>
               </div>
             </RevealOnScroll>
@@ -118,14 +121,14 @@ export default function AboutPage() {
             <div className="max-w-3xl mx-auto text-center space-y-12">
               <div className="flex items-center justify-center gap-6">
                 <span className="w-8 h-px bg-accent-primary"></span>
-                <span className="text-[10px] uppercase tracking-[0.4em] text-accent-primary font-bold">03. The Experience</span>
+                <span className="text-[10px] uppercase tracking-[0.4em] text-accent-primary font-bold">{t.about.experience.number}</span>
                 <span className="w-8 h-px bg-accent-primary"></span>
               </div>
               <h2 className="text-5xl lg:text-7xl font-serif text-primary leading-tight">
-                A Personal <br/><span className="italic text-accent-primary">Dialogue</span>
+                {t.about.experience.titleLine1} <br/><span className="italic text-accent-primary">{t.about.experience.titleLine2}</span>
               </h2>
               <p className="text-xl font-light leading-loose text-primary/80 font-sans text-balance">
-                To ensure that every WANAS garment is a perfect extension of the wearer, we operate exclusively through a concierge-led reservation model. By bypassing direct checkout, we invite a personal dialogue, allowing our team to guide you through sizing and bespoke considerations.
+                {t.about.experience.p1}
               </p>
             </div>
           </RevealOnScroll>

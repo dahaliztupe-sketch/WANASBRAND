@@ -29,7 +29,7 @@ function TrackContent() {
     setError(null);
     try {
       const result = await trackByToken(token);
-      if (result.success) {
+      if (result.success && result.data) {
         if (result.data.needsVerification) {
           setOrderId(result.data.orderNumber);
           toast.info('Please enter the last 4 digits of your phone number to unlock tracking.');
@@ -135,7 +135,7 @@ function TrackContent() {
                   {trackingData.status.replace('_', ' ')}
                 </h2>
                 <p className="text-xs text-primary/50 uppercase tracking-widest">
-                  {trackingData.id}
+                  <bdi>{trackingData.id}</bdi>
                 </p>
               </div>
             </div>

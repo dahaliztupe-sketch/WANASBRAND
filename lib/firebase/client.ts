@@ -1,8 +1,9 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, persistentLocalCache } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getMessaging, isSupported } from 'firebase/messaging';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
 import firebaseConfigJson from '../../firebase-applet-config.json';
 
 const envDbId = process.env.NEXT_PUBLIC_FIRESTORE_DATABASE_ID;
@@ -19,20 +20,21 @@ const firebaseConfig = {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 const auth = getAuth(app);
-const db = getFirestore(app, databaseId);
-
-// Enable offline persistence
-if (typeof window !== 'undefined') {
-  enableIndexedDbPersistence(db).catch((err) => {
-    if (err.code === 'failed-precondition') {
-      console.warn('Persistence failed: Multiple tabs open');
-    } else if (err.code === 'unimplemented') {
-      console.warn('Persistence failed: Browser does not support');
-    }
-  });
-}
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache(),
+}, databaseId);
 
 const storage = getStorage(app);
 const messaging = typeof window !== 'undefined' ? isSupported().then(yes => yes ? getMessaging(app) : null) : Promise.resolve(null);
 
-export { app, auth, db, storage, messaging };
+// Initialize App Check with reCAPTCHA Enterprise
+let appCheck;
+if (typeof window !== 'undefined') {
+  // Ensure we only initialize App Check in the browser
+  appCheck = initializeAppCheck(app, {
+    provider: new ReCaptchaEnterpriseProvider(process.env.NEXT_PUBLIC_RECAPTCHA_ENTERPRISE_SITE_KEY || 'dummy-key-for-dev'),
+    isTokenAutoRefreshEnabled: true
+  });
+}
+
+export { app, auth, db, storage, messaging, appCheck };

@@ -4,9 +4,12 @@ import { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI, Type, Schema } from '@google/genai';
 import { db, auth } from '@/lib/firebase/client';
 import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp, doc, getDocs, getDoc } from 'firebase/firestore';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { Send, Loader2, Bot, User, X, ShoppingBag, ImagePlus } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || '' });
 
@@ -40,9 +43,13 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
 
     // Fetch User Profile (Style Profile)
     const fetchProfile = async () => {
-      const userDoc = await getDoc(doc(db, 'users', auth.currentUser!.uid));
-      if (userDoc.exists()) {
-        setUserProfile(userDoc.data());
+      try {
+        const userDoc = await getDoc(doc(db, 'users', auth.currentUser!.uid));
+        if (userDoc.exists()) {
+          setUserProfile(userDoc.data());
+        }
+      } catch (error) {
+        handleFirestoreError(error, OperationType.GET, 'users/' + auth.currentUser!.uid, auth);
       }
     };
     fetchProfile();
@@ -78,6 +85,8 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
         const chatData = snapshot.docs[0].data();
         setMessages(chatData.messages || []);
       }
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'concierge_chats', auth);
     });
 
     return () => unsubscribe();
@@ -280,7 +289,11 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
               
               <div className={`flex flex-col gap-3 max-w-[80%] ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                 <div className={`p-4 rounded-sm text-sm leading-relaxed ${msg.role === 'user' ? 'bg-primary text-inverted' : msg.isHandoff ? 'bg-accent-primary/10 border border-accent-primary/20 text-primary' : 'bg-secondary border border-primary/10 text-primary'}`}>
-                  {msg.content}
+                  <div className="markdown-body prose prose-sm prose-stone dark:prose-invert max-w-none">
+                    <Markdown remarkPlugins={[remarkGfm]} skipHtml={true}>
+                      {msg.content}
+                    </Markdown>
+                  </div>
                   {msg.imageUrl && (
                     <div className="mt-3 relative w-48 h-48 rounded-sm overflow-hidden">
                       <Image src={msg.imageUrl} alt="Uploaded" fill className="object-cover" />
@@ -366,14 +379,14 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
                 maxLength={500}
-                className="w-full bg-primary/5 border border-primary/10 py-3 pl-4 pr-12 rounded-sm text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:border-accent-primary/50 transition-colors"
+                className="w-full bg-primary/5 border border-primary/10 py-3 ps-4 pe-12 rounded-sm text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:border-accent-primary/50 transition-colors"
                 placeholder="Ask for styling advice or upload an image..."
                 disabled={isLoading}
               />
               <button 
                 onClick={handleSend} 
                 disabled={(!input.trim() && !selectedImage) || isLoading}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-primary/40 hover:text-accent-primary disabled:opacity-50 transition-colors"
+                className="absolute end-2 top-1/2 -translate-y-1/2 p-2 text-primary/40 hover:text-accent-primary disabled:opacity-50 transition-colors"
               >
                 <Send size={18} strokeWidth={1.5} />
               </button>

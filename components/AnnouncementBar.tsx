@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { db } from '@/lib/firebase/client';
+import { db, auth } from '@/lib/firebase/client';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'motion/react';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 
 export function AnnouncementBar() {
   const [settings, setSettings] = useState<{
@@ -16,7 +17,7 @@ export function AnnouncementBar() {
       if (doc.exists()) {
         setSettings(doc.data() as any);
       }
-    });
+    }, (error) => handleFirestoreError(error, OperationType.GET, 'settings/global', auth));
     return () => unsub();
   }, []);
 

@@ -16,6 +16,7 @@ import { Mail, Lock, User, Phone, ArrowRight, Loader2, Sparkles, Moon } from 'lu
 import { toast } from 'sonner';
 import { syncUserToFirestore } from '@/lib/firebase/user';
 import { useSelectionStore } from '@/store/useSelectionStore';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -24,6 +25,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const syncWithCloud = useSelectionStore((state) => state.syncWithCloud);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -70,9 +72,9 @@ export default function AuthPage() {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       await syncUserToFirestore(result.user);
-      toast.success('Welcome to WANAS.');
+      toast.success(t.auth.welcomeWanasToast);
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to sign in with Google.';
+      const message = error instanceof Error ? error.message : t.auth.googleFailToast;
       toast.error(message);
     } finally {
       setLoading(false);
@@ -86,14 +88,14 @@ export default function AuthPage() {
       if (isLogin) {
         const result = await signInWithEmailAndPassword(auth, email, password);
         await syncUserToFirestore(result.user);
-        toast.success('Welcome back.');
+        toast.success(t.auth.welcomeBackToast);
       } else {
         const result = await createUserWithEmailAndPassword(auth, email, password);
         await syncUserToFirestore(result.user);
-        toast.success('Welcome to WANAS.');
+        toast.success(t.auth.welcomeWanasToast);
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Authentication failed.';
+      const message = error instanceof Error ? error.message : t.auth.authFailToast;
       toast.error(message);
     } finally {
       setLoading(false);
@@ -114,7 +116,7 @@ export default function AuthPage() {
             <h1 className="text-8xl font-serif mb-8 tracking-tighter">WANAS</h1>
             <div className="w-24 h-[1px] bg-inverted/20 mx-auto mb-10" />
             <p className="text-xs uppercase tracking-[0.6em] font-light text-primary/60">
-              The Digital Atelier
+              {t.auth.digitalAtelier}
             </p>
           </motion.div>
         </div>
@@ -130,13 +132,13 @@ export default function AuthPage() {
 
       {/* Right: Auth Form */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-24">
-        <div className="w-full max-w-md">
+        <div className="w-full max-md">
           <div className="mb-12 text-center md:text-left">
             <h2 className="text-3xl font-serif text-primary mb-4 tracking-wide">
-              {isLogin ? 'Welcome Back' : 'Join WANAS'}
+              {isLogin ? t.auth.welcomeBack : t.auth.joinWanas}
             </h2>
             <p className="text-primary/50 font-light text-sm tracking-wide">
-              {isLogin ? 'Sign in to access your account.' : 'Create an account to begin your shopping experience.'}
+              {isLogin ? t.auth.signInDesc : t.auth.signUpDesc}
             </p>
           </div>
 
@@ -146,7 +148,7 @@ export default function AuthPage() {
                 <Mail strokeWidth={1} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/30 group-focus-within:text-accent-primary transition-colors" />
                 <input
                   type="email"
-                  placeholder="Email Address"
+                  placeholder={t.auth.emailAddress}
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -157,7 +159,7 @@ export default function AuthPage() {
                 <Lock strokeWidth={1} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/30 group-focus-within:text-accent-primary transition-colors" />
                 <input
                   type="password"
-                  placeholder="Password"
+                  placeholder={t.auth.password}
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -175,8 +177,8 @@ export default function AuthPage() {
                 <Loader2 strokeWidth={1} className="w-4 h-4 animate-spin" />
               ) : (
                 <>
-                  {isLogin ? 'Sign In' : 'Create Account'}
-                  <ArrowRight strokeWidth={1} className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  {isLogin ? t.auth.signIn : t.auth.createAccount}
+                  <ArrowRight strokeWidth={1} className={`w-4 h-4 transition-transform ${t.locale === 'ar' ? 'group-hover:-translate-x-1 rotate-180' : 'group-hover:translate-x-1'}`} />
                 </>
               )}
             </button>
@@ -187,7 +189,7 @@ export default function AuthPage() {
               <div className="w-full border-t border-primary/10"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase tracking-widest">
-              <span className="bg-primary px-4 text-primary/30">Or Continue With</span>
+              <span className="bg-primary px-4 text-primary/30">{t.auth.orContinueWith}</span>
             </div>
           </div>
 
@@ -215,14 +217,14 @@ export default function AuthPage() {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                 />
               </svg>
-              Google
+              {t.auth.google}
             </button>
             <button
               disabled={loading}
               className="flex items-center justify-center gap-3 border border-primary/10 py-4 hover:bg-inverted/5 transition-colors text-xs uppercase tracking-widest disabled:opacity-50"
             >
               <Phone strokeWidth={1} className="w-4 h-4" />
-              Phone
+              {t.auth.phone}
             </button>
           </div>
 
@@ -231,7 +233,7 @@ export default function AuthPage() {
               onClick={() => setIsLogin(!isLogin)}
               className="text-xs uppercase tracking-widest text-primary/50 hover:text-accent-primary transition-colors"
             >
-              {isLogin ? "Don't have an account? Join WANAS" : 'Already a member? Sign in'}
+              {isLogin ? t.auth.noAccount : t.auth.alreadyMember}
             </button>
           </div>
         </div>

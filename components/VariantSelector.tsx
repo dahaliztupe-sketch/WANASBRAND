@@ -8,18 +8,20 @@ import { useSelectionStore } from '@/store/useSelectionStore';
 import { triggerHaptic } from '@/lib/utils/haptics';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export function VariantSelector({ product, recommendedByAI }: { product: Product, recommendedByAI?: boolean }) {
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const { addItem, openBag } = useSelectionStore();
+  const { t } = useTranslation();
 
   const variants = product.variants || [];
   const allOutOfStock = variants.length > 0 && variants.every(v => v.stock === 0);
 
   const handleAddToBag = () => {
     if (!selectedVariant) {
-      toast.error('Please select a size');
+      toast.error(t.product.variantSelector.pleaseSelectSize);
       return;
     }
     addItem({
@@ -32,7 +34,7 @@ export function VariantSelector({ product, recommendedByAI }: { product: Product
       recommendedByAI,
     });
     triggerHaptic();
-    toast.success('Added to your selection');
+    toast.success(t.product.variantSelector.addedToSelection);
     openBag();
   };
 
@@ -40,8 +42,8 @@ export function VariantSelector({ product, recommendedByAI }: { product: Product
     <div className="space-y-6 pt-6">
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-[10px] uppercase tracking-[0.3em] text-secondary font-bold">Select Silhouette Size</h3>
-          <button className="text-[10px] uppercase tracking-[0.2em] text-primary/40 border-b border-primary/10 pb-1 hover:text-primary transition-colors">Size Guide</button>
+          <h3 className="text-[10px] uppercase tracking-[0.3em] text-secondary font-bold">{t.product.variantSelector.selectSize}</h3>
+          <button className="text-[10px] uppercase tracking-[0.2em] text-primary/40 border-b border-primary/10 pb-1 hover:text-primary transition-colors">{t.product.variantSelector.sizeGuide}</button>
         </div>
         <div className="flex flex-wrap gap-4">
           {variants.filter(v => v.isActive !== false).map((variant) => (
@@ -80,12 +82,12 @@ export function VariantSelector({ product, recommendedByAI }: { product: Product
         {(allOutOfStock || (selectedVariant && selectedVariant.stock === 0)) ? (
           <>
             <Clock strokeWidth={1} className="w-4 h-4" />
-            Join The Waitlist
+            {t.product.variantSelector.joinWaitlist}
           </>
         ) : (
           <>
             <ShoppingBag strokeWidth={1} className="w-4 h-4" />
-            Place in Basket
+            {t.product.variantSelector.placeInBasket}
           </>
         )}
       </motion.button>

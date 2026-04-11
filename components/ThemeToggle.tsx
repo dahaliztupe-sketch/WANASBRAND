@@ -13,8 +13,8 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <button className="text-[10px] tracking-[0.2em] uppercase opacity-0">
-        DAY
+      <button className="text-[10px] tracking-[0.2em] uppercase opacity-0" aria-label="Toggle Theme">
+        NIGHT
       </button>
     );
   }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 interface CountdownTimerProps {
   expiresAt: string;
@@ -9,6 +10,7 @@ interface CountdownTimerProps {
 
 export function CountdownTimer({ expiresAt }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<string>('15:00');
+  const { t } = useTranslation();
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -42,7 +44,7 @@ export function CountdownTimer({ expiresAt }: CountdownTimerProps) {
   return (
     <div className="flex items-center gap-2 text-[10px] tracking-widest uppercase text-accent-primary animate-pulse">
       <Clock strokeWidth={1} className="w-3 h-3" />
-      <span>Reserved for your wardrobe for {timeLeft} mins</span>
+      <span>{t.common.shared.countdown.replace('{time}', timeLeft)}</span>
     </div>
   );
 }

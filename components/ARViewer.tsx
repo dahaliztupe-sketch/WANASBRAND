@@ -1,12 +1,12 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { X, View } from 'lucide-react';
 import { motion } from 'motion/react';
-
-// Import model-viewer only on client side to avoid SSR issues
-if (typeof window !== 'undefined') {
-  import('@google/model-viewer');
-}
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
 interface ARViewerProps {
   modelUrl: string;
@@ -14,6 +14,108 @@ interface ARViewerProps {
 }
 
 export default function ARViewer({ modelUrl, onClose }: ARViewerProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    // 1. Scene Setup
+    const scene = new THREE.Scene();
+    scene.background = null;
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0.5, 2);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    containerRef.current.appendChild(renderer.domElement);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.autoRotate = true;
+    controls.autoRotateSpeed = 2;
+
+    // 2. Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    directionalLight.position.set(5, 5, 5);
+    scene.add(directionalLight);
+
+    // 3. Load Model with DRACO
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(dracoLoader);
+
+    loader.load(
+      modelUrl,
+      (gltf) => {
+        const model = gltf.scene;
+        
+        // Center model
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        model.position.sub(center);
+        
+        scene.add(model);
+      },
+      (xhr) => {
+        setLoadingProgress((xhr.loaded / xhr.total) * 100);
+      },
+      (error) => {
+        console.error('An error happened while loading the 3D model:', error);
+      }
+    );
+
+    // 4. Animation Loop
+    let animationId: number;
+    const animate = () => {
+      animationId = requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    // 5. Handle Resize
+    const handleResize = () => {
+      if (!containerRef.current) return;
+      camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+    };
+    window.addEventListener('resize', handleResize);
+
+    // 6. Memory Cleanup (WAN-038)
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationId);
+      
+      scene.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          object.geometry.dispose();
+          if (Array.isArray(object.material)) {
+            object.material.forEach(material => material.dispose());
+          } else {
+            object.material.dispose();
+          }
+        }
+      });
+
+      renderer.dispose();
+      dracoLoader.dispose();
+      if (containerRef.current) {
+        containerRef.current.removeChild(renderer.domElement);
+      }
+    };
+  }, [modelUrl]);
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -29,41 +131,29 @@ export default function ARViewer({ modelUrl, onClose }: ARViewerProps) {
       </button>
 
       <div className="w-full h-full relative max-w-5xl mx-auto flex flex-col items-center justify-center p-4 md:p-12">
-        {/* @ts-ignore - model-viewer is a custom element */}
-        <model-viewer
-          src={modelUrl}
-          alt="WANAS 3D Product Model"
-          ar
-          ar-modes="webxr scene-viewer quick-look"
-          ar-scale="auto"
-          camera-controls
-          auto-rotate
-          rotation-per-second="30deg"
-          interaction-prompt="none"
-          shadow-intensity="1.5"
-          shadow-softness="1"
-          exposure="1"
-          environment-image="neutral"
-          camera-orbit="0deg 75deg 105%"
-          min-camera-orbit="auto auto auto"
-          max-camera-orbit="auto auto 150%"
-          style={{ width: '100%', height: '100%', outline: 'none' }}
-        >
-          <div slot="progress-bar" className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4 text-secondary/50">
+        <div ref={containerRef} className="w-full h-full outline-none" />
+        
+        {loadingProgress < 100 && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-4 text-secondary/50">
             <div className="w-12 h-[1px] bg-secondary/20 overflow-hidden">
-              <div className="h-full bg-accent-primary animate-pulse w-full origin-left" />
+              <div 
+                className="h-full bg-accent-primary transition-all duration-300" 
+                style={{ width: `${loadingProgress}%` }}
+              />
             </div>
-            <p className="text-[10px] uppercase tracking-[0.3em] font-light">Preparing 3D Model</p>
+            <p className="text-[10px] uppercase tracking-[0.3em] font-light">
+              {loadingProgress > 0 ? `Loading ${Math.round(loadingProgress)}%` : 'Preparing 3D Model'}
+            </p>
           </div>
+        )}
 
-          <button 
-            slot="ar-button" 
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-3 px-8 py-4 bg-accent-primary text-inverted text-xs uppercase tracking-[0.2em] shadow-2xl hover:bg-accent-primary/90 transition-all"
-          >
-            <View size={16} strokeWidth={1.5} />
-            View in Your Space
-          </button>
-        </model-viewer>
+        <button 
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-3 px-8 py-4 bg-accent-primary text-inverted text-xs uppercase tracking-[0.2em] shadow-2xl hover:bg-accent-primary/90 transition-all"
+          onClick={() => window.open(modelUrl, '_blank')}
+        >
+          <View size={16} strokeWidth={1.5} />
+          View in Your Space
+        </button>
       </div>
     </motion.div>
   );

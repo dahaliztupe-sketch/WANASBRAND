@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { ShoppingBag, Heart, Package, ArrowRight, Ghost } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 interface EmptyStateProps {
   type: 'cart' | 'wishlist' | 'orders';
   title: string;
-  description: string;
+  description?: string;
   ctaText?: string;
   ctaLink?: string;
 }
@@ -18,14 +19,9 @@ const icons = {
   orders: Package,
 };
 
-const standardDescriptions = {
-  cart: "Your shopping bag is empty.",
-  wishlist: "Your wishlist is empty.",
-  orders: "No orders found.",
-};
-
-export default function EmptyState({ type, title, description, ctaText = 'Explore The Collection', ctaLink = '/collections' }: EmptyStateProps) {
+export default function EmptyState({ type, title, description, ctaText, ctaLink = '/collections' }: EmptyStateProps) {
   const Icon = icons[type];
+  const { t } = useTranslation();
 
   return (
     <motion.div 
@@ -40,14 +36,14 @@ export default function EmptyState({ type, title, description, ctaText = 'Explor
       </div>
       <h3 className="text-3xl font-serif text-primary mb-6 tracking-tight">{title}</h3>
       <p className="text-primary/40 font-light max-w-md mb-16 leading-relaxed">
-        {standardDescriptions[type] || description}
+        {description || t.emptyStates.descriptions[type]}
       </p>
       <Link 
         href={ctaLink}
         className="group flex items-center gap-6 text-[10px] uppercase tracking-[0.4em] text-primary hover:text-accent-primary transition-all duration-700"
       >
         <div className="w-8 h-[1px] bg-inverted/20 group-hover:w-12 group-hover:bg-accent-primary transition-all duration-700" />
-        {ctaText}
+        {ctaText || t.emptyStates.cta}
         <div className="w-8 h-[1px] bg-inverted/20 group-hover:w-12 group-hover:bg-accent-primary transition-all duration-700" />
       </Link>
     </motion.div>

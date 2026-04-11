@@ -5,11 +5,13 @@ import { Home, ShoppingBag, Heart, Grid } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useSelectionStore } from '@/store/useSelectionStore';
 import { useEffect, useState } from 'react';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export function BottomNav() {
   const pathname = usePathname();
   const { openBag, items } = useSelectionStore();
   const [mounted, setMounted] = useState(false);
+  const { t } = useTranslation();
   
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -19,10 +21,10 @@ export function BottomNav() {
   const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
 
   const navItems = [
-    { name: 'Home', href: '/', icon: Home },
-    { name: 'Collections', href: '/collections', icon: Grid },
-    { name: 'Wishlist', href: '/account/wishlist', icon: Heart },
-    { name: 'Bag', href: '#', icon: ShoppingBag, onClick: (e: React.MouseEvent) => { e.preventDefault(); openBag(); }, badge: totalItems },
+    { name: t.nav.home, href: '/', icon: Home },
+    { name: t.nav.collections, href: '/collections', icon: Grid },
+    { name: t.nav.wishlist, href: '/account/wishlist', icon: Heart },
+    { name: t.nav.bag, href: '#', icon: ShoppingBag, onClick: (e: React.MouseEvent) => { e.preventDefault(); openBag(); }, badge: totalItems },
   ];
 
   return (
@@ -37,7 +39,7 @@ export function BottomNav() {
               <div className="relative mb-1">
                 <Icon className="w-5 h-5" strokeWidth={isActive ? 2 : 1.5} />
                 {mounted && item.badge !== undefined && item.badge > 0 ? (
-                  <span className="absolute -top-1.5 -right-1.5 bg-accent-primary text-primary text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                  <span className="absolute -top-1.5 -end-1.5 bg-accent-primary text-primary text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
                     {item.badge}
                   </span>
                 ) : null}

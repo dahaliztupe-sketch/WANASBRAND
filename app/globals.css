@@ -22,6 +22,10 @@
     --border-primary: #2A2826;
   }
 
+  [dir="rtl"] {
+    font-family: var(--font-arabic), sans-serif;
+  }
+
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;

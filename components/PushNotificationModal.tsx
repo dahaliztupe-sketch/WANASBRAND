@@ -7,10 +7,12 @@ import { auth, db, messaging } from '@/lib/firebase/client';
 import { getToken } from 'firebase/messaging';
 import { doc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function PushNotificationModal() {
   const [show, setShow] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
@@ -82,9 +84,9 @@ export default function PushNotificationModal() {
               </div>
 
               <div className="text-center space-y-2">
-                <h3 className="text-2xl font-serif text-primary italic">Whispers of the Sanctuary</h3>
+                <h3 className="text-2xl font-serif text-primary italic">{t.pushNotificationModal.title}</h3>
                 <p className="text-sm text-primary/60 leading-relaxed">
-                  Would you like to receive exclusive updates and order status whispers directly on your device?
+                  {t.pushNotificationModal.description}
                 </p>
               </div>
 
@@ -94,7 +96,7 @@ export default function PushNotificationModal() {
                   className="w-full py-4 bg-accent-primary text-primary font-bold text-xs uppercase tracking-[0.2em] hover:bg-accent-primary/90 transition-all flex items-center justify-center gap-2"
                 >
                   <Sparkles size={14} />
-                  Enable Whispers
+                  {t.pushNotificationModal.enable}
                 </button>
                 <button
                   onClick={() => {
@@ -103,7 +105,7 @@ export default function PushNotificationModal() {
                   }}
                   className="w-full py-4 text-primary/40 text-[10px] uppercase tracking-widest hover:text-primary transition-all"
                 >
-                  Perhaps Later
+                  {t.pushNotificationModal.later}
                 </button>
               </div>
             </div>

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { collection, query, limit, orderBy, onSnapshot } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
+import { db, auth } from '@/lib/firebase/client';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { 
   TrendingUp, Users, ShoppingBag, AlertCircle, 
   ArrowUpRight, Clock, DollarSign, Package,
@@ -29,68 +30,95 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubRes = onSnapshot(collection(db, 'reservations'), (resSnapshot) => {
-      const unsubProd = onSnapshot(collection(db, 'products'), (prodSnapshot) => {
-        const unsubCart = onSnapshot(collection(db, 'carts'), (cartSnapshot) => {
-          const unsubConcierge = onSnapshot(collection(db, 'concierge_requests'), (conciergeSnapshot) => {
-            let revenue = 0;
-            let active = 0;
-            let lowStock = 0;
-            let confirmed = 0;
+    let resDocs: any[] = [];
+    let prodDocs: any[] = [];
+    let cartDocs: any[] = [];
+    let conciergeDocs: any[] = [];
+    let isInitialLoad = true;
 
-            resSnapshot.forEach(doc => {
-              const data = doc.data();
-              revenue += data.totalAmount || 0;
-              if (!['delivered', 'cancelled', 'returned'].includes(data.status)) {
-                active++;
-              }
-              if (['deposit_paid', 'in_production', 'shipped', 'delivered'].includes(data.status)) {
-                confirmed++;
-              }
-            });
+    const calculateStats = () => {
+      let revenue = 0;
+      let active = 0;
+      let lowStock = 0;
+      let confirmed = 0;
 
-            prodSnapshot.forEach(doc => {
-              const data = doc.data();
-              data.variants?.forEach((v: any) => {
-                if (v.stock < 3) lowStock++;
-              });
-            });
-
-            const requested = resSnapshot.docs.length;
-            const addedToBag = cartSnapshot.docs.length + requested;
-            const totalVisits = Math.round(addedToBag * 4.5);
-            const conversionRate = totalVisits > 0 ? (confirmed / totalVisits) * 100 : 0;
-
-            setFunnelData([
-              { value: totalVisits, name: 'Awareness (Visits)', fill: '#D4A5A5' },
-              { value: addedToBag, name: 'Desire (Bags)', fill: '#B88686' },
-              { value: requested, name: 'Action (Requests)', fill: '#9E6B6B' },
-              { value: confirmed, name: 'Conversion (Paid)', fill: '#8B4513' },
-            ]);
-
-            setRecentReservations(resSnapshot.docs
-              .sort((a, b) => b.data().createdAt - a.data().createdAt)
-              .slice(0, 5)
-              .map(d => ({ id: d.id, ...d.data() })));
-
-            setStats({
-              totalRevenue: revenue,
-              activeReservations: active,
-              lowStockCount: lowStock,
-              abandonedCount: cartSnapshot.docs.length,
-              totalVisits,
-              conversionRate,
-              conciergeCount: conciergeSnapshot.docs.filter(d => d.data().status === 'pending').length,
-            });
-            setLoading(false);
-          });
-          return unsubConcierge;
-        });
-        return unsubCart;
+      resDocs.forEach(doc => {
+        const data = doc.data();
+        revenue += data.totalAmount || 0;
+        if (!['delivered', 'cancelled', 'returned'].includes(data.status)) {
+          active++;
+        }
+        if (['deposit_paid', 'in_production', 'shipped', 'delivered'].includes(data.status)) {
+          confirmed++;
+        }
       });
-      return unsubProd;
-    });
-    return () => unsubRes();
+
+      prodDocs.forEach(doc => {
+        const data = doc.data();
+        data.variants?.forEach((v: any) => {
+          if (v.stock < 3) lowStock++;
+        });
+      });
+
+      const requested = resDocs.length;
+      const addedToBag = cartDocs.length + requested;
+      const totalVisits = Math.round(addedToBag * 4.5);
+      const conversionRate = totalVisits > 0 ? (confirmed / totalVisits) * 100 : 0;
+
+      setFunnelData([
+        { value: totalVisits, name: 'Awareness (Visits)', fill: '#D4A5A5' },
+        { value: addedToBag, name: 'Desire (Bags)', fill: '#B88686' },
+        { value: requested, name: 'Action (Requests)', fill: '#9E6B6B' },
+        { value: confirmed, name: 'Conversion (Paid)', fill: '#8B4513' },
+      ]);
+
+      setRecentReservations(resDocs
+        .sort((a, b) => b.data().createdAt - a.data().createdAt)
+        .slice(0, 5)
+        .map(d => ({ id: d.id, ...d.data() })));
+
+      setStats({
+        totalRevenue: revenue,
+        activeReservations: active,
+        lowStockCount: lowStock,
+        abandonedCount: cartDocs.length,
+        totalVisits,
+        conversionRate,
+        conciergeCount: conciergeDocs.filter(d => d.data().status === 'pending').length,
+      });
+
+      if (isInitialLoad) {
+        setLoading(false);
+        isInitialLoad = false;
+      }
+    };
+
+    const unsubRes = onSnapshot(collection(db, 'reservations'), (snap) => {
+      resDocs = snap.docs;
+      calculateStats();
+    }, (error) => handleFirestoreError(error, OperationType.LIST, 'reservations', auth));
+    
+    const unsubProd = onSnapshot(collection(db, 'products'), (snap) => {
+      prodDocs = snap.docs;
+      calculateStats();
+    }, (error) => handleFirestoreError(error, OperationType.LIST, 'products', auth));
+    
+    const unsubCart = onSnapshot(collection(db, 'carts'), (snap) => {
+      cartDocs = snap.docs;
+      calculateStats();
+    }, (error) => handleFirestoreError(error, OperationType.LIST, 'carts', auth));
+    
+    const unsubConcierge = onSnapshot(collection(db, 'concierge_requests'), (snap) => {
+      conciergeDocs = snap.docs;
+      calculateStats();
+    }, (error) => handleFirestoreError(error, OperationType.LIST, 'concierge_requests', auth));
+
+    return () => {
+      unsubRes();
+      unsubProd();
+      unsubCart();
+      unsubConcierge();
+    };
   }, []);
 
   const chartData = [

@@ -116,7 +116,6 @@ export const useSelectionStore = create<SelectionState>()(
     set({ items: validatedItems });
   },
   initializeAuthSync: () => {
-    const { onAuthStateChanged } = import('@/lib/firebase/client').then(m => m.auth);
     import('@/lib/firebase/client').then(({ auth }) => {
       auth.onAuthStateChanged((user) => {
         if (user) {

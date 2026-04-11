@@ -1,27 +1,33 @@
+'use client';
+
+import { useTranslation } from '@/lib/hooks/useTranslation';
+
 export default function ShippingReturnsPage() {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen bg-primary py-24 px-6 md:px-12">
       <div className="max-w-4xl mx-auto">
-        <h1 className="font-serif text-5xl text-primary mb-12">Shipping & Returns</h1>
+        <h1 className="font-serif text-5xl text-primary mb-12">{t.shippingReturns.title}</h1>
         
         <section className="mb-12">
-          <h2 className="font-serif text-2xl text-primary mb-4">Reservation & Deposit Process</h2>
+          <h2 className="font-serif text-2xl text-primary mb-4">{t.shippingReturns.reservation.title}</h2>
           <p className="text-primary/70 leading-relaxed">
-            Once your reservation is confirmed, our concierge will contact you to finalize your order. A deposit is required to secure your selection.
+            {t.shippingReturns.reservation.content}
           </p>
         </section>
 
         <section className="mb-12">
-          <h2 className="font-serif text-2xl text-primary mb-4">Shipping</h2>
+          <h2 className="font-serif text-2xl text-primary mb-4">{t.shippingReturns.shipping.title}</h2>
           <p className="text-primary/70 leading-relaxed">
-            We offer white-glove delivery services for all our delicate fabric selections.
+            {t.shippingReturns.shipping.content}
           </p>
         </section>
 
         <section className="mb-12">
-          <h2 className="font-serif text-2xl text-primary mb-4">Returns & Exchanges</h2>
+          <h2 className="font-serif text-2xl text-primary mb-4">{t.shippingReturns.returns.title}</h2>
           <p className="text-primary/70 leading-relaxed">
-            Due to the delicate nature of our fabrics, returns are accepted within 14 days of receipt, provided items are in their original condition.
+            {t.shippingReturns.returns.content}
           </p>
         </section>
       </div>

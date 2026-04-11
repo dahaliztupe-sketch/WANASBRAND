@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Menu } from 'lucide-react';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export function MobileMenu({ user }: { user: any }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (isOpen) {
@@ -44,11 +46,11 @@ export function MobileMenu({ user }: { user: any }) {
               <X strokeWidth={1} className="w-8 h-8" />
             </button>
             <nav className="flex flex-col items-center gap-8 text-3xl font-serif">
-              <Link href="/" onClick={() => setIsOpen(false)}>The Atelier</Link>
-              <Link href="/collections" onClick={() => setIsOpen(false)}>Collections</Link>
-              <Link href="/about" onClick={() => setIsOpen(false)}>About</Link>
+              <Link href="/" onClick={() => setIsOpen(false)}>{t.nav.the_atelier}</Link>
+              <Link href="/collections" onClick={() => setIsOpen(false)}>{t.nav.collections}</Link>
+              <Link href="/about" onClick={() => setIsOpen(false)}>{t.nav.about}</Link>
               {user?.role === 'admin' && (
-                <Link href="/admin" onClick={() => setIsOpen(false)}>Dashboard</Link>
+                <Link href="/admin" onClick={() => setIsOpen(false)}>{t.nav.dashboard}</Link>
               )}
             </nav>
           </motion.div>

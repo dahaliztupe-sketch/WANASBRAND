@@ -25,7 +25,9 @@ export async function POST(req: Request) {
     const uid = decodedToken.uid;
 
     // Check for admin role in Firestore
-    const userDoc = await db.collection('users').doc(uid).get();
+    const firestore = db;
+    if (!firestore) throw new Error('Database not initialized');
+    const userDoc = await firestore.collection('users').doc(uid).get();
     const userData = userDoc.data();
     const isAdmin = userData?.role === 'admin';
 

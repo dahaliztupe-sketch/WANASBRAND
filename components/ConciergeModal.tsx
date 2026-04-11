@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { z } from 'zod';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 const conciergeSchema = z.object({
   fullName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -30,6 +31,7 @@ export function ConciergeModal({ isOpen, onClose, onSubmit, isSubmitting }: Conc
     consent: false,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { t } = useTranslation();
 
   if (!isOpen) return null;
 
@@ -57,53 +59,53 @@ export function ConciergeModal({ isOpen, onClose, onSubmit, isSubmitting }: Conc
           <X strokeWidth={1} size={24} />
         </button>
         
-        <h2 className="font-serif text-2xl text-primary mb-6">A piece of art requires a personal touch.</h2>
-        <p className="text-sm text-primary/70 mb-8">How would you like our concierge to reach out?</p>
+        <h2 className="font-serif text-2xl text-primary mb-6">{t.conciergeModal.title}</h2>
+        <p className="text-sm text-primary/70 mb-8">{t.conciergeModal.subtitle}</p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-xs uppercase tracking-wider text-primary mb-2">Full Name</label>
+            <label className="block text-xs uppercase tracking-wider text-primary mb-2">{t.conciergeModal.fullName}</label>
             <input
               type="text"
               value={formData.fullName}
               onChange={(e) => setFormData({...formData, fullName: e.target.value})}
               className="w-full border-b border-primary/20 py-2 bg-transparent focus:outline-none focus:border-primary"
             />
-            {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
+            {errors.fullName && <p className="text-red-500 text-xs mt-1">{t.conciergeModal.errors.fullName}</p>}
           </div>
 
           <div>
-            <label className="block text-xs uppercase tracking-wider text-primary mb-2">Phone Number</label>
+            <label className="block text-xs uppercase tracking-wider text-primary mb-2">{t.conciergeModal.phone}</label>
             <input
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData({...formData, phone: e.target.value})}
               className="w-full border-b border-primary/20 py-2 bg-transparent focus:outline-none focus:border-primary"
             />
-            {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+            {errors.phone && <p className="text-red-500 text-xs mt-1">{t.conciergeModal.errors.phone}</p>}
           </div>
           
           <div>
-            <label className="block text-xs uppercase tracking-wider text-primary mb-2">Contact Method</label>
+            <label className="block text-xs uppercase tracking-wider text-primary mb-2">{t.conciergeModal.contactMethod}</label>
             <select
               value={formData.contactMethod}
               onChange={(e) => setFormData({...formData, contactMethod: e.target.value as 'whatsapp' | 'phone'})}
               className="w-full border-b border-primary/20 py-2 bg-transparent focus:outline-none focus:border-primary"
             >
-              <option value="whatsapp">WhatsApp</option>
-              <option value="phone">Phone Call</option>
+              <option value="whatsapp">{t.conciergeModal.whatsapp}</option>
+              <option value="phone">{t.conciergeModal.phoneCall}</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-xs uppercase tracking-wider text-primary mb-2">Preferred Vibe of Consultation</label>
+            <label className="block text-xs uppercase tracking-wider text-primary mb-2">{t.conciergeModal.vibe}</label>
             <select
               value={formData.vibe}
               onChange={(e) => setFormData({...formData, vibe: e.target.value as 'styling' | 'sizing'})}
               className="w-full border-b border-primary/20 py-2 bg-transparent focus:outline-none focus:border-primary"
             >
-              <option value="styling">Styling Advice</option>
-              <option value="sizing">Sizing Help</option>
+              <option value="styling">{t.conciergeModal.styling}</option>
+              <option value="sizing">{t.conciergeModal.sizing}</option>
             </select>
           </div>
 
@@ -116,10 +118,10 @@ export function ConciergeModal({ isOpen, onClose, onSubmit, isSubmitting }: Conc
                 className="mt-1 accent-charcoal-dark"
               />
               <span className="text-xs text-primary/70 leading-relaxed">
-                I explicitly consent to the processing of my personal and financial data in accordance with Egypt&apos;s Law No. 151 of 2020.
+                {t.conciergeModal.consent}
               </span>
             </label>
-            {errors.consent && <p className="text-red-500 text-xs mt-1">{errors.consent}</p>}
+            {errors.consent && <p className="text-red-500 text-xs mt-1">{t.conciergeModal.errors.consent}</p>}
           </div>
 
           <button
@@ -127,7 +129,7 @@ export function ConciergeModal({ isOpen, onClose, onSubmit, isSubmitting }: Conc
             disabled={isSubmitting}
             className="w-full py-4 bg-inverted text-inverted tracking-widest text-sm uppercase hover:bg-accent-primary transition-colors disabled:opacity-50"
           >
-            {isSubmitting ? 'Submitting...' : 'Request Consultation'}
+            {isSubmitting ? t.conciergeModal.submitting : t.conciergeModal.submit}
           </button>
         </form>
       </div>

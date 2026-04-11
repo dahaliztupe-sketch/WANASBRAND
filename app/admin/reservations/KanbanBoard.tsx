@@ -7,6 +7,7 @@ import { updateReservationStatus } from '@/app/admin/actions';
 import { toast } from 'sonner';
 import { Package, User, DollarSign, ChevronRight, AlertCircle, Gift, Eye, EyeOff, Bot } from 'lucide-react';
 import Link from 'next/link';
+import { useLanguageStore } from '@/lib/store/useLanguageStore';
 
 const COLUMNS = [
   { id: 'pending_contact', title: 'New Requests' },
@@ -22,6 +23,7 @@ interface KanbanBoardProps {
 
 export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
   const [reservations, setReservations] = useState<Reservation[]>(initialReservations);
+  const { language } = useLanguageStore();
 
   const onDragEnd = async (result: DropResult) => {
     const { destination, source, draggableId } = result;
@@ -31,6 +33,7 @@ export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
 
     const newStatus = destination.droppableId as Reservation['status'];
     const reservationId = draggableId;
+    const reservationToUpdate = reservations.find(r => r.id === reservationId);
 
     // Optimistic Update
     const updatedReservations = reservations.map(res => 
@@ -39,10 +42,15 @@ export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
     setReservations(updatedReservations);
 
     try {
-      await updateReservationStatus(reservationId, newStatus);
+      const clientUpdatedAt = reservationToUpdate?.updatedAt 
+        ? new Date(reservationToUpdate.updatedAt).getTime() 
+        : 0;
+        
+      await updateReservationStatus(reservationId, newStatus, clientUpdatedAt);
+      
       toast.success(`Order status updated to ${newStatus.replace('_', ' ')}`);
-    } catch (error) {
-      toast.error('Failed to update status');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to update status');
       // Revert on error
       setReservations(reservations);
     }
@@ -54,7 +62,7 @@ export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="flex gap-6 overflow-x-auto pb-8 min-h-[calc(100vh-200px)]">
+      <div className="flex gap-6 overflow-x-auto pb-8 min-h-[calc(100vh-200px)]" dir={language === 'ar' ? 'rtl' : 'ltr'}>
         {COLUMNS.map(column => (
           <div key={column.id} className="flex-shrink-0 w-80 flex flex-col gap-4">
             <div className="flex items-center justify-between px-2">
@@ -91,7 +99,7 @@ export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
                               <div className="flex justify-between items-start">
                                 <div className="flex items-center gap-2">
                                   <span className="text-[10px] uppercase tracking-widest text-primary/40 font-bold">
-                                    #{res.orderNumber || res.reservationNumber}
+                                    #<bdi>{res.orderNumber || res.reservationNumber}</bdi>
                                   </span>
                                   {res.giftingDetails?.isGift && (
                                     <Gift size={12} className="text-accent-primary animate-pulse" />
@@ -126,7 +134,7 @@ export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
 
                               <div className="flex justify-between items-center pt-4 border-t border-primary/5">
                                 <span className="text-sm font-serif text-primary">
-                                  EGP {res.totalAmount.toLocaleString()}
+                                  <bdi>EGP {res.totalAmount.toLocaleString()}</bdi>
                                 </span>
                                 <Link 
                                   href={`/admin/reservations/${res.id}`}

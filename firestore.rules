@@ -42,9 +42,9 @@ service cloud.firestore {
 
     function isValidUser(data) {
       return data.keys().hasAll(['uid', 'fullName', 'email', 'role', 'tier']) &&
-             data.uid is string &&
+             data.uid is string && data.uid.size() < 100 &&
              data.fullName is string && data.fullName.size() > 0 && data.fullName.size() < 100 &&
-             isValidEmail(data.email) &&
+             isValidEmail(data.email) && data.email.size() < 255 &&
              data.role in ['customer', 'admin'] &&
              data.tier in ['customer', 'member', 'inner_circle'] &&
              (!('styleProfile' in data) || (data.styleProfile is map && data.styleProfile.keys().hasAny(['preferredColors', 'preferredSilhouettes', 'lastQuizDate']))) &&
@@ -54,10 +54,11 @@ service cloud.firestore {
 
     function isValidProduct(data) {
       return data.keys().hasAll(['id', 'name', 'description', 'price', 'category', 'images', 'variants', 'isArchived']) &&
-             data.id is string &&
+             data.id is string && data.id.size() < 100 &&
              data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.description is string && data.description.size() < 2000 &&
              data.price is number && data.price >= 0 &&
-             data.category is string &&
+             data.category is string && data.category.size() < 100 &&
              data.images is list && data.images.size() <= 10 &&
              data.variants is list && data.variants.size() <= 50 &&
              data.isArchived is bool &&
@@ -66,7 +67,7 @@ service cloud.firestore {
 
     function isValidReservation(data) {
       return data.keys().hasAll(['userId', 'customerInfo', 'items', 'totalAmount', 'status', 'createdAt']) &&
-             data.userId is string &&
+             data.userId is string && data.userId.size() < 100 &&
              data.customerInfo is map &&
              data.customerInfo.keys().hasAll(['fullName', 'phone', 'contactMethod', 'vibe', 'consent']) &&
              data.customerInfo.fullName is string && data.customerInfo.fullName.size() > 0 && data.customerInfo.fullName.size() < 100 &&
@@ -77,26 +78,26 @@ service cloud.firestore {
              data.items is list && data.items.size() > 0 && data.items.size() < 20 &&
              data.totalAmount is number && data.totalAmount >= 0 &&
              data.status in ['pending_contact', 'contacted', 'deposit_paid', 'in_production', 'shipped', 'delivered', 'cancelled', 'returned'] &&
-             (!('trackingNumber' in data) || data.trackingNumber is string) &&
-             (!('shippingProvider' in data) || data.shippingProvider is string) &&
+             (!('trackingNumber' in data) || (data.trackingNumber is string && data.trackingNumber.size() < 100)) &&
+             (!('shippingProvider' in data) || (data.shippingProvider is string && data.shippingProvider.size() < 100)) &&
              isValidDateString(data.createdAt);
     }
 
     function isValidReturn(data) {
       return data.keys().hasAll(['userId', 'userEmail', 'orderId', 'orderNumber', 'item', 'reason', 'status', 'createdAt']) &&
-             data.userId is string &&
-             data.userEmail is string && isValidEmail(data.userEmail) &&
-             data.orderId is string &&
-             data.orderNumber is string &&
+             data.userId is string && data.userId.size() < 100 &&
+             data.userEmail is string && isValidEmail(data.userEmail) && data.userEmail.size() < 255 &&
+             data.orderId is string && data.orderId.size() < 100 &&
+             data.orderNumber is string && data.orderNumber.size() < 100 &&
              data.item is map &&
-             data.reason is string && data.reason.size() > 0 && data.reason.size() < 100 &&
+             data.reason is string && data.reason.size() > 0 && data.reason.size() < 1000 &&
              data.status in ['pending', 'approved', 'rejected', 'completed'] &&
              isValidDateString(data.createdAt);
     }
 
     function isValidConciergeChat(data) {
       return data.keys().hasAll(['userId', 'messages', 'createdAt', 'updatedAt']) &&
-             data.userId is string &&
+             data.userId is string && data.userId.size() < 100 &&
              data.messages is list && data.messages.size() <= 100 &&
              isValidDateString(data.createdAt) &&
              isValidDateString(data.updatedAt);
@@ -157,9 +158,7 @@ service cloud.firestore {
     }
 
     match /waitlist/{entryId} {
-      allow create: if isValidWaitlist(request.resource.data);
-      allow read: if isAdmin();
-      allow update, delete: if isAdmin();
+      allow read, write: if isAdmin();
     }
 
     match /concierge_chats/{chatId} {

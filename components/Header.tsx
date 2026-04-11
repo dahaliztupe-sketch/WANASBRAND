@@ -2,25 +2,27 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, User, Search, X, Heart, Package, Sun, Moon } from 'lucide-react';
-import { useSelectionStore } from '@/store/useSelectionStore';
-import { useWishlistStore } from '@/store/useWishlistStore';
+import { User, Search, X, Heart, Package, Sun, Moon, Globe } from 'lucide-react';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { auth, db } from '@/lib/firebase/client';
 import { doc, getDoc, collection, getDocs, where, query } from 'firebase/firestore';
 import { User as UserType, Product } from '@/types';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTheme } from 'next-themes';
 import Image from 'next/image';
+import { Logo } from './Logo';
+import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useLanguageStore } from '@/lib/store/useLanguageStore';
 
 export function Header() {
-  const { items, openBag } = useSelectionStore();
-  const { items: wishlistItems } = useWishlistStore();
   const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState<UserType | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const { theme, setTheme } = useTheme();
+  const { t, language } = useTranslation();
+  const { setLanguage } = useLanguageStore();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -30,9 +32,13 @@ export function Header() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
       if (firebaseUser) {
-        const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-        if (userDoc.exists()) {
-          setUser(userDoc.data() as UserType);
+        try {
+          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+          if (userDoc.exists()) {
+            setUser(userDoc.data() as UserType);
+          }
+        } catch (error) {
+          handleFirestoreError(error, OperationType.GET, 'users/' + firebaseUser.uid, auth);
         }
       } else {
         setUser(null);
@@ -40,9 +46,13 @@ export function Header() {
     });
 
     const fetchProducts = async () => {
-      const q = query(collection(db, 'products'), where('status', '==', 'Published'));
-      const snapshot = await getDocs(q);
-      setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product)));
+      try {
+        const q = query(collection(db, 'products'), where('status', '==', 'Published'));
+        const snapshot = await getDocs(q);
+        setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product)));
+      } catch (error) {
+        handleFirestoreError(error, OperationType.LIST, 'products', auth);
+      }
     };
     fetchProducts();
 
@@ -57,50 +67,47 @@ export function Header() {
     );
   }, [searchQuery, products]);
 
-  const totalItems = items.reduce((acc, item) => acc + item.quantity, 0);
-
   return (
     <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-primary/70 border-b border-primary/5 transition-all duration-500" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="max-w-[1600px] mx-auto px-6 h-24 grid grid-cols-3 items-center w-full relative">
         {/* Left: User Icon */}
-        <div className="flex items-center justify-start gap-6">
-          <Link href="/account" className="group flex items-center gap-3 hover:text-accent-primary transition-colors">
+        <div className="flex items-center justify-start">
+          <Link href="/account" className="p-2 hover:text-accent-primary transition-colors" aria-label={t.nav.account}>
             <User className="w-4 h-4" strokeWidth={1} />
-            <span className="hidden md:block text-[9px] uppercase tracking-[0.3em] font-bold">Account</span>
           </Link>
         </div>
 
         {/* Center: Logo */}
         <div className="flex justify-center">
-          <Link href="/" className="text-3xl md:text-4xl font-serif tracking-[0.4em] min-h-[44px] flex items-center text-primary hover:opacity-70 transition-opacity">
-            WANAS
+          <Link href="/" className="min-h-[44px] flex items-center hover:opacity-70 transition-opacity">
+            <Logo className="h-8 w-auto text-primary" />
           </Link>
         </div>
 
-        {/* Right: Search, Bag, and Theme Toggle */}
-        <div className="flex gap-6 items-center justify-end text-primary">
-          <button onClick={() => setIsSearchOpen(true)} className="group flex items-center gap-3 hover:text-accent-primary transition-colors">
-            <span className="hidden md:block text-[9px] uppercase tracking-[0.3em] font-bold">Search</span>
+        {/* Right: Search, Language, and Theme Toggle */}
+        <div className="flex gap-4 items-center justify-end text-primary">
+          <button 
+            onClick={() => setIsSearchOpen(true)} 
+            className="p-2 hover:text-accent-primary transition-colors"
+            aria-label={t.nav.search}
+          >
             <Search className="w-4 h-4" strokeWidth={1} />
           </button>
-          
-          <button onClick={openBag} className="group flex items-center gap-3 hover:text-accent-primary transition-colors">
-            <span className="hidden md:block text-[9px] uppercase tracking-[0.3em] font-bold">Bag</span>
-            <div className="relative">
-              <ShoppingBag className="w-4 h-4" strokeWidth={1} />
-              {mounted && totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 bg-accent-primary text-primary-foreground text-[8px] font-bold w-3.5 h-3.5 flex items-center justify-center rounded-full">
-                  {totalItems}
-                </span>
-              )}
-            </div>
+
+          <button 
+            onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+            className="p-2 hover:text-accent-primary transition-colors flex items-center"
+            aria-label={mounted ? (language === 'en' ? t.nav.switch_to_arabic : t.nav.switch_to_english) : t.nav.switch_language}
+          >
+            <Globe className="w-4 h-4" strokeWidth={1} />
           </button>
           
           <button 
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
             className="p-2 hover:text-accent-primary transition-colors"
+            aria-label={mounted ? (theme === 'dark' ? t.nav.switch_to_light : t.nav.switch_to_dark) : t.nav.switch_theme}
           >
-            {mounted && (theme === 'dark' ? <Sun className="w-4 h-4" strokeWidth={1} /> : <Moon className="w-4 h-4" strokeWidth={1} />)}
+            {mounted ? (theme === 'dark' ? <Sun className="w-4 h-4" strokeWidth={1} /> : <Moon className="w-4 h-4" strokeWidth={1} />) : <div className="w-4 h-4" />}
           </button>
         </div>
 
@@ -122,7 +129,7 @@ export function Header() {
                     <input
                       autoFocus
                       type="text"
-                      placeholder="DISCOVER THE COLLECTION..."
+                      placeholder={t.nav.search_placeholder}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="flex-1 bg-transparent border-none outline-none text-2xl md:text-4xl tracking-widest uppercase placeholder:text-primary/20 font-serif text-primary"
@@ -132,7 +139,7 @@ export function Header() {
                     onClick={() => setIsSearchOpen(false)}
                     className="p-4 hover:bg-primary/5 rounded-full transition-colors group flex items-center gap-3"
                   >
-                    <span className="text-[9px] uppercase tracking-[0.3em] font-bold group-hover:text-accent-primary transition-colors">Close</span>
+                    <span className="text-[9px] uppercase tracking-[0.3em] font-bold group-hover:text-accent-primary transition-colors">{t.nav.close}</span>
                     <X strokeWidth={1} className="w-6 h-6 text-primary group-hover:text-accent-primary transition-colors" />
                   </button>
                 </div>
@@ -171,8 +178,8 @@ export function Header() {
                   </div>
                   {searchQuery && filteredProducts.length === 0 && (
                     <div className="flex flex-col items-center justify-center h-64 space-y-6">
-                      <p className="text-3xl font-serif text-primary/30 italic">&quot;No silhouettes found.&quot;</p>
-                      <p className="text-[10px] uppercase tracking-[0.3em] text-primary/40 font-bold">Try adjusting your search terms</p>
+                      <p className="text-3xl font-serif text-primary/30 italic">&quot;{t.nav.no_results}&quot;</p>
+                      <p className="text-[10px] uppercase tracking-[0.3em] text-primary/40 font-bold">{t.nav.try_adjusting}</p>
                     </div>
                   )}
                 </div>

@@ -2,8 +2,11 @@
 
 import { motion } from 'motion/react';
 import Link from 'next/link';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function ReservationSuccessPage() {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-24 text-center bg-primary">
       <motion.div
@@ -34,9 +37,9 @@ export default function ReservationSuccessPage() {
           </motion.svg>
           
           <div className="space-y-4">
-            <h1 className="font-serif text-5xl italic text-primary">Your Selection is Reserved.</h1>
+            <h1 className="font-serif text-5xl italic text-primary">{t.reserveSuccess.title}</h1>
             <p className="text-primary/60 font-light leading-relaxed tracking-wide text-lg">
-              Our concierge team is reviewing your request. You will be contacted via WhatsApp shortly to finalize sizing, deposit, and delivery.
+              {t.reserveSuccess.description}
             </p>
           </div>
         </div>
@@ -46,7 +49,7 @@ export default function ReservationSuccessPage() {
             href="/track?token=magicToken" 
             className="px-12 py-4 bg-inverted text-inverted text-[10px] uppercase tracking-[0.3em] hover:bg-accent-primary transition-all duration-700 shadow-xl"
           >
-            Track Your Request
+            {t.reserveSuccess.trackRequest}
           </Link>
         </div>
       </motion.div>

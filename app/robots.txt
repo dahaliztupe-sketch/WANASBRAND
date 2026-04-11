@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Disallow admin and account areas
+Disallow: /admin/
+Disallow: /account/
+Disallow: /api/
+
+Sitemap: https://wanasbrand.com/sitemap.xml

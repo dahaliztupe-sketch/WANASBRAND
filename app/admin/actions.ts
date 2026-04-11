@@ -137,14 +137,29 @@ export async function getAdminCustomers() {
 import { sendStatusUpdateEmail } from '@/lib/mail';
 import { sendPushNotification } from '@/lib/services/push.service';
 
-export async function updateReservationStatus(id: string, status: Reservation['status']) {
+export async function updateReservationStatus(id: string, status: Reservation['status'], clientUpdatedAt?: number) {
   try {
     const firestore = db;
     if (!firestore) throw new Error('Database not initialized');
     const ref = firestore.collection('reservations').doc(id);
-    await ref.update({ 
-      status, 
-      updatedAt: new Date().toISOString() 
+    
+    await firestore.runTransaction(async (transaction) => {
+      const doc = await transaction.get(ref);
+      if (!doc.exists) {
+        throw new Error('Reservation does not exist');
+      }
+      
+      const data = doc.data();
+      const serverUpdatedAt = data?.updatedAt ? new Date(data.updatedAt).getTime() : 0;
+      
+      if (clientUpdatedAt && serverUpdatedAt > clientUpdatedAt) {
+        throw new Error('StaleDataError: The reservation was modified by another user. Please refresh the board and try again.');
+      }
+      
+      transaction.update(ref, {
+        status,
+        updatedAt: new Date().toISOString()
+      });
     });
     
     // Optional: Send email notification if status is shipped or deposit_paid
@@ -166,7 +181,9 @@ export async function updateReservationStatus(id: string, status: Reservation['s
         try {
           // Fetch user to get FCM token
           if (data.userId && data.userId !== 'guest') {
-            const userDoc = await db.collection('users').doc(data.userId).get();
+            const firestore = db;
+            if (!firestore) throw new Error('Database not initialized');
+            const userDoc = await firestore.collection('users').doc(data.userId).get();
             const userData = userDoc.data();
             if (userData?.fcmToken) {
               await sendPushNotification(

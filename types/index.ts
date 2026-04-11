@@ -96,6 +96,8 @@ export interface Reservation {
   userId: string;
   createdAt: string;
   magicLinkToken?: string;
+  trackingNumber?: string;
+  shippingProvider?: string;
   conciergeNotes?: string;
   holdExpiresAt?: string; // ISO string
   giftingDetails?: {

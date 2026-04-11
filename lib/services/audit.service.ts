@@ -12,7 +12,9 @@ export const logAdminAction = async (
   newValue?: any
 ): Promise<void> => {
   try {
-    const logRef = db.collection('logs').doc();
+    const firestore = db;
+    if (!firestore) throw new Error('Database not initialized');
+    const logRef = firestore.collection('logs').doc();
     const log: Log = {
       id: logRef.id,
       adminId,

@@ -1,6 +1,7 @@
 'use client';
 
 import { RevealOnScroll } from '@/components/RevealOnScroll';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 const sizeData = [
   { size: 'XS', bust: '82 / 32.3', waist: '64 / 25.2', hips: '88 / 34.6' },
@@ -11,29 +12,31 @@ const sizeData = [
 ];
 
 export default function SizeGuidePage() {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen bg-primary text-primary py-24 px-6">
       <div className="max-w-3xl mx-auto">
         <RevealOnScroll>
-          <h1 className="text-5xl font-serif font-light mb-16 tracking-tight text-center">Haute Couture Size Guide</h1>
+          <h1 className="text-5xl font-serif font-light mb-16 tracking-tight text-center">{t.sizeGuide.title}</h1>
           
           <div className="overflow-x-auto mb-12">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-start border-collapse">
               <thead>
                 <tr className="border-b border-primary/20">
-                  <th className="py-6 text-[10px] uppercase tracking-[0.2em] font-bold">Size</th>
-                  <th className="py-6 text-[10px] uppercase tracking-[0.2em] font-bold">Bust (cm / in)</th>
-                  <th className="py-6 text-[10px] uppercase tracking-[0.2em] font-bold">Waist (cm / in)</th>
-                  <th className="py-6 text-[10px] uppercase tracking-[0.2em] font-bold">Hips (cm / in)</th>
+                  <th className="py-6 text-[10px] uppercase tracking-[0.2em] font-bold text-start">{t.sizeGuide.size}</th>
+                  <th className="py-6 text-[10px] uppercase tracking-[0.2em] font-bold text-start">{t.sizeGuide.bust}</th>
+                  <th className="py-6 text-[10px] uppercase tracking-[0.2em] font-bold text-start">{t.sizeGuide.waist}</th>
+                  <th className="py-6 text-[10px] uppercase tracking-[0.2em] font-bold text-start">{t.sizeGuide.hips}</th>
                 </tr>
               </thead>
               <tbody className="text-sm font-light text-primary/80">
                 {sizeData.map((row) => (
                   <tr key={row.size} className="border-b border-primary/10 hover:bg-secondary/5 transition-colors">
-                    <td className="py-6 font-medium text-primary">{row.size}</td>
-                    <td className="py-6">{row.bust}</td>
-                    <td className="py-6">{row.waist}</td>
-                    <td className="py-6">{row.hips}</td>
+                    <td className="py-6 font-medium text-primary text-start"><span dir="ltr">{row.size}</span></td>
+                    <td className="py-6 text-start"><span dir="ltr">{row.bust}</span></td>
+                    <td className="py-6 text-start"><span dir="ltr">{row.waist}</span></td>
+                    <td className="py-6 text-start"><span dir="ltr">{row.hips}</span></td>
                   </tr>
                 ))}
               </tbody>
@@ -41,7 +44,7 @@ export default function SizeGuidePage() {
           </div>
 
           <p className="text-center text-sm font-light text-primary/60 italic">
-            For bespoke alterations, our Concierge is at your service.
+            {t.sizeGuide.bespoke}
           </p>
         </RevealOnScroll>
       </div>

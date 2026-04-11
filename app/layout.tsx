@@ -1,21 +1,56 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Montserrat } from "next/font/google";
+import localFont from "next/font/local";
+import { cookies } from "next/headers";
 import "./globals.css";
 import { StructuredData } from "@/components/StructuredData";
+import { LanguageWrapper } from "@/components/LanguageWrapper";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-serif", display: "swap" });
 
+// Local Arabic Font (WAN-022 Optimization)
+const tajawalLocal = localFont({
+  src: [
+    {
+      path: '../public/fonts/Tajawal-Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../public/fonts/Tajawal-Medium.woff2',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '../public/fonts/Tajawal-Bold.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-arabic',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://wanasbrand.com"),
   title: {
     default: "WANAS | Handcrafted Fashion House",
     template: "%s | WANAS"
   },
   description: "WANAS is a luxury fashion house dedicated to handcrafted excellence and timeless elegance. Based in Egypt, serving the world.",
-  keywords: ["fashion", "luxury", "handcrafted", "egyptian fashion", "couture", "wanas"],
+  keywords: ["fashion", "luxury", "handcrafted", "egyptian fashion", "couture", "wanas", "atelier", "high-end dresses"],
   authors: [{ name: "WANAS Atelier" }],
   creator: "WANAS",
   publisher: "WANAS",
+  alternates: {
+    canonical: "/",
+    languages: {
+      'en-US': '/en',
+      'ar-EG': '/ar',
+      'x-default': '/',
+    },
+  },
   formatDetection: {
     email: false,
     address: false,
@@ -25,23 +60,25 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://wanasbrand.com",
-    siteName: "WANAS",
+    siteName: "WANAS Atelier",
     title: "WANAS | Handcrafted Fashion House",
-    description: "Luxury handcrafted fashion from the heart of Egypt.",
+    description: "Luxury handcrafted fashion from the heart of Egypt. Timeless elegance and modern grace.",
     images: [
       {
-        url: "https://wanasbrand.com/og-image.jpg",
+        url: "https://wanasbrand.com/og-main.jpg",
         width: 1200,
         height: 630,
-        alt: "WANAS Fashion House",
+        alt: "WANAS Atelier - Handcrafted Fashion House",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
+    site: "@wanasbrand",
+    creator: "@wanasbrand",
     title: "WANAS | Handcrafted Fashion House",
     description: "Luxury handcrafted fashion from the heart of Egypt.",
-    images: ["https://wanasbrand.com/og-image.jpg"],
+    images: ["https://wanasbrand.com/og-main.jpg"],
   },
   robots: {
     index: true,
@@ -58,8 +95,8 @@ export const viewport = {
   themeColor: '#FAF9F6',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -79,22 +116,31 @@ import { FirebaseBoot } from "@/components/FirebaseBoot";
 import { NetworkStatus } from "@/components/NetworkStatus";
 import { SmoothScrolling } from "@/components/SmoothScrolling";
 import { SelectionBag } from "@/components/SelectionBag";
+import AudioBranding from "@/components/AudioBranding";
 import { Toaster } from "sonner";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const languageCookie = cookieStore.get('language')?.value;
+  const initialLang = languageCookie === 'ar' ? 'ar' : 'en';
+  const initialDir = initialLang === 'ar' ? 'rtl' : 'ltr';
+
   const organizationJsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "WANAS",
+    "alternateName": "WANAS Atelier",
     "url": "https://wanasbrand.com",
     "logo": "https://wanasbrand.com/logo.png",
+    "description": "Luxury fashion house dedicated to handcrafted excellence and timeless elegance.",
     "sameAs": [
       "https://instagram.com/wanas.brand",
-      "https://facebook.com/wanas.brand"
+      "https://facebook.com/wanas.brand",
+      "https://twitter.com/wanasbrand"
     ],
     "contactPoint": {
       "@type": "ContactPoint",
@@ -102,19 +148,39 @@ export default function RootLayout({
       "contactType": "customer service",
       "areaServed": "Worldwide",
       "availableLanguage": ["English", "Arabic"]
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Cairo",
+      "addressCountry": "EG"
+    }
+  };
+
+  const websiteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "WANAS",
+    "url": "https://wanasbrand.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://wanasbrand.com/collections?q={search_term_string}",
+      "query-input": "required name=search_term_string"
     }
   };
 
   return (
-    <html lang="en" className={`${montserrat.variable} ${playfair.variable}`} suppressHydrationWarning>
-      <body className="font-sans antialiased pb-16 lg:pb-0 cursor-none md:cursor-auto">
+    <html lang={initialLang} dir={initialDir} className={`${montserrat.variable} ${playfair.variable} ${tajawalLocal.variable}`} suppressHydrationWarning>
+      <body className={`antialiased pb-16 lg:pb-0 cursor-none md:cursor-auto ${initialLang === 'ar' ? 'font-arabic' : 'font-sans'}`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <SmoothScrolling>
-            <ErrorBoundary>
+          <LanguageWrapper>
+            <SmoothScrolling>
+              <ErrorBoundary>
               <NetworkStatus />
               <FirebaseBoot />
+              <AudioBranding />
               <CustomCursor />
               <StructuredData data={organizationJsonLd} />
+              <StructuredData data={websiteJsonLd} />
               <AnnouncementBar />
               <Header />
               {children}
@@ -130,6 +196,7 @@ export default function RootLayout({
               <Toaster position="bottom-center" toastOptions={{ className: 'font-sans text-sm rounded-sm border border-primary/10 shadow-xl' }} />
             </ErrorBoundary>
           </SmoothScrolling>
+          </LanguageWrapper>
         </ThemeProvider>
       </body>
     </html>

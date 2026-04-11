@@ -3,47 +3,52 @@
  * Placeholder for Phase 5 automated notifications.
  */
 
+import { SignJWT, jwtVerify } from 'jose';
+
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'wanas-luxury-secret-key-2026');
+
 interface WhatsAppMessage {
   to: string;
   templateName: string;
   variables: Record<string, string>;
 }
 
+/**
+ * Generates a secure, short-lived JWT for cart summaries.
+ * Prevents URL manipulation in WhatsApp links.
+ */
+export const generateCartToken = async (cartData: any) => {
+  return await new SignJWT({ cart: cartData })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('24h')
+    .sign(JWT_SECRET);
+};
+
+export const verifyCartToken = async (token: string) => {
+  try {
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+    return payload.cart;
+  } catch (error) {
+    console.error('JWT Verification failed:', error);
+    return null;
+  }
+};
+
 export const sendWhatsAppNotification = async ({ to, templateName, variables }: WhatsAppMessage) => {
-  // TODO: Integrate with WhatsApp Business API (e.g., Twilio or Meta directly)
-  // Sending message
+  // In a real implementation, this would call the Meta/Twilio API
+  // For now, we simulate the success/failure for the Two-Phase Commit demonstration
   
-  // Example of what the actual implementation would look like:
-  /*
-  const response = await fetch('https://api.whatsapp.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.WHATSAPP_API_TOKEN}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      messaging_product: "whatsapp",
-      to,
-      type: "template",
-      template: {
-        name: templateName,
-        language: { code: "en" },
-        components: [
-          {
-            type: "body",
-            parameters: Object.entries(variables).map(([key, value]) => ({
-              type: "text",
-              text: value
-            }))
-          }
-        ]
-      }
-    })
-  });
-  return response.json();
-  */
+  const isSuccess = Math.random() > 0.1; // 90% success rate simulation
+
+  if (!isSuccess) {
+    throw new Error('WhatsApp API Delivery Failure');
+  }
   
-  return { success: true, messageId: `wa_${Math.random().toString(36).substr(2, 9)}` };
+  return { 
+    success: true, 
+    messageId: `wa_${Math.random().toString(36).substr(2, 9)}` 
+  };
 };
 
 export const templates = {

@@ -13,6 +13,7 @@ import { Heart } from 'lucide-react';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { toast } from 'sonner';
 import { triggerHaptic } from '@/lib/utils/haptics';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function ShoppableLookbook() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -20,6 +21,7 @@ export default function ShoppableLookbook() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { items: wishlistItems, addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+  const { t } = useTranslation();
 
   const handleProductClick = (product: Product) => {
     setSelectedProduct(product);
@@ -30,11 +32,11 @@ export default function ShoppableLookbook() {
     e.stopPropagation(); // Prevent opening the drawer when clicking wishlist
     if (isInWishlist(product.id)) {
       removeFromWishlist(product.id);
-      toast('Removed from The Vault');
+      toast(t.productGrid.removedFromVault);
     } else {
       addToWishlist(product);
       triggerHaptic();
-      toast('Added to The Vault');
+      toast(t.productGrid.addedToVault);
     }
   };
 
@@ -63,13 +65,41 @@ export default function ShoppableLookbook() {
 
   return (
     <section className="py-16 px-6 max-w-7xl mx-auto w-full">
+      {/* SEO Fallback for Crawlers & Accessibility (WAN-032) */}
+      <noscript>
+        <div className="p-8 bg-secondary text-primary border border-primary/10 mb-8">
+          <h2 className="font-serif text-2xl mb-4">Featured in this Lookbook</h2>
+          <ul className="space-y-4">
+            {products.map(p => (
+              <li key={p.id} className="border-b border-primary/5 pb-4">
+                <a href={`/product/${p.slug || p.id}`} className="group">
+                  <span className="block font-serif text-lg group-hover:text-accent-primary transition-colors">{p.name}</span>
+                  <span className="text-sm text-secondary">{formatPrice(p.price)}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </noscript>
+      <div className="sr-only" aria-live="polite">
+        <h2>Shoppable Lookbook: {t.lookbook.architecture}</h2>
+        <p>Explore our curated collection through this interactive lookbook. Featured pieces include:</p>
+        <ul>
+          {products.map(p => (
+            <li key={p.id}>
+              <a href={`/product/${p.slug || p.id}`}>{p.name} - {formatPrice(p.price)}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <div className="flex flex-col lg:flex-row gap-24 items-center">
         {/* Left: Mood Image Placeholder */}
         <div className="w-full lg:w-3/5 relative aspect-[4/5] bg-accent-primary/10 flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
-            <span className="text-[10px] uppercase tracking-[0.5em] text-primary/30 mb-8">Mood No. 01</span>
+            <span className="text-[10px] uppercase tracking-[0.5em] text-primary/30 mb-8">{t.lookbook.mood}</span>
             <h3 className="font-serif text-4xl md:text-6xl text-primary/20 leading-tight">
-              The Architecture of Elegance
+              {t.lookbook.architecture}
             </h3>
           </div>
           {/* Subtle line art overlay */}
@@ -101,12 +131,13 @@ export default function ShoppableLookbook() {
                        <Image 
                         src={products[0].images[0] || 'https://images.unsplash.com/photo-1594913785162-e6786b42dea3?q=80&w=800&auto=format&fit=crop'}
                         alt={products[0].name}
-                        width={400}
-                        height={533}
-                        quality={100}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        priority={true}
+                        quality={85}
                         placeholder="blur"
                         blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
-                        className="object-cover w-full h-full transition-transform duration-1000 group-hover:scale-105"
+                        className="object-cover transition-transform duration-1000 group-hover:scale-105"
                       />
                       <button 
                         onClick={(e) => handleWishlistToggle(e, products[0])} 
@@ -135,12 +166,12 @@ export default function ShoppableLookbook() {
                       <Image 
                         src={products[1].images[0] || 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=800&auto=format&fit=crop'}
                         alt={products[1].name}
-                        width={400}
-                        height={533}
-                        quality={100}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        quality={85}
                         placeholder="blur"
                         blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
-                        className="object-cover w-full h-full transition-transform duration-1000 group-hover:scale-105"
+                        className="object-cover transition-transform duration-1000 group-hover:scale-105"
                       />
                       <button 
                         onClick={(e) => handleWishlistToggle(e, products[1])} 

@@ -3,13 +3,16 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
+import { db, auth } from '@/lib/firebase/client';
 import { Product } from '@/types';
 import { ProductInfo } from '@/components/ProductInfo';
 import { RevealOnScroll } from './RevealOnScroll';
 import { notFound } from 'next/navigation';
 import { toast } from 'sonner';
-import ARViewer from './ARViewer';
+import dynamic from 'next/dynamic';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
+
+const ARViewer = dynamic(() => import('./ARViewer'), { ssr: false });
 
 import { triggerHaptic } from '@/lib/utils/haptics';
 
@@ -33,9 +36,7 @@ export default function ProductDetail({ id }: { id: string }) {
           setProduct(null);
         }
       } catch (err: unknown) {
-        console.error("Error fetching product:", err);
-        const message = err instanceof Error ? err.message : "Permission Denied";
-        setError(message);
+        handleFirestoreError(err, OperationType.GET, 'products/' + id, auth);
       } finally {
         setLoading(false);
       }
@@ -147,8 +148,8 @@ export default function ProductDetail({ id }: { id: string }) {
 
       </div>
 
-      {isAROpen && product.modelUrl && (
-        <ARViewer modelUrl={product.modelUrl} onClose={() => setIsAROpen(false)} />
+      {isAROpen && product.glbModelUrl && (
+        <ARViewer modelUrl={product.glbModelUrl} onClose={() => setIsAROpen(false)} />
       )}
 
       {/* The Fabric Story Section - Below the fold */}
@@ -196,7 +197,7 @@ export default function ProductDetail({ id }: { id: string }) {
                       </div>
                       <div className="h-[1px] w-full bg-inverted/5 relative">
                         <div 
-                          className="absolute inset-y-0 left-0 bg-accent-primary transition-all duration-1000" 
+                          className="absolute inset-y-0 start-0 bg-accent-primary transition-all duration-1000" 
                           style={{ width: `${stat.value}%` }}
                         />
                       </div>

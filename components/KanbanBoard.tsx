@@ -17,8 +17,9 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { db } from '@/lib/firebase/client';
+import { db, auth } from '@/lib/firebase/client';
 import { collection, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 
 const COLUMNS = ['Pending Contact', 'Deposit Paid', 'In Production', 'Shipped', 'Delivered'];
 
@@ -77,7 +78,7 @@ export function KanbanBoard() {
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'reservations'), (snapshot) => {
       setReservations(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    });
+    }, (error) => handleFirestoreError(error, OperationType.LIST, 'reservations', auth));
     return () => unsubscribe();
   }, []);
 

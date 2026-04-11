@@ -1,8 +1,44 @@
 import { db } from '@/lib/firebase/client';
 import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { ReservationItem, Product } from '@/types';
+import { ReservationItem, Product, ProductVariant } from '@/types';
+
+interface BagItem {
+  product: Product;
+  variant: ProductVariant;
+  quantity: number;
+}
 
 export const CART_COLLECTION = 'carts';
+export const GUEST_CART_COLLECTION = 'guest_carts';
+
+export async function syncGuestCartToCloud(guestId: string, items: BagItem[]) {
+  try {
+    const cartRef = doc(db, GUEST_CART_COLLECTION, guestId);
+    await setDoc(cartRef, {
+      items,
+      updatedAt: new Date().toISOString(),
+      guestId
+    });
+    return { success: true };
+  } catch (error) {
+    console.error('Error syncing guest cart:', error);
+    return { success: false };
+  }
+}
+
+export async function recoverGuestCart(guestId: string): Promise<BagItem[]> {
+  try {
+    const cartRef = doc(db, GUEST_CART_COLLECTION, guestId);
+    const cartDoc = await getDoc(cartRef);
+    if (cartDoc.exists()) {
+      return cartDoc.data().items || [];
+    }
+    return [];
+  } catch (error) {
+    console.error('Error recovering guest cart:', error);
+    return [];
+  }
+}
 
 export async function syncCartToCloud(userId: string, localItems: ReservationItem[], isInitialSync: boolean = false) {
   try {

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 interface WaitlistModalProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface WaitlistModalProps {
 export function WaitlistModal({ isOpen, onClose, productId, variantId, productName, variantName }: WaitlistModalProps) {
   const [contactInfo, setContactInfo] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t } = useTranslation();
 
   if (!isOpen) return null;
 
@@ -43,12 +45,12 @@ export function WaitlistModal({ isOpen, onClose, productId, variantId, productNa
         throw new Error('Failed to join waitlist');
       }
 
-      toast.success('You have been added to the waitlist.');
+      toast.success(t.waitlistModal.successToast);
       onClose();
       setContactInfo('');
     } catch (error) {
       console.error('Error joining waitlist:', error);
-      toast.error('Failed to join waitlist. Please try again.');
+      toast.error(t.waitlistModal.errorToast);
     } finally {
       setIsSubmitting(false);
     }
@@ -59,13 +61,13 @@ export function WaitlistModal({ isOpen, onClose, productId, variantId, productNa
       <div className="bg-primary w-full max-w-md p-8 relative shadow-2xl">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-primary/50 hover:text-primary transition-colors"
+          className={`absolute top-4 ${t.locale === 'ar' ? 'left-4' : 'right-4'} p-2 text-primary/50 hover:text-primary transition-colors`}
         >
           <X strokeWidth={1} className="w-5 h-5" />
         </button>
 
         <div className="text-center mb-8">
-          <h2 className="font-serif text-3xl font-light text-primary mb-2">Join the Waitlist</h2>
+          <h2 className="font-serif text-3xl font-light text-primary mb-2">{t.waitlistModal.title}</h2>
           <p className="text-primary/60 font-light">
             {productName} - {variantName}
           </p>
@@ -74,14 +76,14 @@ export function WaitlistModal({ isOpen, onClose, productId, variantId, productNa
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="contact" className="block text-[10px] uppercase tracking-widest text-primary/50 mb-2">
-              Email or Phone Number
+              {t.waitlistModal.contactLabel}
             </label>
             <input
               type="text"
               id="contact"
               value={contactInfo}
               onChange={(e) => setContactInfo(e.target.value)}
-              placeholder="Enter your contact info"
+              placeholder={t.waitlistModal.contactPlaceholder}
               className="w-full border-b border-primary/50 py-3 px-0 bg-transparent focus:border-primary focus:ring-0 transition-colors text-sm font-light placeholder:text-primary/30"
               required
             />
@@ -92,7 +94,7 @@ export function WaitlistModal({ isOpen, onClose, productId, variantId, productNa
             disabled={isSubmitting || !contactInfo.trim()}
             className="w-full py-4 bg-inverted text-inverted text-xs uppercase tracking-[0.2em] font-semibold hover:bg-inverted/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? 'Joining...' : 'Join Waitlist'}
+            {isSubmitting ? t.waitlistModal.joining : t.waitlistModal.join}
           </button>
         </form>
       </div>

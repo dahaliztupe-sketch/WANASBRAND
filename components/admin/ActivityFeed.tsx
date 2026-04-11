@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
+import { db, auth } from '@/lib/firebase/client';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { Log } from '@/types';
 
 export function ActivityFeed() {
@@ -13,7 +14,7 @@ export function ActivityFeed() {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Log));
       setLogs(data);
-    });
+    }, (error) => handleFirestoreError(error, OperationType.LIST, 'logs', auth));
     return unsubscribe;
   }, []);
 

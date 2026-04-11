@@ -1,247 +1,155 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { notFound, useParams } from 'next/navigation';
-import { MessageCircle, ShieldCheck, Truck, RotateCcw, Wind, Layers, Feather, Camera, X } from 'lucide-react';
-import { VariantSelector } from '@/components/VariantSelector';
-import FeaturedProducts from '@/components/FeaturedProducts';
-import { RevealOnScroll } from '@/components/RevealOnScroll';
-import dynamic from 'next/dynamic';
-import { motion, AnimatePresence } from 'motion/react';
-
-const ARViewer = dynamic(() => import('@/components/ARViewer'), {
-  ssr: false,
-  loading: () => <div className="w-full h-full flex items-center justify-center bg-primary/5 text-primary/40 text-[10px] uppercase tracking-widest">Loading Virtual Sanctuary...</div>
-});
-
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { db } from '@/lib/firebase/client';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { Product } from '@/types';
+import ProductClient from '@/components/ProductClient';
+import { StructuredData } from '@/components/StructuredData';
+import dynamic from 'next/dynamic';
 
-export default function ProductPage() {
-  const { slug } = useParams();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isAROpen, setIsAROpen] = useState(false);
+const ARViewer = dynamic(() => import('@/components/ARViewer'), {
+  ssr: false,
+  loading: () => (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-primary/95 backdrop-blur-xl">
+      <div className="flex flex-col items-center gap-4 text-secondary/50">
+        <div className="w-12 h-[1px] bg-secondary/20 overflow-hidden">
+          <div className="h-full bg-accent-primary animate-pulse w-full origin-left" />
+        </div>
+        <p className="text-[10px] uppercase tracking-[0.3em] font-light">Loading Experience</p>
+      </div>
+    </div>
+  )
+});
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const q = query(collection(db, 'products'), where('slug', '==', slug));
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
-          setProduct(null);
-        } else {
-          const doc = querySnapshot.docs[0];
-          setProduct({ id: doc.id, ...doc.data() } as Product);
-        }
-      } catch (error) {
-        console.error("Error fetching product:", error);
-      } finally {
-        setLoading(false);
-      }
+interface Props {
+  params: Promise<{ slug: string }>;
+}
+
+async function getProduct(slug: string): Promise<Product | null> {
+  try {
+    const q = query(collection(db, 'products'), where('slug', '==', slug));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) return null;
+    const doc = querySnapshot.docs[0];
+    return { id: doc.id, ...doc.data() } as Product;
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    return null;
+  }
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+
+  if (!product) {
+    return {
+      title: 'Product Not Found',
     };
-    fetchProduct();
-  }, [slug]);
+  }
 
-  if (loading) return <div className="min-h-screen bg-primary flex items-center justify-center"><div className="w-12 h-12 border-2 border-accent-primary border-t-transparent rounded-full animate-spin" /></div>;
+  return {
+    title: product.name,
+    description: product.description.slice(0, 160),
+    openGraph: {
+      title: `${product.name} | WANAS Atelier`,
+      description: product.description.slice(0, 160),
+      url: `https://wanasbrand.com/product/${slug}`,
+      siteName: 'WANAS Atelier',
+      images: product.images?.[0] ? [
+        {
+          url: product.images[0],
+          width: 1200,
+          height: 630,
+          alt: product.name,
+        }
+      ] : [],
+      locale: 'en_US',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      site: '@wanasbrand',
+      title: `${product.name} | WANAS Atelier`,
+      description: product.description.slice(0, 160),
+      images: product.images?.[0] ? [product.images[0]] : [],
+    },
+    alternates: {
+      canonical: `/product/${slug}`,
+    },
+    other: {
+      'product:price:amount': product.price.toString(),
+      'product:price:currency': 'EGP',
+      'product:availability': (product.variants?.reduce((acc, v) => acc + (v.stock || 0), 0) || 0) > 0 ? 'instock' : 'oos',
+      'product:condition': 'new',
+      'product:brand': 'WANAS',
+      'product:category': product.category,
+    }
+  };
+}
+
+export default async function ProductPage({ params }: Props) {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+
   if (!product) notFound();
 
-  const mainImage = product.images?.[0] || 'https://picsum.photos/seed/gown/1920/1080';
-  const whatsappLink = `https://wa.me/201090946772?text=Greetings WANAS Atelier. I am inquiring about ${product.name} (Ref: ${product.id}).`;
+  const totalStock = product.variants?.reduce((acc, v) => acc + (v.stock || 0), 0) || 0;
+
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "image": product.images || [],
+    "description": product.description,
+    "sku": product.id,
+    "brand": {
+      "@type": "Brand",
+      "name": "WANAS"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": `https://wanasbrand.com/product/${product.slug}`,
+      "priceCurrency": "EGP",
+      "price": product.price,
+      "availability": totalStock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "itemCondition": "https://schema.org/NewCondition"
+    },
+    "category": product.category
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://wanasbrand.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Collections",
+        "item": "https://wanasbrand.com/collections"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": product.name,
+        "item": `https://wanasbrand.com/product/${product.slug}`
+      }
+    ]
+  };
 
   return (
-    <main className="min-h-screen bg-primary font-serif selection:bg-accent-primary selection:text-white pb-32">
-      <div className="w-full max-w-[1600px] mx-auto px-6 pt-12 lg:pt-24 grid lg:grid-cols-12 gap-12 lg:gap-24 items-start">
-        
-        {/* Left Content Section - Sticky */}
-        <div className="lg:col-span-5 flex flex-col justify-center space-y-16 lg:sticky lg:top-24 z-20">
-          <RevealOnScroll>
-            <div className="space-y-8">
-              <div className="flex items-center gap-6">
-                <p className="text-[10px] uppercase tracking-[0.6em] text-accent-primary font-bold">Atelier Silhouette</p>
-                <span className="w-16 h-px bg-primary/20"></span>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-primary/40">{product.category}</p>
-              </div>
-              <h1 className="text-6xl lg:text-[7rem] font-light tracking-tighter text-primary leading-[0.85] text-balance mix-blend-difference dark:mix-blend-normal">
-                {product.name}
-              </h1>
-              <p className="text-2xl font-serif italic text-primary/60 tracking-tight">EGP {product.price.toLocaleString()}</p>
-            </div>
-          </RevealOnScroll>
-
-          <RevealOnScroll>
-            <div className="space-y-10">
-              <p className="text-lg leading-loose text-primary/80 max-w-md font-sans font-light">
-                {product.description}
-              </p>
-              
-              {/* Stylist Note */}
-              <blockquote className="border-l border-accent-primary pl-8 py-2 italic text-primary/60 text-lg font-serif max-w-sm">
-                &quot;This silhouette is designed to capture the essence of modern grace, blending architectural structure with fluid movement.&quot;
-              </blockquote>
-            </div>
-          </RevealOnScroll>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 py-8 border-y border-primary/10">
-            <div className="flex items-center gap-4 text-primary/60">
-              <ShieldCheck strokeWidth={1} className="w-5 h-5 text-accent-primary" />
-              <span className="text-[9px] uppercase tracking-[0.2em] font-bold">Authenticity Guaranteed</span>
-            </div>
-            <div className="flex items-center gap-4 text-primary/60">
-              <Truck strokeWidth={1} className="w-5 h-5 text-accent-primary" />
-              <span className="text-[9px] uppercase tracking-[0.2em] font-bold">Complimentary Shipping</span>
-            </div>
-          </div>
-
-          <div className="space-y-8">
-            <VariantSelector product={product} recommendedByAI={typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ref') === 'concierge'} />
-            
-            <div className="pt-4 space-y-4">
-              {product.glbModelUrl && (
-                <div className="space-y-3">
-                  <button 
-                    onClick={() => setIsAROpen(true)}
-                    className="w-full flex items-center justify-center gap-4 py-6 bg-secondary text-primary border border-primary/10 text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-primary/5 transition-all active:scale-[0.98] group"
-                  >
-                    <Camera strokeWidth={1} className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                    View in Your Sanctuary
-                  </button>
-                  <p className="text-[9px] text-primary/40 uppercase tracking-[0.2em] text-center italic font-serif">
-                    Visualize the silhouette and fabric drape in your own space before reserving.
-                  </p>
-                </div>
-              )}
-
-              <a 
-                href={whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-4 py-6 border border-primary/20 text-primary text-[10px] uppercase tracking-[0.4em] font-bold hover:bg-primary hover:text-primary-foreground hover:invert dark:hover:invert-0 transition-all active:scale-[0.98]"
-              >
-                <MessageCircle strokeWidth={1} className="w-4 h-4" />
-                Concierge Service
-              </a>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Image Section - Massive Parallax */}
-        <div className="lg:col-span-7 relative">
-          <div className="relative w-full aspect-[3/4] lg:aspect-[2/3] bg-secondary overflow-hidden group cursor-crosshair shadow-2xl">
-            <Image
-              src={mainImage}
-              alt={product.name}
-              fill
-              className="object-cover object-top transition-transform duration-[2s] ease-out group-hover:scale-125 origin-center"
-              priority
-              referrerPolicy="no-referrer"
-            />
-            <div className="absolute inset-0 linen-texture opacity-20 pointer-events-none" />
-            <div className="absolute bottom-8 left-8 bg-primary/80 backdrop-blur-md px-6 py-3 rounded-none text-[8px] uppercase tracking-[0.4em] text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-500 border border-primary/10">
-              Fabric Loupe Active
-            </div>
-          </div>
-          
-          {/* Secondary Image Overlap */}
-          {product.images && product.images.length > 1 && (
-            <motion.div 
-              initial={{ y: 100, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1.5, delay: 0.5 }}
-              className="hidden lg:block absolute -bottom-32 -left-32 w-2/3 aspect-square bg-primary p-4 shadow-2xl z-30"
-            >
-              <div className="relative w-full h-full overflow-hidden bg-secondary">
-                <Image
-                  src={product.images[1]}
-                  alt={`${product.name} Detail`}
-                  fill
-                  className="object-cover transition-transform duration-[3s] hover:scale-110"
-                  referrerPolicy="no-referrer"
-                />
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </div>
-
-      {/* Fabric Story Section */}
-      <section className="max-w-[1400px] mx-auto px-6 py-48 mt-32 border-t border-primary/10">
-        <RevealOnScroll className="grid lg:grid-cols-12 gap-16 lg:gap-0 items-center">
-          <div className="lg:col-span-7 relative aspect-[4/3] bg-secondary overflow-hidden shadow-xl">
-            <Image
-              src="https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?q=80&w=1000&auto=format&fit=crop"
-              alt="Fabric Macro"
-              fill
-              className="object-cover opacity-90 transition-transform duration-[4s] hover:scale-110"
-              referrerPolicy="no-referrer"
-            />
-          </div>
-          <div className="lg:col-span-5 lg:-ml-16 z-10 bg-primary/95 backdrop-blur-xl p-12 lg:p-16 shadow-2xl space-y-8">
-            <span className="text-[10px] uppercase tracking-[0.4em] text-accent-primary font-bold flex items-center gap-4">
-              <span className="w-8 h-px bg-accent-primary"></span>
-              The Material
-            </span>
-            <h2 className="text-4xl lg:text-6xl font-serif text-primary leading-tight">Woven with <br/><span className="italic text-accent-primary">Intention</span></h2>
-            <p className="text-primary/70 font-sans leading-loose text-lg">
-              Every thread is selected for its drape, breathability, and enduring quality. We partner with heritage mills to source textiles that feel as luxurious as they look.
-            </p>
-            <div className="grid grid-cols-2 gap-8 pt-8 border-t border-primary/10">
-              <div className="space-y-3">
-                <Wind strokeWidth={1} className="w-6 h-6 text-accent-primary" />
-                <h3 className="text-[9px] uppercase tracking-[0.2em] font-bold">Breathable</h3>
-              </div>
-              <div className="space-y-3">
-                <Layers strokeWidth={1} className="w-6 h-6 text-accent-primary" />
-                <h3 className="text-[9px] uppercase tracking-[0.2em] font-bold">Structured Drape</h3>
-              </div>
-            </div>
-          </div>
-        </RevealOnScroll>
-      </section>
-
-      {/* Complete the Silhouette */}
-      <div className="max-w-7xl mx-auto px-6 py-32 border-t border-primary/5">
-        <h2 className="text-4xl md:text-5xl font-serif font-light mb-20 text-center text-primary">Complete the Silhouette</h2>
-        <FeaturedProducts />
-      </div>
-
-      {/* AR Modal */}
-      <AnimatePresence>
-        {isAROpen && product.glbModelUrl && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-primary/95 backdrop-blur-xl flex flex-col"
-          >
-            <div className="flex justify-between items-center px-8 h-24 border-b border-primary/5">
-              <div className="space-y-1">
-                <h3 className="text-[10px] uppercase tracking-[0.4em] font-bold text-accent-primary">Virtual Sanctuary</h3>
-                <p className="text-sm font-serif text-primary/60">{product.name} — Silhouette Study</p>
-              </div>
-              <button 
-                onClick={() => setIsAROpen(false)}
-                className="p-4 hover:bg-primary/5 rounded-full transition-colors text-primary"
-              >
-                <X strokeWidth={1} size={24} />
-              </button>
-            </div>
-            
-            <div className="flex-1 relative">
-              <ARViewer modelUrl={product.glbModelUrl} onClose={() => setIsAROpen(false)} />
-            </div>
-
-            <div className="p-8 text-center border-t border-primary/5">
-              <p className="text-[9px] uppercase tracking-[0.3em] text-primary/40">
-                Move your device to scan the floor and place the silhouette.
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </main>
+    <>
+      <StructuredData data={productSchema} />
+      <StructuredData data={breadcrumbSchema} />
+      <ProductClient product={product} />
+      {product.modelUrl && <ARViewer modelUrl={product.modelUrl} onClose={() => {}} />}
+    </>
   );
 }
+

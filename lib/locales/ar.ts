@@ -1,0 +1,33 @@
+export const ar = {
+  nav: {
+    home: 'الرئيسية',
+    collections: 'المجموعات',
+    about: 'عن الشركة',
+    contact: 'اتصل بنا',
+    account: 'الحساب',
+    wishlist: 'قائمة الأمنيات',
+    search: 'بحث',
+    bag: 'الحقيبة',
+    close: 'إغلاق',
+    no_results: 'لم يتم العثور على نتائج.',
+    try_adjusting: 'حاول تعديل مصطلحات البحث',
+    search_placeholder: 'اكتشف المجموعة...',
+    client_services: 'خدمات العملاء',
+    faq: 'الأسئلة الشائعة',
+    size_guide: 'دليل المقاسات',
+    returns: 'سياسة الإرجاع',
+    the_atelier: 'المشغل',
+    our_story: 'قصتنا',
+    careers: 'الوظائف',
+    inner_circle: 'الدائرة الداخلية',
+    newsletter_desc: 'انضم إلى الدائرة الداخلية لـ WANAS للحصول على وصول حصري للمجموعات والقصص الجديدة.',
+    email_address: 'عنوان البريد الإلكتروني',
+    all_rights: 'جميع الحقوق محفوظة.',
+    designed_for: 'مصمم للمشغل الحديث.',
+  },
+  common: {
+    language: 'اللغة',
+    english: 'الإنجليزية',
+    arabic: 'العربية',
+  }
+};

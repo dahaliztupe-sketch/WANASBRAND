@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { db } from '@/lib/firebase/client';
+import { db, auth } from '@/lib/firebase/client';
 import { collection, query, orderBy, onSnapshot, limit, getDocs, where } from 'firebase/firestore';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { ShoppingBag, Clock, User, Phone, Mail, TrendingUp, AlertTriangle, MessageCircle, BarChart3, ChevronRight, Sparkles, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
@@ -73,7 +74,7 @@ export default function InsightsPage() {
         ...doc.data()
       })).filter((cart: any) => cart.items && cart.items.length > 0);
       setAbandonedCarts(carts);
-    });
+    }, (error) => handleFirestoreError(error, OperationType.LIST, 'carts', auth));
 
     // 2. Fetch Low Stock Products
     const fetchLowStock = async () => {

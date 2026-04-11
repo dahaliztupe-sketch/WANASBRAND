@@ -1,0 +1,33 @@
+export const en = {
+  nav: {
+    home: 'Home',
+    collections: 'Collections',
+    about: 'About',
+    contact: 'Contact',
+    account: 'Account',
+    wishlist: 'Wishlist',
+    search: 'Search',
+    bag: 'Bag',
+    close: 'Close',
+    no_results: 'No silhouettes found.',
+    try_adjusting: 'Try adjusting your search terms',
+    search_placeholder: 'DISCOVER THE COLLECTION...',
+    client_services: 'Client Services',
+    faq: 'FAQ',
+    size_guide: 'Size Guide',
+    returns: 'Returns',
+    the_atelier: 'The Atelier',
+    our_story: 'Our Story',
+    careers: 'Careers',
+    inner_circle: 'Inner Circle',
+    newsletter_desc: 'Join the WANAS Inner Circle for exclusive access to new collections and stories.',
+    email_address: 'EMAIL ADDRESS',
+    all_rights: 'ALL RIGHTS RESERVED.',
+    designed_for: 'DESIGNED FOR THE MODERN ATELIER.',
+  },
+  common: {
+    language: 'Language',
+    english: 'English',
+    arabic: 'Arabic',
+  }
+};

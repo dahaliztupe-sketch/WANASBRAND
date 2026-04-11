@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { collection, query, where, limit, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
+import { db, auth } from '@/lib/firebase/client';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { Product } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { Heart } from 'lucide-react';
@@ -12,22 +13,24 @@ import { useWishlistStore } from '@/store/useWishlistStore';
 import { toast } from 'sonner';
 import { RevealOnScroll } from './RevealOnScroll';
 import { triggerHaptic } from '@/lib/utils/haptics';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { items: wishlistItems, addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+  const { t } = useTranslation();
 
   const handleWishlistToggle = (e: React.MouseEvent, product: Product) => {
     e.preventDefault();
     if (isInWishlist(product.id)) {
       removeFromWishlist(product.id);
-      toast('Removed from The Vault');
+      toast(t.featuredProducts.removedFromVault);
     } else {
       addToWishlist(product);
       triggerHaptic();
-      toast('Added to The Vault');
+      toast(t.featuredProducts.addedToVault);
     }
   };
 
@@ -46,11 +49,7 @@ export default function FeaturedProducts() {
         });
         setProducts(productsData);
       } catch (err: any) {
-        console.error("Error fetching featured products:", err);
-        console.error("Error code:", err.code);
-        console.error("Error message:", err.message);
-        const message = err instanceof Error ? err.message : "Permission Denied";
-        setError(message);
+        handleFirestoreError(err, OperationType.LIST, 'products', auth);
       } finally {
         setLoading(false);
       }
@@ -84,10 +83,9 @@ export default function FeaturedProducts() {
   if (error || products.length === 0) {
     return (
       <div className="text-center py-24 bg-primary/5 rounded-2xl border border-primary/10 backdrop-blur-sm">
-        <h3 className="font-serif text-2xl text-primary mb-3 italic">Curating the Collection</h3>
+        <h3 className="font-serif text-2xl text-primary mb-3 italic">{t.featuredProducts.curatingTitle}</h3>
         <p className="text-primary/60 font-light max-w-md mx-auto px-6 leading-relaxed">
-          Our latest collection is currently being prepared for its debut. 
-          Each piece is selected to bring tranquility and craftsmanship to your wardrobe.
+          {t.featuredProducts.curatingDescription}
         </p>
       </div>
     );
@@ -125,7 +123,7 @@ export default function FeaturedProducts() {
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700" />
               <button 
                 onClick={(e) => handleWishlistToggle(e, product)} 
-                className="absolute top-6 right-6 z-10 p-3 bg-primary/90 backdrop-blur-md rounded-full hover:bg-primary transition-colors opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-500"
+                className="absolute top-6 end-6 z-10 p-3 bg-primary/90 backdrop-blur-md rounded-full hover:bg-primary transition-colors opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-500"
               >
                 <Heart strokeWidth={1} className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-accent-primary text-accent-primary' : 'text-primary'}`} />
               </button>
@@ -135,7 +133,7 @@ export default function FeaturedProducts() {
                 {product.name}
               </h3>
               <p className="text-secondary text-[10px] uppercase tracking-[0.3em] font-bold">
-                {formatPrice(product.price)}
+                <bdi>{formatPrice(product.price)}</bdi>
               </p>
             </div>
           </Link>

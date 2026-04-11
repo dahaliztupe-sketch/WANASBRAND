@@ -8,15 +8,31 @@ import { CountdownTimer } from './CountdownTimer';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export function SelectionBag() {
   const { items, isBagOpen, closeBag, removeItem, updateQuantity, giftingDetails, setGiftingDetails } = useSelectionStore();
   const [mounted, setMounted] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-  }, []);
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeBag();
+    };
+
+    if (isBagOpen) {
+      window.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isBagOpen, closeBag]);
 
   if (!mounted) return null;
 
@@ -42,13 +58,13 @@ export function SelectionBag() {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed top-0 right-0 h-full w-full sm:w-[500px] bg-primary/90 backdrop-blur-2xl z-[60] shadow-2xl flex flex-col border-l border-primary/10"
+            className="fixed top-0 end-0 h-full w-full sm:w-[500px] bg-primary/90 backdrop-blur-2xl z-[60] shadow-2xl flex flex-col border-s border-primary/10"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-8 md:p-12 pb-6">
               <div className="space-y-1">
-                <span className="text-[8px] uppercase tracking-[0.4em] text-accent-primary font-bold">Private Fitting Room</span>
-                <h2 className="text-4xl font-serif tracking-tight text-primary italic">Your Selection</h2>
+                <span className="text-[8px] uppercase tracking-[0.4em] text-accent-primary font-bold">{t.selectionBag.subtitle}</span>
+                <h2 className="text-4xl font-serif tracking-tight text-primary italic">{t.selectionBag.title}</h2>
               </div>
               <button onClick={closeBag} className="text-primary/40 hover:text-primary transition-transform hover:rotate-90 duration-500 w-11 h-11 flex items-center justify-center">
                 <X className="w-8 h-8" strokeWidth={0.5} />
@@ -66,10 +82,10 @@ export function SelectionBag() {
                 >
                   <div className="w-px h-24 bg-primary/20" />
                   <p className="text-[10px] uppercase tracking-[0.4em] text-center leading-loose">
-                    Your private selection <br /> is currently empty.
+                    {t.selectionBag.empty}
                   </p>
                   <button onClick={closeBag} className="text-xs font-serif italic text-primary hover:text-accent-primary transition-colors border-b border-primary/20 pb-1">
-                    Return to Collection
+                    {t.selectionBag.return}
                   </button>
                 </motion.div>
               ) : (
@@ -104,7 +120,9 @@ export function SelectionBag() {
                             <p className="text-[10px] text-primary/50 uppercase tracking-[0.2em] mb-4">
                               {item.variant.size} <span className="mx-2">|</span> {item.variant.color}
                             </p>
-                            <p className="text-sm text-primary font-medium tracking-widest">EGP {item.priceAtPurchase.toLocaleString()}</p>
+                            <p className="text-sm text-primary font-medium tracking-widest">
+                              <bdi>EGP {item.priceAtPurchase.toLocaleString()}</bdi>
+                            </p>
                           </div>
                           
                           <div className="flex items-center gap-6 mt-6">
@@ -133,7 +151,7 @@ export function SelectionBag() {
                         </div>
                       </div>
                       {item.holdExpiresAt && (
-                        <div className="pl-[160px]">
+                        <div className="ps-[160px]">
                           <CountdownTimer expiresAt={item.holdExpiresAt} />
                         </div>
                       )}
@@ -147,7 +165,7 @@ export function SelectionBag() {
                     transition={{ delay: 0.5, duration: 1 }}
                     className="border-t border-primary/10 pt-12 mt-8"
                   >
-                    <button 
+                      <button 
                       onClick={() => {
                         triggerHaptic();
                         setGiftingDetails({ ...giftingDetails, isGift: !giftingDetails.isGift });
@@ -155,7 +173,7 @@ export function SelectionBag() {
                       className="flex items-center gap-4 text-[10px] uppercase tracking-[0.3em] text-primary hover:text-accent-primary transition-colors mb-8"
                     >
                       <Gift strokeWidth={1} className={`w-4 h-4 ${giftingDetails.isGift ? 'text-accent-primary' : ''}`} />
-                      {giftingDetails.isGift ? 'Remove Gift Options' : 'Make this a Gift'}
+                      {giftingDetails.isGift ? t.selectionBag.gifting.removeGift : t.selectionBag.gifting.makeGift}
                     </button>
                     
                     <AnimatePresence>
@@ -168,13 +186,13 @@ export function SelectionBag() {
                         >
                           <input 
                             type="text"
-                            placeholder="To: (Recipient Name)"
+                            placeholder={t.selectionBag.gifting.recipientPlaceholder}
                             value={giftingDetails.recipientName || ''}
                             onChange={(e) => setGiftingDetails({ ...giftingDetails, recipientName: e.target.value })}
                             className="w-full bg-transparent border-b border-primary/20 pb-4 text-sm text-primary placeholder:text-primary/30 focus:border-primary outline-none transition-colors font-serif italic"
                           />
                           <textarea 
-                            placeholder="Write your warm wishes here..."
+                            placeholder={t.selectionBag.gifting.notePlaceholder}
                             value={giftingDetails.handwrittenNote || ''}
                             onChange={(e) => setGiftingDetails({ ...giftingDetails, handwrittenNote: e.target.value })}
                             className="w-full bg-transparent border-b border-primary/20 pb-4 text-sm text-primary placeholder:text-primary/30 focus:border-primary outline-none transition-colors min-h-[100px] resize-none font-serif italic"
@@ -196,8 +214,10 @@ export function SelectionBag() {
                 className="p-8 md:p-12 border-t border-primary/10 bg-primary/50 backdrop-blur-md"
               >
                 <div className="flex justify-between items-end mb-8">
-                  <span className="text-[10px] uppercase tracking-[0.4em] text-primary/50">Estimated Total</span>
-                  <span className="text-3xl font-serif text-primary">EGP {estimatedTotal.toLocaleString()}</span>
+                  <span className="text-[10px] uppercase tracking-[0.4em] text-primary/50">{t.selectionBag.total}</span>
+                  <span className="text-3xl font-serif text-primary">
+                    <bdi>EGP {estimatedTotal.toLocaleString()}</bdi>
+                  </span>
                 </div>
                 <Link 
                   href="/reserve" 
@@ -209,7 +229,7 @@ export function SelectionBag() {
                 >
                   <span className="absolute inset-0 w-0 bg-accent-primary transition-all duration-[800ms] ease-out group-hover:w-full" />
                   <span className="relative z-10 text-[10px] uppercase tracking-[0.4em] font-bold group-hover:text-white transition-colors duration-500">
-                    Proceed to Reservation
+                    {t.selectionBag.submit}
                   </span>
                 </Link>
               </motion.div>

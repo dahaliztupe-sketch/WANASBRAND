@@ -14,8 +14,12 @@ const TOUR_STEPS = [
 ];
 
 export function AtelierTour() {
-  const { isActive, currentStep, nextStep, prevStep, endTour } = useTourStore();
+  const { isActive, currentStep, nextStep, prevStep, endTour, syncTourStatus, hasCompletedTour } = useTourStore();
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+
+  useEffect(() => {
+    syncTourStatus();
+  }, []);
 
   useEffect(() => {
     if (!isActive) return;
