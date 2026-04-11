@@ -15,5 +15,5 @@ export function useTranslation() {
   const currentLanguage = mounted ? language : 'en';
   const t = currentLanguage === 'en' ? en : ar;
   
-  return { t, language: currentLanguage };
+  return { t, language: currentLanguage, locale: currentLanguage };
 }
