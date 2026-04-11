@@ -8,13 +8,13 @@ import { ShoppingBag, Clock, User, Phone, Mail, TrendingUp, AlertTriangle, Messa
 import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
   Cell, FunnelChart, Funnel, LabelList 
 } from 'recharts';
 
-const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || '' });
+const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
 
 export default function InsightsPage() {
   const [abandonedCarts, setAbandonedCarts] = useState<any[]>([]);
@@ -48,11 +48,10 @@ export default function InsightsPage() {
         Keep the tone professional, elegant, and insightful.
       `;
 
-      const result = await ai.models.generateContent({
-        model: 'gemini-2.0-flash',
-        contents: prompt,
-      });
-      setAiReport(result.text || '');
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      setAiReport(response.text() || '');
     } catch (error) {
       console.error('Error generating AI report:', error);
     } finally {
