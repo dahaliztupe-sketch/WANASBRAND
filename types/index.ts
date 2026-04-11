@@ -147,3 +147,65 @@ export interface About {
     p1: string;
   };
 }
+
+export interface OrderDetailsTranslations {
+  notFound: string;
+  backToCollection: string;
+  order: string;
+  acquiredOn: string;
+  viewCertificate: string;
+  acquiredPieces: string;
+  size: string;
+  color: string;
+  quantity: string;
+  financialSummary: string;
+  subtotal: string;
+  vat: string;
+  shipping: string;
+  total: string;
+  deliveryDetails: string;
+  certificate: {
+    title: string;
+    atelier: string;
+    description: string;
+    orderId: string;
+    issueDate: string;
+    material: string;
+    materialValue: string;
+    status: string;
+    statusValue: string;
+    authenticatedBy: string;
+    print: string;
+  };
+}
+
+export interface Translations {
+  nav: any;
+  common: any;
+  home: any;
+  collections: any;
+  product: any;
+  about: About;
+  contact: any;
+  account: any;
+  ordersList: any;
+  orderDetails: OrderDetailsTranslations;
+  reserve: any;
+  reserveSuccess: any;
+  faq: any;
+  lookbook: any;
+  privacy: any;
+  returns: any;
+  shippingReturns: any;
+  sizeGuide: any;
+  waitlistModal: any;
+  conciergeModal: any;
+  pushNotificationModal: any;
+  styleProfileQuiz: any;
+  selectionBag: any;
+  cookieBanner: any;
+  emptyStates: any;
+  digitalCertificate: any;
+  conciergeChat: any;
+  admin: any;
+}

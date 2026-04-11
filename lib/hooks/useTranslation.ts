@@ -1,7 +1,8 @@
 import { useLanguageStore } from '@/lib/store/useLanguageStore';
-import { en } from '@/lib/locales/en';
-import { ar } from '@/lib/locales/ar';
+import { en } from '@/locales/en';
+import { ar } from '@/locales/ar';
 import { useState, useEffect } from 'react';
+import { Translations } from '@/types';
 
 export function useTranslation() {
   const { language } = useLanguageStore();
@@ -13,7 +14,7 @@ export function useTranslation() {
 
   // Always return 'en' during SSR and initial hydration to match server HTML
   const currentLanguage = mounted ? language : 'en';
-  const t = currentLanguage === 'en' ? en : ar;
+  const t = (currentLanguage === 'en' ? en : ar) as Translations;
   
   return { t, language: currentLanguage, locale: currentLanguage };
 }
