@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Montserrat } from "next/font/google";
-import localFont from "next/font/local";
+import { Playfair_Display, Montserrat, Tajawal } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
 import { StructuredData } from "@/components/StructuredData";
@@ -8,29 +7,7 @@ import { LanguageWrapper } from "@/components/LanguageWrapper";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-serif", display: "swap" });
-
-// Local Arabic Font (WAN-022 Optimization)
-const tajawalLocal = localFont({
-  src: [
-    {
-      path: '../public/fonts/Tajawal-Regular.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: '../public/fonts/Tajawal-Medium.woff2',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: '../public/fonts/Tajawal-Bold.woff2',
-      weight: '700',
-      style: 'normal',
-    },
-  ],
-  variable: '--font-arabic',
-  display: 'swap',
-});
+const tajawal = Tajawal({ subsets: ["arabic"], weight: ["400", "500", "700"], variable: "--font-arabic", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://wanasbrand.com"),
@@ -169,7 +146,7 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang={initialLang} dir={initialDir} className={`${montserrat.variable} ${playfair.variable} ${tajawalLocal.variable}`} suppressHydrationWarning>
+    <html lang={initialLang} dir={initialDir} className={`${montserrat.variable} ${playfair.variable} ${tajawal.variable}`} suppressHydrationWarning>
       <body className={`antialiased pb-16 lg:pb-0 cursor-none md:cursor-auto ${initialLang === 'ar' ? 'font-arabic' : 'font-sans'}`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <LanguageWrapper>

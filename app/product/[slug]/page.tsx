@@ -5,21 +5,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { Product } from '@/types';
 import ProductClient from '@/components/ProductClient';
 import { StructuredData } from '@/components/StructuredData';
-import dynamic from 'next/dynamic';
-
-const ARViewer = dynamic(() => import('@/components/ARViewer'), {
-  ssr: false,
-  loading: () => (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-primary/95 backdrop-blur-xl">
-      <div className="flex flex-col items-center gap-4 text-secondary/50">
-        <div className="w-12 h-[1px] bg-secondary/20 overflow-hidden">
-          <div className="h-full bg-accent-primary animate-pulse w-full origin-left" />
-        </div>
-        <p className="text-[10px] uppercase tracking-[0.3em] font-light">Loading Experience</p>
-      </div>
-    </div>
-  )
-});
+import ARViewerWrapper from '@/components/ARViewerWrapper';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -148,7 +134,7 @@ export default async function ProductPage({ params }: Props) {
       <StructuredData data={productSchema} />
       <StructuredData data={breadcrumbSchema} />
       <ProductClient product={product} />
-      {product.modelUrl && <ARViewer modelUrl={product.modelUrl} onClose={() => {}} />}
+      {product.modelUrl && <ARViewerWrapper modelUrl={product.modelUrl} onClose={() => {}} />}
     </>
   );
 }
