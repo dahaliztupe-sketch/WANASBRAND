@@ -8,6 +8,7 @@ export interface Address {
 }
 
 export interface User {
+  id: string;
   uid: string;
   fullName: string;
   email?: string;
@@ -55,8 +56,8 @@ export interface Product {
   embedding?: number[];
   fabricInfo?: FabricInfo;
   glbModelUrl?: string;
-  createdAt: any;
-  updatedAt?: any;
+  createdAt: string | any;
+  updatedAt: string | any;
 }
 
 export interface ReservationItem {
@@ -92,9 +93,11 @@ export interface Reservation {
     total: number;
     shippingFee: number;
   };
-  status: 'pending_contact' | 'contacted' | 'deposit_paid' | 'in_production' | 'shipped' | 'delivered' | 'cancelled' | 'returned';
+  status: 'pending_contact' | 'contacted' | 'deposit_paid' | 'in_production' | 'shipped' | 'delivered' | 'cancelled' | 'returned' | 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'CANCELLED';
   userId: string;
   createdAt: string;
+  updatedAt: string;
+  version?: number;
   magicLinkToken?: string;
   trackingNumber?: string;
   shippingProvider?: string;
@@ -107,6 +110,19 @@ export interface Reservation {
     giftNote?: string;
   };
   emailDeliveryStatus?: 'pending' | 'sent' | 'failed';
+}
+
+export interface Order {
+  id: string;
+  orderNumber: string;
+  userId: string;
+  totalAmount: number;
+  status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'CANCELLED';
+  createdAt: string;
+  updatedAt: string;
+  version?: number;
+  items: any[];
+  customerInfo: any;
 }
 
 export interface Log {
