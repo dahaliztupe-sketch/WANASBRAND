@@ -10,7 +10,7 @@ import { Plus, Trash2, Upload } from 'lucide-react';
 
 export default function NewProductPage() {
   const router = useRouter();
-  const [product, setProduct] = useState({ name: '', slug: '', price: 0, category: '', description: '', fitNotes: '', glbModelUrl: '', variants: [{ size: '', color: '', stock: 0, isActive: true }] });
+  const [product, setProduct] = useState({ name: '', slug: '', price: 0, category: '', description: '', fitNotes: '', modelUrl: '', variants: [{ size: '', color: '', stock: 0, isActive: true }] });
   const [images, setImages] = useState<File[]>([]);
   const [glbFile, setGlbFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,11 +28,11 @@ export default function NewProductPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      let glbModelUrl = '';
+      let modelUrl = '';
       if (glbFile) {
         const glbRef = ref(storage, `models/${Date.now()}_${glbFile.name}`);
         await uploadBytes(glbRef, glbFile);
-        glbModelUrl = await getDownloadURL(glbRef);
+        modelUrl = await getDownloadURL(glbRef);
       }
 
       const imageUrls = await Promise.all(images.map(async (file) => {
@@ -44,7 +44,7 @@ export default function NewProductPage() {
       await addDoc(collection(db, 'products'), {
         ...product,
         images: imageUrls,
-        glbModelUrl,
+        modelUrl,
         createdAt: serverTimestamp(),
         isArchived: false
       });

@@ -93,7 +93,7 @@ export default function ProductClient({ product }: ProductClientProps) {
             <VariantSelector product={product} recommendedByAI={typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ref') === 'concierge'} />
             
             <div className="pt-4 space-y-4">
-              {product.glbModelUrl && (
+              {product.modelUrl && (
                 <div className="space-y-3">
                   <button 
                     onClick={() => setIsAROpen(true)}
@@ -205,7 +205,7 @@ export default function ProductClient({ product }: ProductClientProps) {
 
       {/* AR Modal */}
       <AnimatePresence>
-        {isAROpen && product.glbModelUrl && (
+        {isAROpen && product.modelUrl && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -227,7 +227,7 @@ export default function ProductClient({ product }: ProductClientProps) {
             </div>
             
             <div className="flex-1 relative">
-              <ARViewer modelUrl={product.glbModelUrl} onClose={() => setIsAROpen(false)} />
+              <ARViewer modelUrl={product.modelUrl} onClose={() => setIsAROpen(false)} />
             </div>
 
             <div className="p-8 text-center border-t border-primary/5">

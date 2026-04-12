@@ -148,8 +148,8 @@ export default function ProductDetail({ id }: { id: string }) {
 
       </div>
 
-      {isAROpen && product.glbModelUrl && (
-        <ARViewer modelUrl={product.glbModelUrl} onClose={() => setIsAROpen(false)} />
+      {isAROpen && product.modelUrl && (
+        <ARViewer modelUrl={product.modelUrl} onClose={() => setIsAROpen(false)} />
       )}
 
       {/* The Fabric Story Section - Below the fold */}

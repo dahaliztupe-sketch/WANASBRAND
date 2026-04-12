@@ -54,7 +54,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     description: '',
     fitNotes: '',
     status: 'Draft' as 'Draft' | 'Published' | 'Archived',
-    glbModelUrl: '',
+    modelUrl: '',
   });
 
   const [images, setImages] = useState<string[]>([]);
@@ -77,7 +77,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             description: data.description,
             fitNotes: data.fitNotes || '',
             status: data.status || (data.isArchived ? 'Archived' : 'Published'),
-            glbModelUrl: data.glbModelUrl || '',
+            modelUrl: data.modelUrl || '',
           });
           setImages(data.images || []);
           setVariants(data.variants || []);
@@ -181,11 +181,11 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       let blurDataURL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
       const mainImageUrl = images.length > 0 ? images[0] : `https://images.unsplash.com/photo-1594913785162-e6786b42dea3?q=80&w=800&auto=format&fit=crop`;
       
-      let finalGlbModelUrl = formData.glbModelUrl;
+      let finalModelUrl = formData.modelUrl;
       if (glbFile) {
         const glbRef = ref(storage, `models/${Date.now()}_${glbFile.name}`);
         await uploadBytes(glbRef, glbFile);
-        finalGlbModelUrl = await getDownloadURL(glbRef);
+        finalModelUrl = await getDownloadURL(glbRef);
       }
 
       try {
@@ -206,7 +206,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         variants: finalVariants,
         status: formData.status as 'Draft' | 'Published' | 'Archived',
         isArchived: formData.status === 'Archived',
-        glbModelUrl: finalGlbModelUrl,
+        modelUrl: finalModelUrl,
       };
 
       const response = await fetch('/api/admin/products/update', {
@@ -375,7 +375,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
               <input 
                 type="text" 
                 readOnly 
-                value={formData.glbModelUrl || 'No model uploaded'} 
+                value={formData.modelUrl || 'No model uploaded'} 
                 className="w-full p-2 bg-secondary/50 border border-primary/10 text-[10px] font-mono text-primary/60"
               />
             </div>

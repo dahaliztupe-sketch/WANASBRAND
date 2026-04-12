@@ -55,7 +55,7 @@ export interface Product {
   fitNotes?: string;
   embedding?: number[];
   fabricInfo?: FabricInfo;
-  glbModelUrl?: string;
+  modelUrl?: string;
   createdAt: string | any;
   updatedAt: string | any;
 }
