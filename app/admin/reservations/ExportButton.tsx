@@ -53,6 +53,10 @@ export default function ExportButton({ reservations }: ExportButtonProps) {
     }
   };
 
+  const handleUpdate = () => {
+    handleExport();
+  };
+
   return (
     <button
       onClick={handleUpdate}
@@ -62,8 +66,4 @@ export default function ExportButton({ reservations }: ExportButtonProps) {
       Download Records for Accounting
     </button>
   );
-
-  function handleUpdate() {
-    handleExport();
-  }
 }

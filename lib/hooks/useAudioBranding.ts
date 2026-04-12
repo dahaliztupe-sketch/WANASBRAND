@@ -10,7 +10,7 @@ export function useAudioBranding() {
     if (typeof window === 'undefined') return;
 
     // Initialize AudioContext in a suspended state
-    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     if (!AudioContextClass) return;
 
     audioCtxRef.current = new AudioContextClass();

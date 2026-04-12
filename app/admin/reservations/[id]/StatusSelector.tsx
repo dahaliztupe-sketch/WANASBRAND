@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { updateReservationStatus } from '@/app/admin/actions';
 import { Reservation } from '@/types';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
 
 const STATUS_OPTIONS: { value: Reservation['status']; label: string }[] = [
   { value: 'pending_contact', label: 'New Request' },

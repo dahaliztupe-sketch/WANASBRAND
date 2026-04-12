@@ -2,7 +2,6 @@ import crypto from 'crypto';
 
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12;
-const AUTH_TAG_LENGTH = 16;
 
 // The key should be a 32-byte hex string (64 characters)
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;

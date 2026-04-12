@@ -17,8 +17,8 @@ interface WhatsAppMessage {
  * Generates a secure, short-lived JWT for cart summaries.
  * Prevents URL manipulation in WhatsApp links.
  */
-export const generateCartToken = async (cartData: any) => {
-  return await new SignJWT({ cart: cartData })
+export const generateCartToken = async (cartData: unknown) => {
+  return await new SignJWT({ cart: cartData as any })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('24h')
@@ -35,7 +35,7 @@ export const verifyCartToken = async (token: string) => {
   }
 };
 
-export const sendWhatsAppNotification = async ({ to, templateName, variables }: WhatsAppMessage) => {
+export const sendWhatsAppNotification = async ({ to: _to, templateName: _templateName, variables: _variables }: WhatsAppMessage) => {
   // In a real implementation, this would call the Meta/Twilio API
   // For now, we simulate the success/failure for the Two-Phase Commit demonstration
   

@@ -2,16 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { collection, query, orderBy, getDocs, doc, updateDoc, writeBatch } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
-import { Product, ProductVariant } from '@/types';
-import Link from 'next/link';
+import { ref, deleteObject } from 'firebase/storage';
+import { Plus, Search, Archive, Package, Eye, EyeOff, MoreHorizontal, CheckSquare, Square, Trash2, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
-import { Plus, Search, Archive, Package, AlertCircle, Eye, EyeOff, MoreHorizontal, CheckSquare, Square, Trash2, ChevronDown } from 'lucide-react';
-import { handleFirestoreError, OperationType } from '@/lib/firebase/errors';
+import Link from 'next/link';
 import { toast } from 'sonner';
 
-import { ref, deleteObject } from 'firebase/storage';
-import { storage } from '@/lib/firebase/client';
+import { db, storage } from '@/lib/firebase/client';
+import { handleFirestoreError, OperationType } from '@/lib/firebase/errors';
+import { Product, ProductVariant } from '@/types';
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);

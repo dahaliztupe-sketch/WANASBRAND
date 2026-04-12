@@ -2,23 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'motion/react';
-import { triggerHaptic } from '@/lib/utils/haptics';
-import { useSelectionStore } from '@/store/useSelectionStore';
-import { Gift, Loader2 } from 'lucide-react';
-import { db } from '@/lib/firebase/client';
 import { doc, getDoc } from 'firebase/firestore';
+import { Gift, Loader2 } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+
+
+import { db } from '@/lib/firebase/client';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useSelectionStore } from '@/store/useSelectionStore';
+import { triggerHaptic } from '@/lib/utils/haptics';
 
 export default function ReservePage() {
   const router = useRouter();
-  const { items, giftingDetails, setGiftingDetails } = useSelectionStore();
+  const { items, giftingDetails } = useSelectionStore();
   const [isGift, setIsGift] = useState(giftingDetails.isGift);
   const [governorate, setGovernorate] = useState('');
   const [shippingFee, setShippingFee] = useState(0);
-  const [settings, setSettings] = useState<any>(null);
+  const [settings, setSettings] = useState<Record<string, unknown> | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<Record<string, unknown> | null>(null);
   const [idempotencyKey, setIdempotencyKey] = useState('');
   const [website, setWebsite] = useState(''); // Honeypot state
   const { t } = useTranslation();
@@ -72,7 +74,7 @@ export default function ReservePage() {
     setIsSubmitting(true);
     
     // Egyptian phone validation: 010, 011, 012, 015 followed by 8 digits
-    const phoneInput = (e.target as any).phone.value;
+    const phoneInput = (e.target as HTMLFormElement & { phone: HTMLInputElement }).phone.value;
     const phoneRegex = /^01[0125][0-9]{8}$/;
     if (!phoneRegex.test(phoneInput)) {
       import('sonner').then(({ toast }) => toast.error(t.reserve.errors.invalidPhone));
@@ -100,15 +102,15 @@ export default function ReservePage() {
         },
         body: JSON.stringify({
           customerData: {
-            fullName: (e.target as any).fullName.value,
-            email: (e.target as any).email.value,
+            fullName: (e.target as HTMLFormElement & { fullName: HTMLInputElement }).fullName.value,
+            email: (e.target as HTMLFormElement & { email: HTMLInputElement }).email.value,
             phone: phoneInput,
             city: governorate,
-            address: (e.target as any).address.value,
+            address: (e.target as HTMLFormElement & { address: HTMLInputElement }).address.value,
             giftingDetails: { 
               isGift, 
-              recipientName: (e.target as any).recipientName?.value, 
-              handwrittenNote: (e.target as any).handwrittenNote?.value 
+              recipientName: (e.target as HTMLFormElement & { recipientName?: HTMLInputElement }).recipientName?.value, 
+              handwrittenNote: (e.target as HTMLFormElement & { handwrittenNote?: HTMLTextAreaElement }).handwrittenNote?.value 
             }
           },
           items: snapshotItems,
@@ -126,9 +128,10 @@ export default function ReservePage() {
         const errorData = await response.json();
         import('sonner').then(({ toast }) => toast.error(errorData.error || t.reserve.errors.failed));
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Reservation error:', error);
-      import('sonner').then(({ toast }) => toast.error(error.message || t.reserve.errors.failed));
+      const message = error instanceof Error ? error.message : t.reserve.errors.failed;
+      import('sonner').then(({ toast }) => toast.error(message));
     } finally {
       setIsSubmitting(false);
     }

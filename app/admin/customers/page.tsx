@@ -10,15 +10,9 @@ import {
   Star, 
   MoreVertical, 
   Mail, 
-  Calendar, 
   TrendingUp,
-  UserCheck,
-  UserMinus,
-  Loader2,
-  ChevronRight,
-  ArrowUpDown
+  UserCheck
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 
 interface Customer {
@@ -36,7 +30,6 @@ export default function CustomerCRM() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -45,8 +38,8 @@ export default function CustomerCRM() {
         const snapshot = await getDocs(q);
         const customerList = snapshot.docs.map(doc => {
           const data = doc.data() as Customer;
-          const { id: _, ...dataWithoutId } = data as any;
-          return { id: doc.id, ...dataWithoutId } as Customer;
+          const { id: _id, ...dataWithoutId } = data as Record<string, unknown>;
+          return { id: doc.id, ...dataWithoutId } as unknown as Customer;
         });
         setCustomers(customerList);
       } catch (error) {

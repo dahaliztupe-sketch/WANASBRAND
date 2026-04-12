@@ -1,19 +1,20 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
-import { useRouter } from 'next/navigation';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { db, storage } from '@/lib/firebase/client';
-import { Product, ProductVariant } from '@/types';
-import Link from 'next/link';
+import { ArrowLeft, Plus, Trash2, Save, X } from 'lucide-react';
 import Image from 'next/image';
-import { ArrowLeft, Plus, Trash2, Save, UploadCloud, X } from 'lucide-react';
-import { handleFirestoreError, OperationType } from '@/lib/firebase/errors';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
+import { db, storage } from '@/lib/firebase/client';
+import { handleFirestoreError, OperationType } from '@/lib/firebase/errors';
+import { Product, ProductVariant } from '@/types';
+
 async function generateBlurDataURL(imageUrl: string): Promise<string> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const img = new window.Image();
     img.crossOrigin = 'Anonymous';
     img.onload = () => {
@@ -399,7 +400,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
             <div className="flex items-center justify-center w-full">
               <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-primary/20 border-dashed rounded-lg cursor-pointer bg-primary/50 hover:bg-primary transition-colors">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <UploadCloud strokeWidth={1} className="w-8 h-8 mb-4 text-primary/40" />
+                  <Plus strokeWidth={1} className="w-8 h-8 mb-4 text-primary/40" />
                   <p className="mb-2 text-sm text-primary/60"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                   <p className="text-xs text-primary/40">PNG, JPG or WEBP (MAX. 2MB)</p>
                 </div>

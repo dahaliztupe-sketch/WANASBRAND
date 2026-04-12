@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import { Template } from "@pdfme/common";
 
 export const passportPdfTemplate: Template = {

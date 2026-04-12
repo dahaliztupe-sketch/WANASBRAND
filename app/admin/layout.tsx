@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
-import { auth, db } from '@/lib/firebase/client';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { Home, Inbox, Tag, Users, LogOut, Menu, X, Settings, BarChart3, Clock } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
+
+import { auth, db } from '@/lib/firebase/client';
 import { useTourStore } from '@/store/useTourStore';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

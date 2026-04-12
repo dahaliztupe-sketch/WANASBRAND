@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { db } from '@/lib/firebase/client';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { 
-  Settings, 
   Save, 
   Bell, 
   CreditCard, 
@@ -17,7 +16,6 @@ import {
   Layout,
   Palette
 } from 'lucide-react';
-import { motion } from 'motion/react';
 import { toast } from 'sonner';
 
 interface SiteSettings {

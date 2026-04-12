@@ -1,17 +1,18 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
-import Link from 'next/link';
-import { auth, db } from '@/lib/firebase/client';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
-import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
-import { Package, ArrowRight, Clock, Calendar, ShoppingBag } from 'lucide-react';
+import { ArrowRight, Calendar, Package, ShoppingBag } from 'lucide-react';
 import { motion } from 'motion/react';
-import { Reservation } from '@/types';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+import { auth, db } from '@/lib/firebase/client';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
+import { Reservation } from '@/types';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Reservation[]>([]);
@@ -46,7 +47,7 @@ export default function OrdersPage() {
     } finally {
       setLoading(false);
     }
-  }, [auth]);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

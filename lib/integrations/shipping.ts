@@ -11,7 +11,7 @@ interface ShippingLabelRequest {
   items: { name: string; weight: number }[];
 }
 
-export const generateShippingLabel = async ({ orderId, customerName, address, city, items }: ShippingLabelRequest) => {
+export const generateShippingLabel = async ({ orderId, customerName: _customerName, address: _address, city: _city, items: _items }: ShippingLabelRequest) => {
   // TODO: Integrate with Shipping API (e.g., Aramex, DHL, ShipStation)
   // Shipping label generated
   
@@ -45,7 +45,7 @@ export const generateShippingLabel = async ({ orderId, customerName, address, ci
   };
 };
 
-export const getTrackingStatus = async (trackingNumber: string) => {
+export const getTrackingStatus = async (_trackingNumber: string) => {
   // TODO: Fetch real-time status from shipping provider
   // Fetching status
   return {

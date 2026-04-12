@@ -2,15 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { Reservation } from '@/types';
-import { updateReservationStatus } from '@/app/admin/actions';
-import { toast } from 'sonner';
-import { Package, User, DollarSign, ChevronRight, AlertCircle, Gift, Eye, EyeOff, Bot } from 'lucide-react';
-import Link from 'next/link';
-import { useLanguageStore } from '@/lib/store/useLanguageStore';
-import { db, auth } from '@/lib/firebase/client';
 import { collection, query, where, limit, onSnapshot, orderBy } from 'firebase/firestore';
+import { ChevronRight, AlertCircle, Gift, Bot } from 'lucide-react';
+import Link from 'next/link';
+import { toast } from 'sonner';
+
+import { updateReservationStatus } from '@/app/admin/actions';
+import { auth, db } from '@/lib/firebase/client';
+import { useLanguageStore } from '@/lib/store/useLanguageStore';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
+import { Reservation } from '@/types';
 
 const COLUMNS = [
   { id: 'pending_contact', title: 'New Requests' },
@@ -80,8 +81,9 @@ export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
       await updateReservationStatus(reservationId, newStatus, clientUpdatedAt);
       
       toast.success(`Order status updated to ${newStatus.replace('_', ' ')}`);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to update status');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to update status';
+      toast.error(message);
       // Revert on error
       setReservations(reservations);
     }

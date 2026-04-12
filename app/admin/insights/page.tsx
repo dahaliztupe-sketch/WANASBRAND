@@ -1,26 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { db, auth } from '@/lib/firebase/client';
 import { collection, query, orderBy, onSnapshot, limit, getDocs, where } from 'firebase/firestore';
-import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
-import { ShoppingBag, Clock, User, Phone, Mail, TrendingUp, AlertTriangle, MessageCircle, BarChart3, ChevronRight, Sparkles, Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { AlertTriangle, ChevronRight, Clock, Loader2, Mail, MessageCircle, ShoppingBag, Sparkles, TrendingUp, User } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  Cell, FunnelChart, Funnel, LabelList 
+  FunnelChart, Funnel, LabelList, ResponsiveContainer, Tooltip 
 } from 'recharts';
 
-import { Product, Reservation } from '@/types';
+import { auth, db } from '@/lib/firebase/client';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
+import { Product } from '@/types';
 
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
 
 interface Cart {
   id: string;
-  items: any[];
+  items: { priceAtPurchase: number; quantity: number; image: string; productName: string }[];
   updatedAt: string;
   userEmail?: string;
   userPhone?: string;
@@ -106,12 +105,11 @@ export default function InsightsPage() {
     // 3. Fetch Funnel Data (Optimized with getCountFromServer and getAggregateFromServer)
     const fetchFunnel = async () => {
       try {
-        const { getCountFromServer, getAggregateFromServer, sum, doc, getDoc } = await import('firebase/firestore');
+        const { getCountFromServer, doc, getDoc } = await import('firebase/firestore');
         
         let activeCartsCount = 0;
         let requested = 0;
         let confirmed = 0;
-        let totalSales = 0;
 
         // Try reading from denormalized stats document first
         const statsDoc = await getDoc(doc(db, 'stats', 'latest'));
@@ -120,7 +118,6 @@ export default function InsightsPage() {
           const statsData = statsDoc.data();
           requested = statsData.totalOrders || 0;
           confirmed = statsData.totalConfirmed || 0;
-          totalSales = statsData.totalSales || 0;
           
           // Still need to count carts live as they aren't in the stats doc
           const cartsCountSnap = await getCountFromServer(collection(db, 'carts'));
@@ -139,11 +136,6 @@ export default function InsightsPage() {
           );
           const confirmedCountSnap = await getCountFromServer(confirmedQuery);
           confirmed = confirmedCountSnap.data().count;
-
-          const salesAggregateSnap = await getAggregateFromServer(confirmedQuery, {
-            totalSales: sum('financials.total')
-          });
-          totalSales = salesAggregateSnap.data().totalSales;
         }
 
         const addedToBag = activeCartsCount + requested;

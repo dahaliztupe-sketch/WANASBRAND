@@ -11,7 +11,7 @@ export async function fetchTranslations(lang: 'en' | 'ar') {
   try {
     const query = `*[_type == "translation"]{ key, "text": text_${lang} }`;
     const results = await sanityClient.fetch(query);
-    return results.reduce((acc: any, curr: any) => {
+    return results.reduce((acc: Record<string, string>, curr: { key: string; text: string }) => {
       acc[curr.key] = curr.text;
       return acc;
     }, {});

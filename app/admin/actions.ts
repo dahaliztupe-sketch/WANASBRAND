@@ -1,6 +1,8 @@
 'use server';
 
 import { db } from '@/lib/firebase/server';
+import { sendStatusUpdateEmail } from '@/lib/mail';
+import { sendPushNotification } from '@/lib/services/push.service';
 import { decryptPII } from '@/lib/utils/encryption';
 import { Reservation } from '@/types';
 
@@ -112,7 +114,7 @@ export async function getAdminCustomers() {
       .limit(1000)
       .get();
       
-    const customersMap = new Map<string, any>();
+    const customersMap = new Map<string, Record<string, unknown>>();
 
     snapshot.docs.forEach(doc => {
       const data = doc.data();
@@ -135,7 +137,7 @@ export async function getAdminCustomers() {
         });
       }
 
-      const customer = customersMap.get(key);
+      const customer = customersMap.get(key) as any;
       customer.totalSpend += data.financials?.total || data.totalAmount || 0;
       customer.orderCount += 1;
       
@@ -144,15 +146,12 @@ export async function getAdminCustomers() {
       }
     });
 
-    return Array.from(customersMap.values()).sort((a, b) => b.totalSpend - a.totalSpend);
+    return Array.from(customersMap.values()).sort((a: any, b: any) => b.totalSpend - a.totalSpend);
   } catch (error) {
     console.error('Error fetching admin customers:', error);
     throw new Error('Failed to fetch customers');
   }
 }
-
-import { sendStatusUpdateEmail } from '@/lib/mail';
-import { sendPushNotification } from '@/lib/services/push.service';
 
 export async function updateReservationStatus(id: string, status: Reservation['status'], clientUpdatedAt?: number) {
   try {
@@ -233,7 +232,7 @@ export async function bulkUpdateReservations(ids: string[], status: Reservation[
     // Fetch reservations first to get customer info
     const reservations = await Promise.all(ids.map(id => database.collection('reservations').doc(id).get()));
     
-    ids.forEach((id, index) => {
+    ids.forEach((id) => {
       const ref = database.collection('reservations').doc(id);
       batch.update(ref, { status, updatedAt: now });
     });

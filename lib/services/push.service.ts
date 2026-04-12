@@ -8,7 +8,7 @@ const app = !getApps().length ? initializeApp({
 
 const messaging = getMessaging(app);
 
-export async function sendPushNotification(token: string, title: string, body: string, data?: any) {
+export async function sendPushNotification(token: string, title: string, body: string, data?: Record<string, string>) {
   if (!token) return;
 
   const message = {

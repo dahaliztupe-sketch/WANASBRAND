@@ -5,7 +5,7 @@ import { loadArtLocale } from '@/lib/utils/loadLocale';
 
 export function useArtTranslation() {
   const { language } = useLanguageStore();
-  const [artT, setArtT] = useState<any>(null);
+  const [artT, setArtT] = useState<Record<string, unknown> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

@@ -1,20 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, query, limit, orderBy, onSnapshot } from 'firebase/firestore';
-import { db, auth } from '@/lib/firebase/client';
-import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
+import { collection, onSnapshot } from 'firebase/firestore';
 import { 
-  TrendingUp, Users, ShoppingBag, AlertCircle, 
-  ArrowUpRight, Clock, DollarSign, Package,
+  TrendingUp, ShoppingBag, AlertCircle, 
+  Clock, DollarSign,
   ChevronRight, MessageCircle, Plus
 } from 'lucide-react';
 import Link from 'next/link';
 import { 
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  Tooltip, ResponsiveContainer,
   FunnelChart, Funnel, LabelList
 } from 'recharts';
+
+import { db, auth } from '@/lib/firebase/client';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { Product, Reservation } from '@/types';
+import { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -31,10 +33,10 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let resDocs: any[] = [];
-    let prodDocs: any[] = [];
-    let cartDocs: any[] = [];
-    let conciergeDocs: any[] = [];
+    let resDocs: QueryDocumentSnapshot<DocumentData>[] = [];
+    let prodDocs: QueryDocumentSnapshot<DocumentData>[] = [];
+    let cartDocs: QueryDocumentSnapshot<DocumentData>[] = [];
+    let conciergeDocs: QueryDocumentSnapshot<DocumentData>[] = [];
     let isInitialLoad = true;
 
     const calculateStats = () => {
@@ -121,16 +123,6 @@ export default function AdminDashboard() {
       unsubConcierge();
     };
   }, []);
-
-  const chartData = [
-    { name: 'Mon', value: 4000 },
-    { name: 'Tue', value: 3000 },
-    { name: 'Wed', value: 2000 },
-    { name: 'Thu', value: 2780 },
-    { name: 'Fri', value: 1890 },
-    { name: 'Sat', value: 2390 },
-    { name: 'Sun', value: 3490 },
-  ];
 
   if (loading) return <div className="animate-pulse text-primary/40 text-[10px] uppercase tracking-[0.3em] p-12">Synchronizing Atelier...</div>;
 

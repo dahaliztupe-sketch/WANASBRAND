@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, query, orderBy, getDocs, doc, updateDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
+import { collection, query, orderBy, getDocs, doc, updateDoc, Timestamp } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+
+import { db } from '@/lib/firebase/client';
 
 interface WaitlistEntry {
   id: string;
@@ -14,7 +15,7 @@ interface WaitlistEntry {
   variantName: string;
   contactInfo: string;
   status: 'pending' | 'notified';
-  createdAt: any;
+  createdAt: Timestamp;
 }
 
 export default function WaitlistPage() {

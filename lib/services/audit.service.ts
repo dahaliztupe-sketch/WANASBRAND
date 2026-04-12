@@ -1,5 +1,3 @@
-import crypto from 'crypto';
-
 import { Log } from '@/types';
 
 import { db } from '../firebase/server';
@@ -10,8 +8,8 @@ export const logAdminAction = async (
   action: string,
   targetId: string,
   targetType: 'product' | 'reservation' | 'user' | 'system',
-  oldValue?: any,
-  newValue?: any
+  oldValue?: unknown,
+  newValue?: unknown
 ): Promise<void> => {
   try {
     const firestore = db;

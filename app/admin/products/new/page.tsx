@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { db, storage } from '@/lib/firebase/client';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { Plus, Trash2, Upload } from 'lucide-react';
+
+import { db, storage } from '@/lib/firebase/client';
 
 export default function NewProductPage() {
   const router = useRouter();
@@ -50,7 +51,8 @@ export default function NewProductPage() {
       });
       toast.success('Product created.');
       router.push('/admin/products');
-    } catch (e) {
+    } catch (err) {
+      console.error(err);
       toast.error('Failed to create product.');
     } finally {
       setLoading(false);
