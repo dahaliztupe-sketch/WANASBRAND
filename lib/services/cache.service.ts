@@ -15,6 +15,10 @@ export async function getCachedProduct(slug: string) {
     if (cached) return cached;
 
     // 2. Fallback to Firestore (1 Read)
+    if (!db) {
+      console.warn('Firestore not initialized. Cache fallback skipped.');
+      return null;
+    }
     const snapshot = await db.collection('products').where('slug', '==', slug).limit(1).get();
     if (snapshot.empty) return null;
     
@@ -27,6 +31,7 @@ export async function getCachedProduct(slug: string) {
   } catch (error) {
     console.error('Cache service error:', error);
     // Fallback to direct DB query if Redis fails
+    if (!db) return null;
     const snapshot = await db.collection('products').where('slug', '==', slug).limit(1).get();
     return snapshot.empty ? null : snapshot.docs[0].data();
   }

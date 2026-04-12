@@ -7,6 +7,12 @@ export const experimental_ppr = true; // Opt-in to PPR
 
 export default async function PassportPage({ params }: { params: Promise<{ certificateNumber: string }> }) {
   const { certificateNumber } = await params;
+  
+  if (!db) {
+    console.error('Database not initialized');
+    notFound();
+  }
+
   const snapshot = await db.collection('passports').where('certificateNumber', '==', certificateNumber).limit(1).get();
   if (snapshot.empty) notFound();
   
