@@ -1,20 +1,20 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
-import Link from 'next/link';
-import { auth, db } from '@/lib/firebase/client';
 import { collection, query, where, limit, getDocs, orderBy } from 'firebase/firestore';
-import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { Package, Heart, RotateCcw, ArrowRight, Clock, MapPin, CreditCard } from 'lucide-react';
-import { motion } from 'motion/react';
-import { Reservation } from '@/types';
+
+import { auth, db } from '@/lib/firebase/client';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
+import { Reservation, User } from '@/types';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function AccountDashboard() {
   const [recentOrders, setRecentOrders] = useState<Reservation[]>([]);
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const { t, locale } = useTranslation();
 
@@ -43,7 +43,7 @@ export default function AccountDashboard() {
     } finally {
       setLoading(false);
     }
-  }, [auth]);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

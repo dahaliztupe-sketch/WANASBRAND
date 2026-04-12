@@ -1,14 +1,15 @@
 'use client';
 
 import { useEffect, useState, use } from 'react';
-import { auth, db } from '@/lib/firebase/client';
-import { doc, getDoc } from 'firebase/firestore';
-import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
-import { motion, AnimatePresence } from 'motion/react';
-import { Reservation } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, ShieldCheck, Printer, X, Award, Package } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { ArrowLeft, ShieldCheck, Printer, X, Award } from 'lucide-react';
+import { doc, getDoc } from 'firebase/firestore';
+
+import { auth, db } from '@/lib/firebase/client';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
+import { Reservation } from '@/types';
 import { triggerHaptic } from '@/lib/utils/haptics';
 import { TrackingTimeline } from '@/components/TrackingTimeline';
 import { useTranslation } from '@/lib/hooks/useTranslation';

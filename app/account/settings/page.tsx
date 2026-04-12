@@ -1,15 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { auth, db } from '@/lib/firebase/client';
-import { doc, getDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { motion } from 'motion/react';
-import { User, MapPin, Mail, Phone, Shield, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { User as UserIcon, Shield, Loader2 } from 'lucide-react';
+
+import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase/client';
+import { User } from '@/types';
 import { triggerHaptic } from '@/lib/utils/haptics';
 
 export default function SettingsPage() {
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -71,7 +73,7 @@ export default function SettingsPage() {
         {/* Profile Section */}
         <section className="space-y-10">
           <div className="flex items-center gap-4 text-xs uppercase tracking-[0.2em] text-primary/40 font-bold border-b border-primary/5 pb-4">
-            <User strokeWidth={1} className="w-4 h-4" />
+            <UserIcon strokeWidth={1} className="w-4 h-4" />
             Personal Details
           </div>
           

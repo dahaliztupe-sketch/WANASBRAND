@@ -1,21 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { auth, db } from '@/lib/firebase/client';
-import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
-import { motion, AnimatePresence } from 'motion/react';
-import { Reservation } from '@/types';
-import { RotateCcw, CheckCircle2, ChevronRight, Package, AlertCircle } from 'lucide-react';
-import { triggerHaptic } from '@/lib/utils/haptics';
-import { toast } from 'sonner';
 import Image from 'next/image';
+import { motion, AnimatePresence } from 'motion/react';
+import { CheckCircle2, ChevronRight, Package, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase/client';
+import { Reservation, ReservationItem } from '@/types';
+import { triggerHaptic } from '@/lib/utils/haptics';
 
 export default function ReturnsPage() {
   const [orders, setOrders] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState<Reservation | null>(null);
-  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [selectedItem, setSelectedItem] = useState<ReservationItem | null>(null);
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);

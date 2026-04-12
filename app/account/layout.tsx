@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { auth } from '@/lib/firebase/client';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+import { motion } from 'motion/react';
+import { toast } from 'sonner';
 import { 
   LayoutDashboard, 
   Package, 
@@ -14,8 +15,8 @@ import {
   User,
   ChevronRight
 } from 'lucide-react';
-import { motion } from 'motion/react';
-import { toast } from 'sonner';
+
+import { auth } from '@/lib/firebase/client';
 
 const navItems = [
   { name: 'Overview', href: '/account', icon: LayoutDashboard },
@@ -26,7 +27,7 @@ const navItems = [
 ];
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
@@ -46,7 +47,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
       await signOut(auth);
       toast.success('Signed out successfully.');
       router.push('/');
-    } catch (error) {
+    } catch {
       toast.error('Failed to sign out.');
     }
   };

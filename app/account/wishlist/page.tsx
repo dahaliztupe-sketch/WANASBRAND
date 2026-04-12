@@ -1,19 +1,21 @@
 'use client';
 
-import { useWishlistStore } from '@/store/useWishlistStore';
-import { useSelectionStore } from '@/store/useSelectionStore';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ShoppingBag, Trash2, Heart } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { useWishlistStore } from '@/store/useWishlistStore';
+import { useSelectionStore } from '@/store/useSelectionStore';
 import { triggerHaptic } from '@/lib/utils/haptics';
+import { Product } from '@/types';
 
 export default function WishlistPage() {
   const { items, removeItem } = useWishlistStore();
   const { addItem } = useSelectionStore();
 
-  const handleMoveToBag = (product: any) => {
+  const handleMoveToBag = (product: Product) => {
     triggerHaptic();
     // Default to first variant if available
     if (product.variants && product.variants.length > 0) {
