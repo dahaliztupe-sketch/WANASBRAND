@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import QRCode from 'qrcode';
 
 export const revalidate = 86400; // ISR: Cache for 24 hours
-export const experimental_ppr = true; // Opt-in to PPR
 
 export default async function PassportPage({ params }: { params: Promise<{ certificateNumber: string }> }) {
   const { certificateNumber } = await params;
