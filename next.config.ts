@@ -2,7 +2,10 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  cacheComponents: true,
+  turbopack: {},
+  experimental: {
+    ppr: 'incremental',
+  },
   serverExternalPackages: ['firebase-admin', 'sharp'],
   images: {
     remotePatterns: [

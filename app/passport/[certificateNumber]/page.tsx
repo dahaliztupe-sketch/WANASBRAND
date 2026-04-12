@@ -5,8 +5,9 @@ import QRCode from 'qrcode';
 export const revalidate = 86400; // ISR: Cache for 24 hours
 export const experimental_ppr = true; // Opt-in to PPR
 
-export default async function PassportPage({ params }: { params: { certificateNumber: string } }) {
-  const snapshot = await db.collection('passports').where('certificateNumber', '==', params.certificateNumber).limit(1).get();
+export default async function PassportPage({ params }: { params: Promise<{ certificateNumber: string }> }) {
+  const { certificateNumber } = await params;
+  const snapshot = await db.collection('passports').where('certificateNumber', '==', certificateNumber).limit(1).get();
   if (snapshot.empty) notFound();
   
   const passport = snapshot.docs[0].data();

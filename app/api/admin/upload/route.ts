@@ -21,8 +21,11 @@ export async function POST(request: Request) {
       .toBuffer();
 
     // Initialize Firebase Admin
-    initAdmin();
-    const bucket = getStorage().bucket();
+    const adminApp = initAdmin();
+    if (!adminApp) {
+      return NextResponse.json({ error: 'Firebase Admin not configured' }, { status: 500 });
+    }
+    const bucket = getStorage(adminApp).bucket();
     
     const filename = `products/${Date.now()}_${file.name.replace(/\.[^/.]+$/, "")}.webp`;
     const fileRef = bucket.file(filename);
