@@ -16,6 +16,7 @@ interface WaitlistModalProps {
 
 export function WaitlistModal({ isOpen, onClose, productId, variantId, productName, variantName }: WaitlistModalProps) {
   const [contactInfo, setContactInfo] = useState('');
+  const [website, setWebsite] = useState(''); // Honeypot state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { t } = useTranslation();
 
@@ -38,6 +39,7 @@ export function WaitlistModal({ isOpen, onClose, productId, variantId, productNa
           productName,
           variantName,
           contactInfo,
+          website, // Honeypot field
         }),
       });
 
@@ -74,6 +76,18 @@ export function WaitlistModal({ isOpen, onClose, productId, variantId, productNa
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Honeypot field - hidden from users */}
+          <div style={{ display: 'none' }} aria-hidden="true">
+            <input
+              type="text"
+              name="website"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
+
           <div>
             <label htmlFor="contact" className="block text-[10px] uppercase tracking-widest text-primary/50 mb-2">
               {t.waitlistModal.contactLabel}

@@ -3,7 +3,6 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore, initializeFirestore, persistentLocalCache } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getMessaging, isSupported } from 'firebase/messaging';
-import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
 import firebaseConfigJson from '../../firebase-applet-config.json';
 
 const envDbId = process.env.NEXT_PUBLIC_FIRESTORE_DATABASE_ID;
@@ -27,14 +26,4 @@ const db = initializeFirestore(app, {
 const storage = getStorage(app);
 const messaging = typeof window !== 'undefined' ? isSupported().then(yes => yes ? getMessaging(app) : null) : Promise.resolve(null);
 
-// Initialize App Check with reCAPTCHA Enterprise
-let appCheck;
-if (typeof window !== 'undefined') {
-  // Ensure we only initialize App Check in the browser
-  appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaEnterpriseProvider(process.env.NEXT_PUBLIC_RECAPTCHA_ENTERPRISE_SITE_KEY || 'dummy-key-for-dev'),
-    isTokenAutoRefreshEnabled: true
-  });
-}
-
-export { app, auth, db, storage, messaging, appCheck };
+export { app, auth, db, storage, messaging };

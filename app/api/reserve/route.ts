@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { db, auth, appCheck } from '@/lib/firebase/server';
+import { db, auth } from '@/lib/firebase/server';
 import { encryptPII } from '@/lib/utils/encryption';
 import { sendReservationEmail } from '@/lib/services/email.service';
 import crypto from 'crypto';
@@ -37,27 +37,18 @@ function checkRateLimit(ip: string): boolean {
 
 export async function POST(req: Request) {
   try {
-    // 1. Verify App Check Token
-    const appCheckToken = req.headers.get('X-Firebase-AppCheck');
-    if (!appCheckToken) {
-      return NextResponse.json({ error: 'Unauthorized: Missing App Check token' }, { status: 401 });
-    }
-
-    if (appCheck) {
-      try {
-        await appCheck.verifyToken(appCheckToken);
-      } catch (err) {
-        console.error('App Check token verification failed:', err);
-        return NextResponse.json({ error: 'Unauthorized: Invalid App Check token' }, { status: 401 });
-      }
-    }
-
     const ip = req.headers.get('x-forwarded-for') || 'unknown';
     if (!checkRateLimit(ip)) {
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
     }
 
     const body = await req.json();
+    
+    // Honeypot Check
+    if (body.website) {
+      console.warn(`Honeypot triggered in Reservation by IP: ${ip}`);
+      return NextResponse.json({ success: true, message: 'Reservation received' });
+    }
     
     // Zod Validation
     const validation = ReservationSchema.safeParse(body);

@@ -16,7 +16,6 @@ These variables are prefixed with `NEXT_PUBLIC_` and are accessible in the brows
 | `NEXT_PUBLIC_FIRESTORE_DATABASE_ID` | Firestore Database ID | Firebase Console > Firestore (usually `(default)`) |
 | `NEXT_PUBLIC_GEMINI_API_KEY` | Google Gemini API Key | Google AI Studio (aistudio.google.com) |
 | `NEXT_PUBLIC_SENTRY_DSN` | Sentry DSN | Sentry Project Settings |
-| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | reCAPTCHA Enterprise Site Key | Firebase Console > App Check |
 
 ## Server-Side Variables (Secret)
 These variables are only accessible on the server. **NEVER** expose these in client-side code.
@@ -25,6 +24,8 @@ These variables are only accessible on the server. **NEVER** expose these in cli
 |----------|-------------|--------|
 | `FIREBASE_SERVICE_ACCOUNT_BASE64` | Base64 encoded Firebase Service Account JSON | Firebase Console > Project Settings > Service Accounts |
 | `JWT_SECRET` | Secret key for signing WhatsApp resume links | Generate a random 32+ char string |
+| `UPSTASH_REDIS_REST_URL` | Upstash Redis REST URL | Upstash Console |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST Token | Upstash Console |
 | `CRON_SECRET` | Bearer token for protecting Vercel Cron jobs | Generate a random string |
 | `WHATSAPP_API_TOKEN` | Token for WhatsApp Business API | Meta for Developers Console |
 | `SMTP_HOST` | SMTP Server Host | Email Provider (e.g., SendGrid, Mailgun) |
@@ -33,6 +34,12 @@ These variables are only accessible on the server. **NEVER** expose these in cli
 | `SMTP_PASS` | SMTP Password | Email Provider |
 | `ENCRYPTION_KEY` | Key for encrypting sensitive data | Generate a random 32-byte hex string |
 | `SENTRY_AUTH_TOKEN` | Sentry Auth Token for source maps | Sentry User Settings |
+
+## Security Note
+App Check and reCAPTCHA have been disabled to ensure a frictionless luxury user experience. Security is now handled via:
+1. **Invisible Honeypots**: Hidden fields in forms to trap bots.
+2. **Strict Rate Limiting**: Powered by Upstash Redis (3 requests/hour per IP for sensitive routes).
+3. **Idempotency Keys**: Used in order processing to prevent duplicate submissions.
 
 ## Instructions for Vercel
 1. Go to your Vercel Project > Settings > Environment Variables.

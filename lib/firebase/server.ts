@@ -1,7 +1,6 @@
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
-import { getAppCheck } from 'firebase-admin/app-check';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 let app;
@@ -31,4 +30,3 @@ const databaseId = (envDbId && envDbId !== '(default)') ? envDbId : firebaseConf
 
 export const db = app ? getFirestore(app, databaseId) : null;
 export const auth = app ? getAuth(app) : null;
-export const appCheck = app ? getAppCheck(app) : null;

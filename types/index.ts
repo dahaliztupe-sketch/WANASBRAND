@@ -195,6 +195,36 @@ export interface OrderDetailsTranslations {
   };
 }
 
+export interface AuthTranslations {
+  signIn: string;
+  signUp: string;
+  signOut: string;
+  email: string;
+  password: string;
+  forgotPassword: string;
+  resetPassword: string;
+  continueWithGoogle: string;
+  welcomeWanasToast: string;
+  googleFailToast: string;
+  signOutSuccess: string;
+  sessionExpired: string;
+  // Keys used in app/auth/page.tsx
+  welcomeBack: string;
+  joinWanas: string;
+  signInDesc: string;
+  signUpDesc: string;
+  emailAddress: string;
+  createAccount: string;
+  orContinueWith: string;
+  google: string;
+  phone: string;
+  noAccount: string;
+  alreadyMember: string;
+  welcomeBackToast: string;
+  authFailToast: string;
+  digitalAtelier: string;
+}
+
 export interface Translations {
   nav: any;
   common: any;
@@ -206,6 +236,7 @@ export interface Translations {
   account: any;
   ordersList: any;
   orderDetails: OrderDetailsTranslations;
+  auth: AuthTranslations;
   reserve: any;
   reserveSuccess: any;
   faq: any;

@@ -1,33 +1,7 @@
-import { db, appCheck } from '@/lib/firebase/server';
+import { db } from '@/lib/firebase/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-
-// Basic in-memory rate limiter for edge protection
-const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
-const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 5;
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const record = rateLimitMap.get(ip);
-
-  if (!record) {
-    rateLimitMap.set(ip, { count: 1, lastReset: now });
-    return true;
-  }
-
-  if (now - record.lastReset > RATE_LIMIT_WINDOW_MS) {
-    rateLimitMap.set(ip, { count: 1, lastReset: now });
-    return true;
-  }
-
-  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
-    return false;
-  }
-
-  record.count += 1;
-  return true;
-}
+import { waitlistRateLimit } from '@/lib/upstash';
 
 const WaitlistSchema = z.object({
   productId: z.string(),
@@ -35,31 +9,30 @@ const WaitlistSchema = z.object({
   productName: z.string(),
   variantName: z.string(),
   contactInfo: z.string().min(5),
+  website: z.string().optional(), // Honeypot field
 });
 
 export async function POST(req: Request) {
   try {
-    const ip = req.headers.get('x-forwarded-for') || 'unknown';
-    if (!checkRateLimit(ip)) {
-      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
-    }
-
-    // 1. Verify App Check Token
-    const appCheckToken = req.headers.get('X-Firebase-AppCheck');
-    if (!appCheckToken) {
-      return NextResponse.json({ error: 'Unauthorized: Missing App Check token' }, { status: 401 });
-    }
-
-    if (appCheck) {
-      try {
-        await appCheck.verifyToken(appCheckToken);
-      } catch (err) {
-        console.error('App Check token verification failed:', err);
-        return NextResponse.json({ error: 'Unauthorized: Invalid App Check token' }, { status: 401 });
+    const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+    
+    // 1. Enhanced Rate Limiting with Upstash
+    if (waitlistRateLimit) {
+      const { success } = await waitlistRateLimit.limit(ip);
+      if (!success) {
+        return NextResponse.json({ error: 'Too many requests. Please try again in an hour.' }, { status: 429 });
       }
     }
 
     const body = await req.json();
+    
+    // 2. Honeypot Check
+    if (body.website) {
+      console.warn(`Honeypot triggered by IP: ${ip}`);
+      // Silently reject or return success to fool the bot
+      return NextResponse.json({ success: true, message: 'Joined waitlist' });
+    }
+
     const validation = WaitlistSchema.safeParse(body);
     
     if (!validation.success) {
@@ -70,8 +43,12 @@ export async function POST(req: Request) {
     if (!firestore) throw new Error('Database not initialized');
 
     const waitlistRef = firestore.collection('waitlist').doc();
+    
+    // Remove honeypot field before saving
+    const { website, ...dataToSave } = validation.data;
+
     await waitlistRef.set({
-      ...validation.data,
+      ...dataToSave,
       status: 'pending',
       createdAt: new Date().toISOString(),
     });

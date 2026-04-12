@@ -20,6 +20,7 @@ export default function ReservePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userData, setUserData] = useState<any>(null);
   const [idempotencyKey, setIdempotencyKey] = useState('');
+  const [website, setWebsite] = useState(''); // Honeypot state
   const { t } = useTranslation();
 
   const subtotal = items.reduce((acc, item) => acc + item.priceAtPurchase * item.quantity, 0);
@@ -114,6 +115,7 @@ export default function ReservePage() {
           subtotal,
           shippingFee,
           totalAmount,
+          website, // Honeypot field
         }),
       });
 
@@ -139,6 +141,18 @@ export default function ReservePage() {
         <div className="max-w-xl mx-auto space-y-12">
           <h1 className="text-4xl font-serif text-primary italic">{t.reserve.title}</h1>
           <form onSubmit={handleSubmit} className="space-y-10">
+            {/* Honeypot field */}
+            <div style={{ display: 'none' }} aria-hidden="true">
+              <input
+                type="text"
+                name="website"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+
             <div className="space-y-8">
               <div className="group">
                 <label className="text-[10px] uppercase tracking-widest text-primary/40 group-focus-within:text-accent-primary transition-colors">{t.reserve.fullName}</label>

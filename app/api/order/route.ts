@@ -1,25 +1,10 @@
 import { NextResponse } from 'next/server';
-import { db, appCheck } from '@/lib/firebase/server';
+import { db } from '@/lib/firebase/server';
 import { sendWhatsAppNotification, templates, generateCartToken } from '@/lib/integrations/whatsapp';
 
 export async function POST(req: Request) {
   try {
-    // 1. Verify App Check Token
-    const appCheckToken = req.headers.get('X-Firebase-AppCheck');
-    if (!appCheckToken) {
-      return NextResponse.json({ error: 'Unauthorized: Missing App Check token' }, { status: 401 });
-    }
-
-    if (appCheck) {
-      try {
-        await appCheck.verifyToken(appCheckToken);
-      } catch (err) {
-        console.error('App Check token verification failed:', err);
-        return NextResponse.json({ error: 'Unauthorized: Invalid App Check token' }, { status: 401 });
-      }
-    }
-
-    // 2. Check Idempotency Key
+    // 1. Check Idempotency Key
     const idempotencyKey = req.headers.get('X-Idempotency-Key');
     if (!idempotencyKey) {
       return NextResponse.json({ error: 'Missing X-Idempotency-Key header' }, { status: 400 });
