@@ -2,14 +2,6 @@
 
 import { useEffect, useState } from 'react';
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'model-viewer': any;
-    }
-  }
-}
-
 interface ModelViewerProps {
   src: string;
   poster?: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import Link from 'next/link';
@@ -31,18 +31,7 @@ export default function OrdersPage() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.push('/auth');
-        return;
-      }
-      fetchOrders(user.uid);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const fetchOrders = async (uid: string) => {
+  const fetchOrders = useCallback(async (uid: string) => {
     try {
       const q = query(
         collection(db, 'reservations'),
@@ -57,7 +46,18 @@ export default function OrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [auth]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push('/auth');
+        return;
+      }
+      fetchOrders(user.uid);
+    });
+    return () => unsubscribe();
+  }, [fetchOrders, router]);
 
   if (loading) {
     return (

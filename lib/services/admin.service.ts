@@ -1,5 +1,6 @@
-import { db } from '@/lib/firebase/client';
 import { collection, addDoc, writeBatch, doc } from 'firebase/firestore';
+
+import { db } from '@/lib/firebase/client';
 
 export const logAction = async (adminName: string, action: string, targetId?: string) => {
   try {

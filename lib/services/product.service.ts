@@ -1,6 +1,8 @@
-import { db } from '../firebase/client';
 import { collection, query, where, getDocs, limit, startAfter, orderBy } from 'firebase/firestore';
+
 import { Product } from '@/types';
+
+import { db } from '../firebase/client';
 
 export const getProducts = async (
   pageSize: number = 12,

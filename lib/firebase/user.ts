@@ -1,10 +1,13 @@
-import { db } from './client';
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { User as FirebaseAuthUser } from 'firebase/auth';
+
 import { User as UserType } from '@/types';
+
+import { db } from './client';
 
 const ADMIN_EMAIL = 'abdalrahman32008@gmail.com';
 
-export async function syncUserToFirestore(firebaseUser: any) {
+export async function syncUserToFirestore(firebaseUser: FirebaseAuthUser | null) {
   if (!firebaseUser) return null;
 
   const userRef = doc(db, 'users', firebaseUser.uid);
@@ -56,7 +59,7 @@ export async function syncUserToFirestore(firebaseUser: any) {
   }
 }
 
-export async function promoteUserToAdmin(email: string) {
+export async function promoteUserToAdmin(_email: string) {
   // This would typically be a server-side function or admin-only
   // For this sprint, we'll use it in a secure context
   return { success: true, message: 'Admin promotion logic initialized.' };

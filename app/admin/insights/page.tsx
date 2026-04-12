@@ -14,12 +14,23 @@ import {
   Cell, FunnelChart, Funnel, LabelList 
 } from 'recharts';
 
+import { Product, Reservation } from '@/types';
+
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
 
+interface Cart {
+  id: string;
+  items: any[];
+  updatedAt: string;
+  userEmail?: string;
+  userPhone?: string;
+  userId?: string;
+}
+
 export default function InsightsPage() {
-  const [abandonedCarts, setAbandonedCarts] = useState<any[]>([]);
-  const [lowStockProducts, setLowStockProducts] = useState<any[]>([]);
-  const [funnelData, setFunnelData] = useState<any[]>([]);
+  const [abandonedCarts, setAbandonedCarts] = useState<Cart[]>([]);
+  const [lowStockProducts, setLowStockProducts] = useState<Product[]>([]);
+  const [funnelData, setFunnelData] = useState<{ value: number; name: string; fill: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [aiReport, setAiReport] = useState<string | null>(null);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
@@ -28,7 +39,10 @@ export default function InsightsPage() {
     setIsGeneratingReport(true);
     try {
       const chatsSnap = await getDocs(query(collection(db, 'concierge_chats'), limit(10)));
-      const chatLogs = chatsSnap.docs.map(doc => doc.data().messages.map((m: any) => `${m.role}: ${m.content}`).join('\n')).join('\n---\n');
+      const chatLogs = chatsSnap.docs.map(doc => {
+        const data = doc.data();
+        return data.messages.map((m: { role: string; content: string }) => `${m.role}: ${m.content}`).join('\n');
+      }).join('\n---\n');
       
       const prompt = `
         You are a strategic fashion consultant for WANAS, a luxury fashion house.
@@ -71,7 +85,7 @@ export default function InsightsPage() {
       const carts = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      })).filter((cart: any) => cart.items && cart.items.length > 0);
+      } as Cart)).filter((cart) => cart.items && cart.items.length > 0);
       setAbandonedCarts(carts);
     }, (error) => handleFirestoreError(error, OperationType.LIST, 'carts', auth));
 
@@ -82,8 +96,8 @@ export default function InsightsPage() {
       const lowStock = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      }) as any).filter(p => {
-        const totalStock = p.variants?.reduce((sum: number, v: any) => sum + v.stock, 0) || 0;
+      }) as Product).filter(p => {
+        const totalStock = p.variants?.reduce((sum: number, v) => sum + v.stock, 0) || 0;
         return totalStock < 5; // Highlight if total < 5, but Task says < 2 for specific alert
       });
       setLowStockProducts(lowStock);
@@ -244,7 +258,7 @@ export default function InsightsPage() {
           <div className="space-y-4">
             {lowStockProducts.length > 0 ? (
               lowStockProducts.map(p => {
-                const totalStock = p.variants?.reduce((sum: number, v: any) => sum + v.stock, 0) || 0;
+                const totalStock = p.variants?.reduce((sum: number, v) => sum + v.stock, 0) || 0;
                 return (
                   <div key={p.id} className="flex items-center justify-between p-4 bg-primary/5 border border-primary/5 group">
                     <div className="flex items-center gap-4">
@@ -279,7 +293,7 @@ export default function InsightsPage() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <AnimatePresence mode="popLayout">
-            {abandonedCarts.map((cart, idx) => (
+            {abandonedCarts.map((cart) => (
               <motion.div
                 key={cart.id}
                 initial={{ opacity: 0, scale: 0.98 }}
@@ -301,13 +315,13 @@ export default function InsightsPage() {
                   <div className="text-right">
                     <p className="text-[10px] uppercase tracking-widest text-primary/30">Value</p>
                     <p className="text-lg font-serif text-primary">
-                      EGP {cart.items.reduce((acc: number, item: any) => acc + (item.priceAtPurchase * item.quantity), 0).toLocaleString()}
+                      EGP {cart.items.reduce((acc: number, item: { priceAtPurchase: number; quantity: number }) => acc + (item.priceAtPurchase * item.quantity), 0).toLocaleString()}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-                  {cart.items.map((item: any, i: number) => (
+                  {cart.items.map((item: { image: string; productName: string }, i: number) => (
                     <div key={i} className="flex-shrink-0 w-12 h-16 bg-primary/10 relative overflow-hidden border border-primary/5">
                       {item.image && <Image src={item.image} alt={item.productName} fill className="object-cover" referrerPolicy="no-referrer" />}
                     </div>

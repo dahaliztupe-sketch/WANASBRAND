@@ -1,7 +1,8 @@
+import { useState, useEffect } from 'react';
+
 import { useLanguageStore } from '@/lib/store/useLanguageStore';
 import { en } from '@/locales/en';
 import { ar } from '@/locales/ar';
-import { useState, useEffect } from 'react';
 import { Translations } from '@/types';
 
 export function useTranslation() {

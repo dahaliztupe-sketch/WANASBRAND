@@ -1,6 +1,7 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+
 import firebaseConfigJson from '../firebase-applet-config.json';
 
 const envDbId = process.env.NEXT_PUBLIC_FIRESTORE_DATABASE_ID;

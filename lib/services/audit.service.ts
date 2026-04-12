@@ -1,6 +1,8 @@
-import { db } from '../firebase/server';
-import { Log } from '@/types';
 import crypto from 'crypto';
+
+import { Log } from '@/types';
+
+import { db } from '../firebase/server';
 
 export const logAdminAction = async (
   adminId: string,

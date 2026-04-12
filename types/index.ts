@@ -56,8 +56,8 @@ export interface Product {
   embedding?: number[];
   fabricInfo?: FabricInfo;
   modelUrl?: string;
-  createdAt: string | any;
-  updatedAt: string | any;
+  createdAt: string | { seconds: number; nanoseconds: number };
+  updatedAt: string | { seconds: number; nanoseconds: number };
 }
 
 export interface ReservationItem {
@@ -121,8 +121,8 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
   version?: number;
-  items: any[];
-  customerInfo: any;
+  items: ReservationItem[];
+  customerInfo: Reservation['customerInfo'];
 }
 
 export interface Log {
@@ -132,8 +132,8 @@ export interface Log {
   action: string;
   targetId?: string;
   targetType: 'product' | 'reservation' | 'user' | 'system';
-  oldValue?: any;
-  newValue?: any;
+  oldValue?: unknown;
+  newValue?: unknown;
   createdAt: string;
 }
 
@@ -226,33 +226,33 @@ export interface AuthTranslations {
 }
 
 export interface Translations {
-  nav: any;
-  common: any;
-  home: any;
-  collections: any;
-  product: any;
+  nav: Record<string, unknown>;
+  common: Record<string, unknown>;
+  home: Record<string, unknown>;
+  collections: Record<string, unknown>;
+  product: Record<string, unknown>;
   about: About;
-  contact: any;
-  account: any;
-  ordersList: any;
+  contact: Record<string, unknown>;
+  account: Record<string, unknown>;
+  ordersList: Record<string, unknown>;
   orderDetails: OrderDetailsTranslations;
   auth: AuthTranslations;
-  reserve: any;
-  reserveSuccess: any;
-  faq: any;
-  lookbook: any;
-  privacy: any;
-  returns: any;
-  shippingReturns: any;
-  sizeGuide: any;
-  waitlistModal: any;
-  conciergeModal: any;
-  pushNotificationModal: any;
-  styleProfileQuiz: any;
-  selectionBag: any;
-  cookieBanner: any;
-  emptyStates: any;
-  digitalCertificate: any;
-  conciergeChat: any;
-  admin: any;
+  reserve: Record<string, unknown>;
+  reserveSuccess: Record<string, unknown>;
+  faq: Record<string, unknown>;
+  lookbook: Record<string, unknown>;
+  privacy: Record<string, unknown>;
+  returns: Record<string, unknown>;
+  shippingReturns: Record<string, unknown>;
+  sizeGuide: Record<string, unknown>;
+  waitlistModal: Record<string, unknown>;
+  conciergeModal: Record<string, unknown>;
+  pushNotificationModal: Record<string, unknown>;
+  styleProfileQuiz: Record<string, unknown>;
+  selectionBag: Record<string, unknown>;
+  cookieBanner: Record<string, unknown>;
+  emptyStates: Record<string, unknown>;
+  digitalCertificate: Record<string, unknown>;
+  conciergeChat: Record<string, unknown>;
+  admin: Record<string, unknown>;
 }

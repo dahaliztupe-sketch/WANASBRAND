@@ -1,5 +1,6 @@
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+
 import { db } from '@/lib/firebase/client';
-import { doc, getDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { ReservationItem, Product, ProductVariant } from '@/types';
 
 interface BagItem {
@@ -43,7 +44,7 @@ export async function recoverGuestCart(guestId: string): Promise<BagItem[]> {
 export async function syncCartToCloud(userId: string, localItems: ReservationItem[], isInitialSync: boolean = false) {
   try {
     const cartRef = doc(db, CART_COLLECTION, userId);
-    let mergedItems = [...localItems];
+    const mergedItems = [...localItems];
 
     // Only merge with cloud items on initial login/hydration
     if (isInitialSync) {

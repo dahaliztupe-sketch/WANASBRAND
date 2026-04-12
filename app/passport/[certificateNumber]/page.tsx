@@ -1,6 +1,7 @@
 import { db } from '@/lib/firebase/server';
 import { notFound } from 'next/navigation';
 import QRCode from 'qrcode';
+import Image from 'next/image';
 
 export const revalidate = 86400; // ISR: Cache for 24 hours
 
@@ -76,7 +77,7 @@ export default async function PassportPage({ params }: { params: Promise<{ certi
             <p className="mt-1">Cairo, Egypt</p>
           </div>
           <div className="border border-[#D4AF37]/40 p-2 bg-white">
-            <img src={qrDataUrl} alt="Passport QR" className="w-20 h-20" />
+            <Image src={qrDataUrl} alt="Passport QR" width={80} height={80} className="w-20 h-20" />
           </div>
         </div>
       </div>

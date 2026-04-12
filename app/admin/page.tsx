@@ -12,8 +12,9 @@ import {
 import Link from 'next/link';
 import { 
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Cell, FunnelChart, Funnel, LabelList
+  FunnelChart, Funnel, LabelList
 } from 'recharts';
+import { Product, Reservation } from '@/types';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -25,8 +26,8 @@ export default function AdminDashboard() {
     conversionRate: 0,
     conciergeCount: 0,
   });
-  const [funnelData, setFunnelData] = useState<any[]>([]);
-  const [recentReservations, setRecentReservations] = useState<any[]>([]);
+  const [funnelData, setFunnelData] = useState<{ value: number; name: string; fill: string }[]>([]);
+  const [recentReservations, setRecentReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,7 +44,7 @@ export default function AdminDashboard() {
       let confirmed = 0;
 
       resDocs.forEach(doc => {
-        const data = doc.data();
+        const data = doc.data() as Reservation;
         revenue += data.totalAmount || 0;
         if (!['delivered', 'cancelled', 'returned'].includes(data.status)) {
           active++;
@@ -54,8 +55,8 @@ export default function AdminDashboard() {
       });
 
       prodDocs.forEach(doc => {
-        const data = doc.data();
-        data.variants?.forEach((v: any) => {
+        const data = doc.data() as Product;
+        data.variants?.forEach((v) => {
           if (v.stock < 3) lowStock++;
         });
       });
@@ -75,7 +76,7 @@ export default function AdminDashboard() {
       setRecentReservations(resDocs
         .sort((a, b) => b.data().createdAt - a.data().createdAt)
         .slice(0, 5)
-        .map(d => ({ id: d.id, ...d.data() })));
+        .map(d => ({ id: d.id, ...d.data() } as Reservation)));
 
       setStats({
         totalRevenue: revenue,

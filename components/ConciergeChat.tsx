@@ -12,13 +12,15 @@ import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useShoppingBagStore } from '@/store/useShoppingBagStore';
 
+import { Product, User, Reservation } from '@/types';
+
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
-  timestamp: any;
-  productRecommendation?: any;
+  timestamp: string;
+  productRecommendation?: Partial<Product>;
   imageUrl?: string;
   isHandoff?: boolean;
 }
@@ -33,8 +35,8 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [selectedImagePreview, setSelectedImagePreview] = useState<string | null>(null);
-  const [products, setProducts] = useState<any[]>([]);
-  const [userProfile, setUserProfile] = useState<any>(null);
+  const [products, setProducts] = useState<Partial<Product>[]>([]);
+  const [userProfile, setUserProfile] = useState<User | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -138,7 +140,10 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
 
     try {
       const reservationsSnapshot = await getDocs(query(collection(db, 'reservations'), where('userId', '==', auth.currentUser.uid)));
-      const purchaseHistory = reservationsSnapshot.docs.map(doc => doc.data().items?.map((i:any) => i.productName).join(', ')).join(', ');
+      const purchaseHistory = reservationsSnapshot.docs.map(doc => {
+        const data = doc.data() as Reservation;
+        return data.items?.map((i) => i.productName).join(', ');
+      }).join(', ');
       
       const styleContext = userProfile?.styleProfile 
         ? `User prefers colors: ${userProfile.styleProfile.preferredColors?.join(', ')}. Preferred silhouettes: ${userProfile.styleProfile.preferredSilhouettes?.join(', ')}.`
@@ -289,12 +294,12 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
       const response = await result.response;
       const functionCalls = response.functionCalls();
       
-      let assistantMessage: Message = { role: 'assistant', content: '', timestamp: new Date().toISOString() };
+      const assistantMessage: Message = { role: 'assistant', content: '', timestamp: new Date().toISOString() };
 
       if (functionCalls && functionCalls.length > 0) {
         const call = functionCalls[0];
         if (call.name === 'recommend_product') {
-          const args = call.args as any;
+          const args = call.args as { productId: string; reason: string };
           const recommendedProduct = products.find(p => p.id === args.productId);
           
           assistantMessage.content = args.reason;
@@ -305,14 +310,14 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
           assistantMessage.content = "I understand. I am connecting you with one of our senior style ambassadors who will assist you personally. They will reach out to you shortly.";
           assistantMessage.isHandoff = true;
         } else if (call.name === 'check_inventory') {
-          const args = call.args as any;
+          const args = call.args as { productId: string };
           const productDoc = await getDoc(doc(db, 'products', args.productId));
           if (productDoc.exists()) {
-            const productData = productDoc.data();
-            const availableVariants = productData.variants?.filter((v: any) => v.stockCount > 0) || [];
+            const productData = productDoc.data() as Product;
+            const availableVariants = productData.variants?.filter((v) => v.stock > 0) || [];
             if (availableVariants.length > 0) {
-              const sizes = [...new Set(availableVariants.map((v: any) => v.size))].join(', ');
-              const colors = [...new Set(availableVariants.map((v: any) => v.color))].join(', ');
+              const sizes = [...new Set(availableVariants.map((v) => v.size))].join(', ');
+              const colors = [...new Set(availableVariants.map((v) => v.color))].join(', ');
               assistantMessage.content = `Yes, the ${productData.name} is currently in stock! We have it available in sizes: ${sizes} and colors: ${colors}. Would you like me to add it to your bag?`;
             } else {
               assistantMessage.content = `I apologize, but the ${productData.name} is currently out of stock. Would you like me to recommend a similar piece?`;
@@ -321,16 +326,16 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
             assistantMessage.content = "I'm sorry, I couldn't find that specific piece in our current catalog.";
           }
         } else if (call.name === 'add_to_cart') {
-          const args = call.args as any;
+          const args = call.args as { productId: string; size: string; color: string };
           const productDoc = await getDoc(doc(db, 'products', args.productId));
           if (productDoc.exists()) {
-            const productData = productDoc.data() as any;
-            const variant = productData.variants?.find((v: any) => 
+            const productData = productDoc.data() as Product;
+            const variant = productData.variants?.find((v) => 
               v.size.toLowerCase() === args.size.toLowerCase() && 
               v.color.toLowerCase() === args.color.toLowerCase()
             );
             
-            if (variant && variant.stockCount > 0) {
+            if (variant && variant.stock > 0) {
               useShoppingBagStore.getState().addItem({ id: productDoc.id, ...productData }, variant, 1);
               assistantMessage.content = `Excellent choice. I have added the ${productData.name} (Size: ${args.size}, Color: ${args.color}) to your shopping bag. Is there anything else I can assist you with?`;
             } else {

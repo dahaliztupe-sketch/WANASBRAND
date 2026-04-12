@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+
 import { useLanguageStore } from '@/lib/store/useLanguageStore';
 import { loadArtLocale } from '@/lib/utils/loadLocale';
 

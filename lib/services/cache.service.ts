@@ -1,4 +1,5 @@
 import { Redis } from '@upstash/redis';
+
 import { db } from '@/lib/firebase/server';
 
 const redis = new Redis({

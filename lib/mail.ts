@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+
 import { OrderConfirmationEmail } from '@/components/emails/OrderConfirmationEmail';
 import { StatusUpdateEmail } from '@/components/emails/StatusUpdateEmail';
 

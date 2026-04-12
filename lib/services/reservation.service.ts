@@ -1,7 +1,6 @@
-import { db, auth } from '../firebase/client';
-import { collection, doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { Reservation, ReservationItem } from '@/types';
-import { handleFirestoreError, OperationType } from '../firebase/errors';
+import { ReservationItem } from '@/types';
+
+import { auth } from '../firebase/client';
 import { encrypt } from '../utils/encryption';
 
 export const createReservation = async (
@@ -15,7 +14,7 @@ export const createReservation = async (
   },
   items: ReservationItem[],
   totalAmount: number
-): Promise<any> => {
+): Promise<{ success: boolean; reservationId: string }> => {
   const user = auth.currentUser;
   const userId = user?.uid || 'guest';
   let idToken = '';

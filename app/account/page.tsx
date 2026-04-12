@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged } from 'firebase/auth';
 import Link from 'next/link';
@@ -20,18 +20,7 @@ export default function AccountDashboard() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        router.push('/auth');
-        return;
-      }
-      fetchData(user.uid);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  const fetchData = async (uid: string) => {
+  const fetchData = useCallback(async (uid: string) => {
     try {
       // Fetch User Data for Tier
       const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', uid)));
@@ -54,7 +43,18 @@ export default function AccountDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [auth]);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push('/auth');
+        return;
+      }
+      fetchData(user.uid);
+    });
+    return () => unsubscribe();
+  }, [fetchData, router]);
 
   const isInnerCircle = userData?.tier === 'InnerCircle';
 
