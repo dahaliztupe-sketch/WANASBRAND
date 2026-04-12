@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { User, Search, X, Heart, Package, Sun, Moon, Globe } from 'lucide-react';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
@@ -72,9 +72,11 @@ export function Header() {
       <div className="max-w-[1600px] mx-auto px-6 h-24 grid grid-cols-3 items-center w-full relative">
         {/* Left: User Icon */}
         <div className="flex items-center justify-start">
-          <Link href="/account" className="p-2 hover:text-accent-primary transition-colors" aria-label={t.nav.account}>
-            <User className="w-4 h-4" strokeWidth={1} />
-          </Link>
+          <Suspense fallback={<div className="w-8 h-8" />}>
+            <Link href="/account" className="p-2 hover:text-accent-primary transition-colors" aria-label={t.nav.account}>
+              <User className="w-4 h-4" strokeWidth={1} />
+            </Link>
+          </Suspense>
         </div>
 
         {/* Center: Logo */}
@@ -86,29 +88,31 @@ export function Header() {
 
         {/* Right: Search, Language, and Theme Toggle */}
         <div className="flex gap-4 items-center justify-end text-primary">
-          <button 
-            onClick={() => setIsSearchOpen(true)} 
-            className="p-2 hover:text-accent-primary transition-colors"
-            aria-label={t.nav.search}
-          >
-            <Search className="w-4 h-4" strokeWidth={1} />
-          </button>
+          <Suspense fallback={<div className="w-24 h-8" />}>
+            <button 
+              onClick={() => setIsSearchOpen(true)} 
+              className="p-2 hover:text-accent-primary transition-colors"
+              aria-label={t.nav.search}
+            >
+              <Search className="w-4 h-4" strokeWidth={1} />
+            </button>
 
-          <button 
-            onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
-            className="p-2 hover:text-accent-primary transition-colors flex items-center"
-            aria-label={mounted ? (language === 'en' ? t.nav.switch_to_arabic : t.nav.switch_to_english) : t.nav.switch_language}
-          >
-            <Globe className="w-4 h-4" strokeWidth={1} />
-          </button>
-          
-          <button 
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
-            className="p-2 hover:text-accent-primary transition-colors"
-            aria-label={mounted ? (theme === 'dark' ? t.nav.switch_to_light : t.nav.switch_to_dark) : t.nav.switch_theme}
-          >
-            {mounted ? (theme === 'dark' ? <Sun className="w-4 h-4" strokeWidth={1} /> : <Moon className="w-4 h-4" strokeWidth={1} />) : <div className="w-4 h-4" />}
-          </button>
+            <button 
+              onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+              className="p-2 hover:text-accent-primary transition-colors flex items-center"
+              aria-label={mounted ? (language === 'en' ? t.nav.switch_to_arabic : t.nav.switch_to_english) : t.nav.switch_language}
+            >
+              <Globe className="w-4 h-4" strokeWidth={1} />
+            </button>
+            
+            <button 
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
+              className="p-2 hover:text-accent-primary transition-colors"
+              aria-label={mounted ? (theme === 'dark' ? t.nav.switch_to_light : t.nav.switch_to_dark) : t.nav.switch_theme}
+            >
+              {mounted ? (theme === 'dark' ? <Sun className="w-4 h-4" strokeWidth={1} /> : <Moon className="w-4 h-4" strokeWidth={1} />) : <div className="w-4 h-4" />}
+            </button>
+          </Suspense>
         </div>
 
         {/* Search Overlay - Editorial */}

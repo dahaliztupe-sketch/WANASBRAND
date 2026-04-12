@@ -8,6 +8,9 @@ import { toast } from 'sonner';
 import { Package, User, DollarSign, ChevronRight, AlertCircle, Gift, Eye, EyeOff, Bot } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguageStore } from '@/lib/store/useLanguageStore';
+import { db } from '@/lib/firebase/client';
+import { collection, query, where, limit, onSnapshot, orderBy } from 'firebase/firestore';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 
 const COLUMNS = [
   { id: 'pending_contact', title: 'New Requests' },
@@ -24,6 +27,34 @@ interface KanbanBoardProps {
 export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
   const [reservations, setReservations] = useState<Reservation[]>(initialReservations);
   const { language } = useLanguageStore();
+
+  useEffect(() => {
+    // Real-time listener for active reservations
+    const q = query(
+      collection(db, 'reservations'),
+      where('status', 'in', ['pending_contact', 'contacted', 'deposit_paid', 'in_production']),
+      orderBy('createdAt', 'desc'),
+      limit(100)
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const activeReservations = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Reservation[];
+      
+      // We keep any 'shipped' items that are currently in local state (e.g., just dragged there)
+      // but we update the active ones from the server.
+      setReservations(prev => {
+        const shippedLocally = prev.filter(r => r.status === 'shipped');
+        return [...activeReservations, ...shippedLocally];
+      });
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'reservations');
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const onDragEnd = async (result: DropResult) => {
     const { destination, source, draggableId } = result;

@@ -5,7 +5,6 @@ import { auth } from '@/lib/firebase/client';
 
 interface SelectionState {
   items: ReservationItem[];
-  isBagOpen: boolean;
   giftingDetails: {
     isGift: boolean;
     recipientName?: string;
@@ -13,8 +12,6 @@ interface SelectionState {
   };
   _hasHydrated: boolean;
   setHasHydrated: (state: boolean) => void;
-  openBag: () => void;
-  closeBag: () => void;
   addItem: (item: ReservationItem) => void;
   removeItem: (variantSku: string) => void;
   updateQuantity: (variantSku: string, quantity: number) => void;
@@ -28,12 +25,9 @@ export const useSelectionStore = create<SelectionState>()(
   persist(
     (set, get) => ({
       items: [],
-      isBagOpen: false,
       giftingDetails: { isGift: false },
       _hasHydrated: false,
       setHasHydrated: (state) => set({ _hasHydrated: state }),
-      openBag: () => set({ isBagOpen: true }),
-      closeBag: () => set({ isBagOpen: false }),
       setGiftingDetails: (giftingDetails) => set({ giftingDetails }),
       addItem: (item) => {
         const holdExpiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
@@ -48,10 +42,9 @@ export const useSelectionStore = create<SelectionState>()(
                   ? { ...i, quantity: i.quantity + item.quantity, holdExpiresAt }
                   : i
               ),
-              isBagOpen: true,
             };
           }
-          return { items: [...state.items, itemWithHold], isBagOpen: true };
+          return { items: [...state.items, itemWithHold] };
         });
 
         const userId = auth.currentUser?.uid;

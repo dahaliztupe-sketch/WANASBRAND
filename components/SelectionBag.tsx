@@ -9,11 +9,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useQueryState, parseAsBoolean } from 'nuqs';
 
 export function SelectionBag() {
-  const { items, isBagOpen, closeBag, removeItem, updateQuantity, giftingDetails, setGiftingDetails } = useSelectionStore();
+  const { items, removeItem, updateQuantity, giftingDetails, setGiftingDetails } = useSelectionStore();
+  const [isBagOpen, setIsBagOpen] = useQueryState('bag', parseAsBoolean.withDefault(false));
   const [mounted, setMounted] = useState(false);
   const { t } = useTranslation();
+
+  const closeBag = () => setIsBagOpen(false);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -32,7 +36,7 @@ export function SelectionBag() {
       window.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [isBagOpen, closeBag]);
+  }, [isBagOpen]);
 
   if (!mounted) return null;
 

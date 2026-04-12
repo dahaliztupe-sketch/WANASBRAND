@@ -9,7 +9,10 @@ import { RevealOnScroll } from '@/components/RevealOnScroll';
 
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
-export default function HomeClient() {
+import { Suspense } from 'react';
+import { Product } from '@/types';
+
+export default function HomeClient({ featuredProductsPromise }: { featuredProductsPromise: Promise<Product[]> }) {
   const { t } = useTranslation();
 
   return (
@@ -117,7 +120,27 @@ export default function HomeClient() {
             </Link>
           </div>
 
-          <FeaturedProducts />
+          <Suspense fallback={
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-y-16 md:gap-x-8">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className={`flex flex-col items-start ${
+                  i === 0 ? 'md:col-span-6 md:col-start-1' :
+                  i === 1 ? 'md:col-span-4 md:col-start-8 md:mt-48' :
+                  'md:col-span-8 md:col-start-3 md:mt-32'
+                }`}>
+                  <div className={`w-full ${
+                    i === 0 ? 'aspect-[3/4]' :
+                    i === 1 ? 'aspect-[4/5]' :
+                    'aspect-[16/9]'
+                  } mb-8 bg-primary/5 animate-pulse rounded-sm`}></div>
+                  <div className="h-6 bg-primary/5 animate-pulse rounded-sm w-3/4 mb-2"></div>
+                  <div className="h-4 bg-primary/5 animate-pulse rounded-sm w-1/4"></div>
+                </div>
+              ))}
+            </div>
+          }>
+            <FeaturedProducts featuredProductsPromise={featuredProductsPromise} />
+          </Suspense>
         </RevealOnScroll>
       </section>
 

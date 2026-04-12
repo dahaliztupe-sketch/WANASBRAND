@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import CollectionsClient from '@/components/CollectionsClient';
 import { StructuredData } from '@/components/StructuredData';
+import { db } from '@/lib/firebase/server';
+import { Product } from '@/types';
 
 export const metadata: Metadata = {
   title: 'The Collection | WANAS Atelier',
@@ -24,7 +26,31 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default function CollectionsPage() {
+async function getInitialProducts(): Promise<{ products: Product[], lastDocId: string | null }> {
+  try {
+    const firestore = db;
+    if (!firestore) return { products: [], lastDocId: null };
+    
+    const snapshot = await firestore.collection('products')
+      .where('status', '==', 'Published')
+      .limit(12)
+      .get();
+      
+    const products = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as Product[];
+    
+    const lastDocId = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1].id : null;
+    
+    return { products, lastDocId };
+  } catch (error) {
+    console.error('Error fetching initial products:', error);
+    return { products: [], lastDocId: null };
+  }
+}
+
+export default async function CollectionsPage() {
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -44,10 +70,12 @@ export default function CollectionsPage() {
     ]
   };
 
+  const initialProductsPromise = getInitialProducts();
+
   return (
     <>
       <StructuredData data={breadcrumbSchema} />
-      <CollectionsClient />
+      <CollectionsClient initialProductsPromise={initialProductsPromise} />
     </>
   );
 }

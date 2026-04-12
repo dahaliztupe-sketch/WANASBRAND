@@ -9,11 +9,13 @@ import { triggerHaptic } from '@/lib/utils/haptics';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useQueryState, parseAsBoolean } from 'nuqs';
 
 export function VariantSelector({ product, recommendedByAI }: { product: Product, recommendedByAI?: boolean }) {
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
-  const { addItem, openBag } = useSelectionStore();
+  const { addItem } = useSelectionStore();
+  const [, setIsBagOpen] = useQueryState('bag', parseAsBoolean.withDefault(false));
   const { t } = useTranslation();
 
   const variants = product.variants || [];
@@ -35,7 +37,7 @@ export function VariantSelector({ product, recommendedByAI }: { product: Product
     });
     triggerHaptic();
     toast.success(t.product.variantSelector.addedToSelection);
-    openBag();
+    setIsBagOpen(true);
   };
 
   return (

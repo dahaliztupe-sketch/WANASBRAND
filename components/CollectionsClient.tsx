@@ -4,10 +4,11 @@ import { ChevronDown } from 'lucide-react';
 import { Suspense, useState } from 'react';
 import ProductGrid from '@/components/ProductGrid';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
+import { Product } from '@/types';
 
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
-export default function CollectionsClient() {
+export default function CollectionsClient({ initialProductsPromise }: { initialProductsPromise: Promise<{ products: Product[], lastDocId: string | null }> }) {
   const [viewMode, setViewMode] = useState<'grid' | 'model'>('grid');
   const { t } = useTranslation();
 
@@ -71,7 +72,7 @@ export default function CollectionsClient() {
             ))}
           </div>
         }>
-          <ProductGrid viewMode={viewMode} />
+          <ProductGrid viewMode={viewMode} initialProductsPromise={initialProductsPromise} />
         </Suspense>
       </section>
     </div>

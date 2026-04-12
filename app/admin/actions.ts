@@ -4,14 +4,23 @@ import { db } from '@/lib/firebase/server';
 import { decryptPII } from '@/lib/utils/encryption';
 import { Reservation } from '@/types';
 
-export async function getAdminReservations(statusFilter: string = 'all') {
+export async function getAdminReservations(statusFilter: string | string[] = 'active', limitCount: number = 100) {
   try {
     const firestore = db;
     if (!firestore) throw new Error('Database not initialized');
     let query: FirebaseFirestore.Query = firestore.collection('reservations').orderBy('createdAt', 'desc');
     
-    if (statusFilter !== 'all') {
+    if (statusFilter === 'active') {
+      // Fetch only active statuses for the Kanban board (excluding historical 'shipped' orders)
+      query = query.where('status', 'in', ['pending_contact', 'contacted', 'deposit_paid', 'in_production']);
+    } else if (Array.isArray(statusFilter)) {
+      query = query.where('status', 'in', statusFilter);
+    } else if (statusFilter !== 'all') {
       query = query.where('status', '==', statusFilter);
+    }
+
+    if (limitCount > 0) {
+      query = query.limit(limitCount);
     }
 
     const snapshot = await query.get();
@@ -94,7 +103,15 @@ export async function getAdminCustomers() {
   try {
     const firestore = db;
     if (!firestore) throw new Error('Database not initialized');
-    const snapshot = await firestore.collection('reservations').get();
+    
+    // OPTIMIZATION: Instead of fetching ALL reservations in history (which causes N+1 reads and OOM),
+    // we fetch only the most recent 1000 reservations to build the active customer directory.
+    // For a full historical directory, a denormalized 'customers' collection should be maintained via Cloud Functions.
+    const snapshot = await firestore.collection('reservations')
+      .orderBy('createdAt', 'desc')
+      .limit(1000)
+      .get();
+      
     const customersMap = new Map<string, any>();
 
     snapshot.docs.forEach(doc => {
@@ -119,7 +136,7 @@ export async function getAdminCustomers() {
       }
 
       const customer = customersMap.get(key);
-      customer.totalSpend += data.totalAmount || 0;
+      customer.totalSpend += data.financials?.total || data.totalAmount || 0;
       customer.orderCount += 1;
       
       if (new Date(data.createdAt) > new Date(customer.lastOrderDate)) {

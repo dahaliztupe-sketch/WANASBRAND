@@ -89,24 +89,64 @@ export default function InsightsPage() {
       setLowStockProducts(lowStock);
     };
 
-    // 3. Fetch Funnel Data (Simplified for demo/prototype)
+    // 3. Fetch Funnel Data (Optimized with getCountFromServer and getAggregateFromServer)
     const fetchFunnel = async () => {
-      // In a real app, these would come from analytics or specific event collections
-      // Here we'll estimate based on existing data
-      const cartsSnap = await getDocs(collection(db, 'carts'));
-      const resSnap = await getDocs(collection(db, 'reservations'));
-      
-      const confirmed = resSnap.docs.filter(d => ['deposit_paid', 'in_production', 'shipped', 'delivered'].includes(d.data().status)).length;
-      const requested = resSnap.docs.length;
-      const addedToBag = cartsSnap.docs.length + requested;
-      const totalVisits = Math.round(addedToBag * 4.5); // Estimate visits
+      try {
+        const { getCountFromServer, getAggregateFromServer, sum, doc, getDoc } = await import('firebase/firestore');
+        
+        let activeCartsCount = 0;
+        let requested = 0;
+        let confirmed = 0;
+        let totalSales = 0;
 
-      setFunnelData([
-        { value: totalVisits, name: 'Total Visits', fill: '#D4A5A5' },
-        { value: addedToBag, name: 'Added to Bag', fill: '#B88686' },
-        { value: requested, name: 'Reservation Requested', fill: '#9E6B6B' },
-        { value: confirmed, name: 'Confirmed', fill: '#8B4513' },
-      ]);
+        // Try reading from denormalized stats document first
+        const statsDoc = await getDoc(doc(db, 'stats', 'latest'));
+        
+        if (statsDoc.exists()) {
+          const statsData = statsDoc.data();
+          requested = statsData.totalOrders || 0;
+          confirmed = statsData.totalConfirmed || 0;
+          totalSales = statsData.totalSales || 0;
+          
+          // Still need to count carts live as they aren't in the stats doc
+          const cartsCountSnap = await getCountFromServer(collection(db, 'carts'));
+          activeCartsCount = cartsCountSnap.data().count;
+        } else {
+          // Fallback to live aggregation if stats doc doesn't exist
+          const cartsCountSnap = await getCountFromServer(collection(db, 'carts'));
+          activeCartsCount = cartsCountSnap.data().count;
+
+          const resCountSnap = await getCountFromServer(collection(db, 'reservations'));
+          requested = resCountSnap.data().count;
+
+          const confirmedQuery = query(
+            collection(db, 'reservations'), 
+            where('status', 'in', ['deposit_paid', 'in_production', 'shipped', 'delivered'])
+          );
+          const confirmedCountSnap = await getCountFromServer(confirmedQuery);
+          confirmed = confirmedCountSnap.data().count;
+
+          const salesAggregateSnap = await getAggregateFromServer(confirmedQuery, {
+            totalSales: sum('financials.total')
+          });
+          totalSales = salesAggregateSnap.data().totalSales;
+        }
+
+        const addedToBag = activeCartsCount + requested;
+        const totalVisits = Math.round(addedToBag * 4.5); // Estimate visits
+
+        setFunnelData([
+          { value: totalVisits, name: 'Total Visits', fill: '#D4A5A5' },
+          { value: addedToBag, name: 'Added to Bag', fill: '#B88686' },
+          { value: requested, name: 'Reservation Requested', fill: '#9E6B6B' },
+          { value: confirmed, name: 'Confirmed', fill: '#8B4513' },
+        ]);
+
+        // We can store totalSales in state if we want to display it in the UI
+        // setTotalSales(totalSales);
+      } catch (error) {
+        console.error('Error fetching funnel stats:', error);
+      }
     };
 
     const init = async () => {

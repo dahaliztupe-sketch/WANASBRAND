@@ -95,6 +95,7 @@ import { SmoothScrolling } from "@/components/SmoothScrolling";
 import { SelectionBag } from "@/components/SelectionBag";
 import AudioBranding from "@/components/AudioBranding";
 import { Toaster } from "sonner";
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 export default async function RootLayout({
   children,
@@ -147,34 +148,36 @@ export default async function RootLayout({
 
   return (
     <html lang={initialLang} dir={initialDir} className={`${montserrat.variable} ${playfair.variable} ${tajawal.variable}`} suppressHydrationWarning>
-      <body className={`antialiased pb-16 lg:pb-0 cursor-none md:cursor-auto ${initialLang === 'ar' ? 'font-arabic' : 'font-sans'}`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          <LanguageWrapper>
-            <SmoothScrolling>
-              <ErrorBoundary>
-              <NetworkStatus />
-              <FirebaseBoot />
-              <AudioBranding />
-              <CustomCursor />
-              <StructuredData data={organizationJsonLd} />
-              <StructuredData data={websiteJsonLd} />
-              <AnnouncementBar />
-              <Header />
-              {children}
-              <Footer />
-              <BottomNav />
-              <SelectionBag />
-              <AtelierTour />
-              <CookieBanner />
-              <PushNotificationModal />
-              <ServiceWorkerRegistration />
-              <InstallPrompt />
-              <GlobalConcierge />
-              <Toaster position="bottom-center" toastOptions={{ className: 'font-sans text-sm rounded-sm border border-primary/10 shadow-xl' }} />
-            </ErrorBoundary>
-          </SmoothScrolling>
-          </LanguageWrapper>
-        </ThemeProvider>
+      <body className={`antialiased pb-16 lg:pb-0 cursor-none md:cursor-auto rtl:tracking-normal ltr:tracking-wide ${initialLang === 'ar' ? 'font-arabic' : 'font-sans'}`}>
+        <NuqsAdapter>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+            <LanguageWrapper>
+              <SmoothScrolling>
+                <ErrorBoundary>
+                <NetworkStatus />
+                <FirebaseBoot />
+                <AudioBranding />
+                <CustomCursor />
+                <StructuredData data={organizationJsonLd} />
+                <StructuredData data={websiteJsonLd} />
+                <AnnouncementBar />
+                <Header />
+                {children}
+                <Footer />
+                <BottomNav />
+                <SelectionBag />
+                <AtelierTour />
+                <CookieBanner />
+                <PushNotificationModal />
+                <ServiceWorkerRegistration />
+                <InstallPrompt />
+                <GlobalConcierge />
+                <Toaster position="bottom-center" toastOptions={{ className: 'font-sans text-sm rounded-sm border border-primary/10 shadow-xl' }} />
+              </ErrorBoundary>
+            </SmoothScrolling>
+            </LanguageWrapper>
+          </ThemeProvider>
+        </NuqsAdapter>
       </body>
     </html>
   );

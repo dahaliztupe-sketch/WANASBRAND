@@ -1,5 +1,7 @@
 import { Metadata } from 'next';
 import HomeClient from '@/components/HomeClient';
+import { db } from '@/lib/firebase/server';
+import { Product } from '@/types';
 
 export const metadata: Metadata = {
   title: 'WANAS | Handcrafted Fashion House',
@@ -24,8 +26,30 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LandingPage() {
-  return <HomeClient />;
+async function getFeaturedProducts(): Promise<Product[]> {
+  try {
+    const firestore = db;
+    if (!firestore) return [];
+    
+    const snapshot = await firestore.collection('products')
+      .where('status', '==', 'Published')
+      .limit(3)
+      .get();
+      
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as Product[];
+  } catch (error) {
+    console.error('Error fetching featured products:', error);
+    return [];
+  }
+}
+
+export default async function LandingPage() {
+  const featuredProductsPromise = getFeaturedProducts();
+  
+  return <HomeClient featuredProductsPromise={featuredProductsPromise} />;
 }
 
 

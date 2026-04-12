@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/types';
@@ -9,7 +9,6 @@ import { Heart } from 'lucide-react';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { toast } from 'sonner';
 import { getProducts } from '@/lib/services/product.service';
-import { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { auth } from '@/lib/firebase/client';
 
@@ -18,13 +17,13 @@ import { ProductSkeleton } from './ProductSkeleton';
 import { triggerHaptic } from '@/lib/utils/haptics';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
-export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' | 'model' }) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function ProductGrid({ viewMode = 'grid', initialProductsPromise }: { viewMode?: 'grid' | 'model', initialProductsPromise: Promise<{ products: Product[], lastDocId: string | null }> }) {
+  const initialData = use(initialProductsPromise);
+  const [products, setProducts] = useState<Product[]>(initialData.products);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
-  const [hasMore, setHasMore] = useState(true);
+  const [lastCreatedAt, setLastCreatedAt] = useState<string | null>(initialData.lastDocId);
+  const [hasMore, setHasMore] = useState(initialData.products.length >= 12);
   const { items: wishlistItems, addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
   const { t } = useTranslation();
 
@@ -40,26 +39,13 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
     }
   };
 
-  const fetchInitialProducts = async () => {
-    try {
-      const { products: initialProducts, lastVisible } = await getProducts(12);
-      setProducts(initialProducts);
-      setLastDoc(lastVisible);
-      if (initialProducts.length < 12) setHasMore(false);
-    } catch (err: unknown) {
-      handleFirestoreError(err, OperationType.LIST, 'products', auth);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const loadMore = async () => {
-    if (!lastDoc || loadingMore) return;
+    if (!lastCreatedAt || loadingMore) return;
     setLoadingMore(true);
     try {
-      const { products: moreProducts, lastVisible } = await getProducts(12, lastDoc);
+      const { products: moreProducts, lastVisible } = await getProducts(12, lastCreatedAt);
       setProducts(prev => [...prev, ...moreProducts]);
-      setLastDoc(lastVisible);
+      setLastCreatedAt(lastVisible);
       if (moreProducts.length < 12) setHasMore(false);
     } catch (err: unknown) {
       handleFirestoreError(err, OperationType.LIST, 'products', auth);
@@ -67,34 +53,6 @@ export default function ProductGrid({ viewMode = 'grid' }: { viewMode?: 'grid' |
       setLoadingMore(false);
     }
   };
-
-  useEffect(() => {
-    fetchInitialProducts();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className={`grid gap-y-24 gap-x-8 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-12' : 'grid-cols-1 md:grid-cols-2'}`}>
-        {[0, 1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className={viewMode === 'grid' ? `flex flex-col items-start ${
-            i % 3 === 0 ? 'md:col-span-6 md:col-start-1' :
-            i % 3 === 1 ? 'md:col-span-4 md:col-start-8 md:mt-48' :
-            'md:col-span-8 md:col-start-3 md:mt-32'
-          }` : 'flex flex-col items-center'}>
-            <div className={`w-full ${
-              viewMode === 'grid' ? (
-                i % 3 === 0 ? 'aspect-[3/4]' :
-                i % 3 === 1 ? 'aspect-[4/5]' :
-                'aspect-[16/9]'
-              ) : 'aspect-[3/4]'
-            } mb-8 bg-primary/5 animate-pulse rounded-sm`}></div>
-            <div className="h-6 bg-primary/5 animate-pulse rounded-sm w-3/4 mb-2"></div>
-            <div className="h-4 bg-primary/5 animate-pulse rounded-sm w-1/4"></div>
-          </div>
-        ))}
-      </div>
-    );
-  }
 
   if (error || products.length === 0) {
     return (

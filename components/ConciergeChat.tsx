@@ -10,6 +10,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useShoppingBagStore } from '@/store/useShoppingBagStore';
 
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
 
@@ -177,7 +178,12 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
           Available Products in Catalog:
           ${availableProductsContext}
           
-          Provide elegant, helpful, and concise styling advice. If a product from the catalog perfectly matches their request or style profile, use the 'recommend_product' tool to show it to them. If they upload an image, analyze the style, colors, and vibe, and recommend a matching piece from the catalog. Always maintain a sophisticated and welcoming tone.`,
+          You are a proactive luxury shopping assistant. You can check inventory and add items directly to the user's cart.
+          If a user asks about availability, use 'check_inventory'.
+          If a user wants to buy something, use 'add_to_cart' after confirming their size and color preferences.
+          If a product from the catalog perfectly matches their request or style profile, use the 'recommend_product' tool to show it to them. 
+          If they upload an image, analyze the style, colors, and vibe, and recommend a matching piece from the catalog. 
+          Always maintain a sophisticated and welcoming tone.`,
         tools: [{
           functionDeclarations: [
             {
@@ -210,6 +216,42 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
                   }
                 },
                 required: ['reason'],
+              },
+            },
+            {
+              name: 'check_inventory',
+              description: 'Checks if a specific product is in stock.',
+              parameters: {
+                type: 'OBJECT' as any,
+                properties: {
+                  productId: {
+                    type: 'STRING' as any,
+                    description: 'The exact ID of the product to check.',
+                  }
+                },
+                required: ['productId'],
+              },
+            },
+            {
+              name: 'add_to_cart',
+              description: 'Adds a specific product to the user\'s shopping cart.',
+              parameters: {
+                type: 'OBJECT' as any,
+                properties: {
+                  productId: {
+                    type: 'STRING' as any,
+                    description: 'The exact ID of the product to add.',
+                  },
+                  size: {
+                    type: 'STRING' as any,
+                    description: 'The size of the product (e.g., S, M, L).',
+                  },
+                  color: {
+                    type: 'STRING' as any,
+                    description: 'The color of the product.',
+                  }
+                },
+                required: ['productId', 'size', 'color'],
               },
             }
           ]
@@ -262,6 +304,41 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
         } else if (call.name === 'human_handoff') {
           assistantMessage.content = "I understand. I am connecting you with one of our senior style ambassadors who will assist you personally. They will reach out to you shortly.";
           assistantMessage.isHandoff = true;
+        } else if (call.name === 'check_inventory') {
+          const args = call.args as any;
+          const productDoc = await getDoc(doc(db, 'products', args.productId));
+          if (productDoc.exists()) {
+            const productData = productDoc.data();
+            const availableVariants = productData.variants?.filter((v: any) => v.stockCount > 0) || [];
+            if (availableVariants.length > 0) {
+              const sizes = [...new Set(availableVariants.map((v: any) => v.size))].join(', ');
+              const colors = [...new Set(availableVariants.map((v: any) => v.color))].join(', ');
+              assistantMessage.content = `Yes, the ${productData.name} is currently in stock! We have it available in sizes: ${sizes} and colors: ${colors}. Would you like me to add it to your bag?`;
+            } else {
+              assistantMessage.content = `I apologize, but the ${productData.name} is currently out of stock. Would you like me to recommend a similar piece?`;
+            }
+          } else {
+            assistantMessage.content = "I'm sorry, I couldn't find that specific piece in our current catalog.";
+          }
+        } else if (call.name === 'add_to_cart') {
+          const args = call.args as any;
+          const productDoc = await getDoc(doc(db, 'products', args.productId));
+          if (productDoc.exists()) {
+            const productData = productDoc.data() as any;
+            const variant = productData.variants?.find((v: any) => 
+              v.size.toLowerCase() === args.size.toLowerCase() && 
+              v.color.toLowerCase() === args.color.toLowerCase()
+            );
+            
+            if (variant && variant.stockCount > 0) {
+              useShoppingBagStore.getState().addItem({ id: productDoc.id, ...productData }, variant, 1);
+              assistantMessage.content = `Excellent choice. I have added the ${productData.name} (Size: ${args.size}, Color: ${args.color}) to your shopping bag. Is there anything else I can assist you with?`;
+            } else {
+              assistantMessage.content = `I apologize, but the ${productData.name} in ${args.color} size ${args.size} is currently unavailable.`;
+            }
+          } else {
+            assistantMessage.content = "I'm sorry, I couldn't find that specific piece to add to your bag.";
+          }
         }
       } else {
         assistantMessage.content = response.text() || '';

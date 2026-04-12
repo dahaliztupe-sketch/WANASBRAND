@@ -1,11 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { collection, query, where, limit, getDocs } from 'firebase/firestore';
-import { db, auth } from '@/lib/firebase/client';
-import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { Product } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { Heart } from 'lucide-react';
@@ -15,10 +12,8 @@ import { RevealOnScroll } from './RevealOnScroll';
 import { triggerHaptic } from '@/lib/utils/haptics';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
-export default function FeaturedProducts() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export default function FeaturedProducts({ featuredProductsPromise }: { featuredProductsPromise: Promise<Product[]> }) {
+  const products = use(featuredProductsPromise);
   const { items: wishlistItems, addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
   const { t } = useTranslation();
 
@@ -34,53 +29,7 @@ export default function FeaturedProducts() {
     }
   };
 
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const q = query(
-          collection(db, 'products'),
-          where('status', '==', 'Published'),
-          limit(3)
-        );
-        const snapshot = await getDocs(q);
-        const productsData = snapshot.docs.map(doc => {
-          const data = doc.data() as Product;
-          return { ...data, id: doc.id };
-        });
-        setProducts(productsData);
-      } catch (err: any) {
-        handleFirestoreError(err, OperationType.LIST, 'products', auth);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchProducts();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-y-16 md:gap-x-8">
-        {[0, 1, 2].map((i) => (
-          <div key={i} className={`flex flex-col items-start ${
-            i === 0 ? 'md:col-span-6 md:col-start-1' :
-            i === 1 ? 'md:col-span-4 md:col-start-8 md:mt-48' :
-            'md:col-span-8 md:col-start-3 md:mt-32'
-          }`}>
-            <div className={`w-full ${
-              i === 0 ? 'aspect-[3/4]' :
-              i === 1 ? 'aspect-[4/5]' :
-              'aspect-[16/9]'
-            } mb-8 bg-primary/5 animate-pulse rounded-sm`}></div>
-            <div className="h-6 bg-primary/5 animate-pulse rounded-sm w-3/4 mb-2"></div>
-            <div className="h-4 bg-primary/5 animate-pulse rounded-sm w-1/4"></div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (error || products.length === 0) {
+  if (!products || products.length === 0) {
     return (
       <div className="text-center py-24 bg-primary/5 rounded-2xl border border-primary/10 backdrop-blur-sm">
         <h3 className="font-serif text-2xl text-primary mb-3 italic">{t.featuredProducts.curatingTitle}</h3>

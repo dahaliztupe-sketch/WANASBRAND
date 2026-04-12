@@ -1,10 +1,10 @@
 import { db } from '../firebase/client';
-import { collection, query, where, getDocs, limit, startAfter, QueryDocumentSnapshot, DocumentData, orderBy } from 'firebase/firestore';
+import { collection, query, where, getDocs, limit, startAfter, orderBy } from 'firebase/firestore';
 import { Product } from '@/types';
 
 export const getProducts = async (
   pageSize: number = 12,
-  lastDoc: QueryDocumentSnapshot<DocumentData> | null = null
+  lastCreatedAt: string | null = null
 ) => {
   try {
     let q = query(
@@ -14,12 +14,12 @@ export const getProducts = async (
       limit(pageSize)
     );
 
-    if (lastDoc) {
+    if (lastCreatedAt) {
       q = query(
         collection(db, 'products'),
         where('status', '==', 'Published'),
         orderBy('createdAt', 'desc'),
-        startAfter(lastDoc),
+        startAfter(lastCreatedAt),
         limit(pageSize)
       );
     }
@@ -30,7 +30,7 @@ export const getProducts = async (
       return { ...data, id: doc.id };
     });
 
-    const lastVisible = snapshot.docs[snapshot.docs.length - 1] || null;
+    const lastVisible = products.length > 0 ? products[products.length - 1].createdAt : null;
 
     return { products, lastVisible };
   } catch (error) {

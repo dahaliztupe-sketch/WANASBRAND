@@ -25,7 +25,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const syncWithCloud = useSelectionStore((state) => state.syncWithCloud);
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -178,7 +178,7 @@ export default function AuthPage() {
               ) : (
                 <>
                   {isLogin ? t.auth.signIn : t.auth.createAccount}
-                  <ArrowRight strokeWidth={1} className={`w-4 h-4 transition-transform ${t.locale === 'ar' ? 'group-hover:-translate-x-1 rotate-180' : 'group-hover:translate-x-1'}`} />
+                  <ArrowRight strokeWidth={1} className={`w-4 h-4 transition-transform ${locale === 'ar' ? 'group-hover:-translate-x-1 rotate-180' : 'group-hover:translate-x-1'}`} />
                 </>
               )}
             </button>

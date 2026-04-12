@@ -18,7 +18,7 @@ export function WaitlistModal({ isOpen, onClose, productId, variantId, productNa
   const [contactInfo, setContactInfo] = useState('');
   const [website, setWebsite] = useState(''); // Honeypot state
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   if (!isOpen) return null;
 
@@ -63,7 +63,7 @@ export function WaitlistModal({ isOpen, onClose, productId, variantId, productNa
       <div className="bg-primary w-full max-w-md p-8 relative shadow-2xl">
         <button
           onClick={onClose}
-          className={`absolute top-4 ${t.locale === 'ar' ? 'left-4' : 'right-4'} p-2 text-primary/50 hover:text-primary transition-colors`}
+          className={`absolute top-4 ${locale === 'ar' ? 'left-4' : 'right-4'} p-2 text-primary/50 hover:text-primary transition-colors`}
         >
           <X strokeWidth={1} className="w-5 h-5" />
         </button>

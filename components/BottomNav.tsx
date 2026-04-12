@@ -6,10 +6,12 @@ import { usePathname } from 'next/navigation';
 import { useSelectionStore } from '@/store/useSelectionStore';
 import { useEffect, useState } from 'react';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useQueryState, parseAsBoolean } from 'nuqs';
 
 export function BottomNav() {
   const pathname = usePathname();
-  const { openBag, items } = useSelectionStore();
+  const { items } = useSelectionStore();
+  const [, setIsBagOpen] = useQueryState('bag', parseAsBoolean.withDefault(false));
   const [mounted, setMounted] = useState(false);
   const { t } = useTranslation();
   
@@ -24,7 +26,7 @@ export function BottomNav() {
     { name: t.nav.home, href: '/', icon: Home },
     { name: t.nav.collections, href: '/collections', icon: Grid },
     { name: t.nav.wishlist, href: '/account/wishlist', icon: Heart },
-    { name: t.nav.bag, href: '#', icon: ShoppingBag, onClick: (e: React.MouseEvent) => { e.preventDefault(); openBag(); }, badge: totalItems },
+    { name: t.nav.bag, href: '?bag=true', icon: ShoppingBag, onClick: (e: React.MouseEvent) => { e.preventDefault(); setIsBagOpen(true); }, badge: totalItems },
   ];
 
   return (
