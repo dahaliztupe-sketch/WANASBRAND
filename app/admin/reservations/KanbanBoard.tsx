@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { Package, User, DollarSign, ChevronRight, AlertCircle, Gift, Eye, EyeOff, Bot } from 'lucide-react';
 import Link from 'next/link';
 import { useLanguageStore } from '@/lib/store/useLanguageStore';
-import { db } from '@/lib/firebase/client';
+import { db, auth } from '@/lib/firebase/client';
 import { collection, query, where, limit, onSnapshot, orderBy } from 'firebase/firestore';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 
@@ -50,7 +50,7 @@ export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
         return [...activeReservations, ...shippedLocally];
       });
     }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, 'reservations');
+      handleFirestoreError(error, OperationType.LIST, 'reservations', auth);
     });
 
     return () => unsubscribe();
