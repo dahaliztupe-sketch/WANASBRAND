@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-
 import { User as UserIcon, Shield, Loader2 } from 'lucide-react';
-
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+
 import { auth, db } from '@/lib/firebase/client';
 import { User } from '@/types';
 import { triggerHaptic } from '@/lib/utils/haptics';

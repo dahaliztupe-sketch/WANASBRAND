@@ -1,8 +1,13 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/update-analytics",
-      "schedule": "0 3 * * *"
-    }
-  ]
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm ci",
+  "regions": ["iad1"],
+  "crons": [{
+    "path": "/api/cron/update-analytics",
+    "schedule": "0 3 * * *"
+  }],
+  "github": {
+    "silent": true
+  }
 }

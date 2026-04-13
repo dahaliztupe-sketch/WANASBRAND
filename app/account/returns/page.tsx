@@ -5,8 +5,8 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle2, ChevronRight, Package, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-
 import { collection, query, where, getDocs, addDoc, serverTimestamp } from 'firebase/firestore';
+
 import { auth, db } from '@/lib/firebase/client';
 import { Reservation, ReservationItem } from '@/types';
 import { triggerHaptic } from '@/lib/utils/haptics';

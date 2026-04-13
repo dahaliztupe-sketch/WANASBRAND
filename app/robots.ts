@@ -5,8 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/admin/', '/api/', '/account/'],
     },
-    sitemap: 'https://wanasbrand.com/sitemap.xml',
+    sitemap: 'https://wanas.vercel.app/sitemap.xml',
   };
 }
