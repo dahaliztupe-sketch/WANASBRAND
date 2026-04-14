@@ -27,7 +27,6 @@ interface SiteSettings {
   taxRate: number;
   shippingRateCairoGiza: number;
   shippingRateOther: number;
-  instaPayHandle: string;
   contactEmail: string;
   contactPhone: string;
   maintenanceMode: boolean;
@@ -43,7 +42,6 @@ const defaultSettings: SiteSettings = {
   taxRate: 14,
   shippingRateCairoGiza: 50,
   shippingRateOther: 100,
-  instaPayHandle: '',
   contactEmail: 'concierge@aura.com',
   contactPhone: '+20 100 000 0000',
   maintenanceMode: false,
@@ -231,19 +229,6 @@ export default function AdminSettings() {
                     type="number" 
                     value={settings.taxRate}
                     onChange={(e) => setSettings({ ...settings, taxRate: Number(e.target.value) })}
-                    className="w-full bg-inverted/[0.02] border border-primary/5 px-12 py-4 text-sm focus:ring-1 focus:ring-accent-primary outline-none transition-all"
-                  />
-                </div>
-              </div>
-              <div className="space-y-3">
-                <label className="text-xs uppercase tracking-widest text-primary/40">InstaPay Handle</label>
-                <div className="relative group">
-                  <Smartphone strokeWidth={1} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/20 group-focus-within:text-accent-primary transition-colors" />
-                  <input 
-                    type="text" 
-                    placeholder="username@instapay"
-                    value={settings.instaPayHandle}
-                    onChange={(e) => setSettings({ ...settings, instaPayHandle: e.target.value })}
                     className="w-full bg-inverted/[0.02] border border-primary/5 px-12 py-4 text-sm focus:ring-1 focus:ring-accent-primary outline-none transition-all"
                   />
                 </div>

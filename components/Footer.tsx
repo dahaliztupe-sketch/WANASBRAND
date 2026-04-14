@@ -1,14 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { Instagram, Facebook, Twitter, ArrowRight } from 'lucide-react';
+import { Instagram, Facebook, Twitter, ArrowRight, Volume2, VolumeX } from 'lucide-react';
 import { toast } from 'sonner';
 import { ThemeToggle } from './ThemeToggle';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useAudioStore } from '@/lib/store/useAudioStore';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
   const { t } = useTranslation();
+  const { isMuted, toggleMute } = useAudioStore();
 
   return (
     <footer className="bg-primary border-t border-primary/10 pt-32 pb-12 px-6 transition-colors duration-500">
@@ -43,7 +45,10 @@ export function Footer() {
                 <Facebook className="w-5 h-5" strokeWidth={1} />
                 <span className="text-[9px] uppercase tracking-[0.3em] font-bold opacity-0 group-hover:opacity-100 transition-opacity">{t.nav.social.facebook}</span>
               </a>
-              <div className="ms-auto">
+              <div className="ms-auto flex items-center gap-4">
+                <button onClick={toggleMute} className="text-primary/40 hover:text-accent-primary transition-colors">
+                  {isMuted ? <VolumeX className="w-5 h-5" strokeWidth={1} /> : <Volume2 className="w-5 h-5" strokeWidth={1} />}
+                </button>
                 <ThemeToggle />
               </div>
             </div>

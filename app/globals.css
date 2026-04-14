@@ -24,6 +24,10 @@
 
   [dir="rtl"] {
     font-family: var(--font-arabic), sans-serif;
+    font-feature-settings: "kern" off;
+    letter-spacing: 0.02em;
+    line-height: 1.6;
+    font-variant-numeric: lining-nums;
   }
 
   /* Custom Scrollbar */

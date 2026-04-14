@@ -30,12 +30,12 @@ export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
   const { language } = useLanguageStore();
 
   useEffect(() => {
-    // Real-time listener for active reservations
+    // Real-time listener for active reservations (Optimized for Cost)
     const q = query(
       collection(db, 'reservations'),
-      where('status', 'in', ['pending_contact', 'contacted', 'deposit_paid', 'in_production']),
+      where('status', 'in', ['pending_contact', 'contacted', 'in_production']),
       orderBy('createdAt', 'desc'),
-      limit(100)
+      limit(50)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {

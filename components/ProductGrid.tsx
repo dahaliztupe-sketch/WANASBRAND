@@ -93,7 +93,8 @@ export default function ProductGrid({ viewMode = 'grid', initialProductsPromise 
                   src={product.images[0] || `https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=800&auto=format&fit=crop`}
                   alt={product.name}
                   fill
-                  quality={100}
+                  quality={90}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   placeholder="blur"
                   blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
                   className="object-cover object-center transition-transform duration-[2s] group-hover:scale-110"

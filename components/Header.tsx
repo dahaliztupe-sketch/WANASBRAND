@@ -1,18 +1,18 @@
 'use client';
 
 import { useEffect, useState, useMemo, Suspense } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { User, Search, X, Heart, Package, Sun, Moon, Globe } from 'lucide-react';
-import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
-import { auth, db } from '@/lib/firebase/client';
-import { doc, getDoc, collection, getDocs, where, query } from 'firebase/firestore';
-import { User as UserType, Product } from '@/types';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTheme } from 'next-themes';
-import Image from 'next/image';
-import { Logo } from './Logo';
+import { doc, getDoc, collection, getDocs, where, query } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase/client';
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useLanguageStore } from '@/lib/store/useLanguageStore';
+import { User as UserType, Product } from '@/types';
+import { Logo } from './Logo';
 
 export function Header() {
   const [mounted, setMounted] = useState(false);
@@ -71,7 +71,7 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full backdrop-blur-xl bg-primary/70 border-b border-primary/5 transition-all duration-500" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="max-w-[1600px] mx-auto px-6 h-24 grid grid-cols-3 items-center w-full relative">
         {/* Left: User Icon */}
-        <div className="flex items-center justify-start">
+        <div className="flex items-center justify-start min-w-[48px]">
           <Suspense fallback={<div className="w-8 h-8" />}>
             <Link href="/account" className="p-2 hover:text-accent-primary transition-colors" aria-label={t.nav.account}>
               <User className="w-4 h-4" strokeWidth={1} />
@@ -87,7 +87,7 @@ export function Header() {
         </div>
 
         {/* Right: Search, Language, and Theme Toggle */}
-        <div className="flex gap-4 items-center justify-end text-primary">
+        <div className="flex gap-4 items-center justify-end text-primary min-w-[120px]">
           <Suspense fallback={<div className="w-24 h-8" />}>
             <button 
               onClick={() => setIsSearchOpen(true)} 
@@ -97,21 +97,25 @@ export function Header() {
               <Search className="w-4 h-4" strokeWidth={1} />
             </button>
 
-            <button 
-              onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
-              className="p-2 hover:text-accent-primary transition-colors flex items-center"
-              aria-label={mounted ? (language === 'en' ? t.nav.switch_to_arabic : t.nav.switch_to_english) : t.nav.switch_language}
-            >
-              <Globe className="w-4 h-4" strokeWidth={1} />
-            </button>
+            <div className="w-8 h-8 flex items-center justify-center">
+              <button 
+                onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+                className="p-2 hover:text-accent-primary transition-colors flex items-center"
+                aria-label={mounted ? (language === 'en' ? t.nav.switch_to_arabic : t.nav.switch_to_english) : t.nav.switch_language}
+              >
+                <Globe className="w-4 h-4" strokeWidth={1} />
+              </button>
+            </div>
             
-            <button 
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
-              className="p-2 hover:text-accent-primary transition-colors"
-              aria-label={mounted ? (theme === 'dark' ? t.nav.switch_to_light : t.nav.switch_to_dark) : t.nav.switch_theme}
-            >
-              {mounted ? (theme === 'dark' ? <Sun className="w-4 h-4" strokeWidth={1} /> : <Moon className="w-4 h-4" strokeWidth={1} />) : <div className="w-4 h-4" />}
-            </button>
+            <div className="w-8 h-8 flex items-center justify-center">
+              <button 
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} 
+                className="p-2 hover:text-accent-primary transition-colors"
+                aria-label={mounted ? (theme === 'dark' ? t.nav.switch_to_light : t.nav.switch_to_dark) : t.nav.switch_theme}
+              >
+                {mounted ? (theme === 'dark' ? <Sun className="w-4 h-4" strokeWidth={1} /> : <Moon className="w-4 h-4" strokeWidth={1} />) : <div className="w-4 h-4" />}
+              </button>
+            </div>
           </Suspense>
         </div>
 

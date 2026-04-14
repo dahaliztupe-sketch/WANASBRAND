@@ -28,7 +28,10 @@ export default function ReservePage() {
   const subtotal = items.reduce((acc, item) => acc + item.priceAtPurchase * item.quantity, 0);
 
   useEffect(() => {
-    setIdempotencyKey(crypto.randomUUID());
+    const array = new Uint8Array(32);
+    window.crypto.getRandomValues(array);
+    const key = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    setIdempotencyKey(key);
     const fetchSettings = async () => {
       const docRef = doc(db, 'settings', 'global');
       const docSnap = await getDoc(docRef);

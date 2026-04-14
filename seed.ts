@@ -34,8 +34,7 @@ async function seed() {
   console.log('Seeding settings/global...');
   await db.collection('settings').doc('global').set({
     shipping_cairo: 150,
-    shipping_other: 250,
-    instapay_handle: "wanas@instapay"
+    shipping_other: 250
   });
 
   console.log('Seeding products/sample-product...');

@@ -18,3 +18,23 @@ export const waitlistRateLimit = redis
       prefix: '@upstash/ratelimit/waitlist',
     })
   : null;
+
+// Admin rate limiter: 20 requests per minute
+export const adminRateLimit = redis
+  ? new Ratelimit({
+      redis: redis,
+      limiter: Ratelimit.slidingWindow(20, '1 m'),
+      analytics: true,
+      prefix: '@upstash/ratelimit/admin',
+    })
+  : null;
+
+// General API rate limiter: 10 requests per minute
+export const generalRateLimit = redis
+  ? new Ratelimit({
+      redis: redis,
+      limiter: Ratelimit.slidingWindow(10, '1 m'),
+      analytics: true,
+      prefix: '@upstash/ratelimit/general',
+    })
+  : null;

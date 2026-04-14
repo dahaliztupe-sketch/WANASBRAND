@@ -111,31 +111,16 @@ export default function InsightsPage() {
         let requested = 0;
         let confirmed = 0;
 
-        // Try reading from denormalized stats document first
+        // Strictly read from denormalized stats document (Cost Optimized)
         const statsDoc = await getDoc(doc(db, 'stats', 'latest'));
         
         if (statsDoc.exists()) {
           const statsData = statsDoc.data();
           requested = statsData.totalOrders || 0;
           confirmed = statsData.totalConfirmed || 0;
-          
-          // Still need to count carts live as they aren't in the stats doc
-          const cartsCountSnap = await getCountFromServer(collection(db, 'carts'));
-          activeCartsCount = cartsCountSnap.data().count;
+          activeCartsCount = statsData.activeCarts || 0;
         } else {
-          // Fallback to live aggregation if stats doc doesn't exist
-          const cartsCountSnap = await getCountFromServer(collection(db, 'carts'));
-          activeCartsCount = cartsCountSnap.data().count;
-
-          const resCountSnap = await getCountFromServer(collection(db, 'reservations'));
-          requested = resCountSnap.data().count;
-
-          const confirmedQuery = query(
-            collection(db, 'reservations'), 
-            where('status', 'in', ['deposit_paid', 'in_production', 'shipped', 'delivered'])
-          );
-          const confirmedCountSnap = await getCountFromServer(confirmedQuery);
-          confirmed = confirmedCountSnap.data().count;
+          console.warn('Stats document not found. Please ensure the Vercel Cron Job is running.');
         }
 
         const addedToBag = activeCartsCount + requested;

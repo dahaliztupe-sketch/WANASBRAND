@@ -72,6 +72,8 @@ export default function HomeClient({ featuredProductsPromise }: { featuredProduc
                 fill
                 className="object-cover object-top"
                 priority
+                fetchPriority="high"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 50vw"
                 referrerPolicy="no-referrer"
               />
             </div>
@@ -87,6 +89,7 @@ export default function HomeClient({ featuredProductsPromise }: { featuredProduc
                   alt="Detail Shot"
                   fill
                   className="object-cover"
+                  sizes="(max-width: 768px) 50vw, 25vw"
                 />
               </div>
             </motion.div>
@@ -178,6 +181,7 @@ export default function HomeClient({ featuredProductsPromise }: { featuredProduc
               alt="Craftsmanship"
               fill
               className="object-cover transition-transform duration-1000 group-hover:scale-110"
+              sizes="(max-width: 768px) 100vw, 50vw"
               referrerPolicy="no-referrer"
             />
           </div>
@@ -192,6 +196,7 @@ export default function HomeClient({ featuredProductsPromise }: { featuredProduc
             alt="Atelier Background"
             fill
             className="object-cover grayscale"
+            sizes="100vw"
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/80 to-primary" />

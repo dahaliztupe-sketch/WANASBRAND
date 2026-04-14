@@ -8,7 +8,7 @@ import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export function MobileMenu({ user }: { user: any }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     if (isOpen) {
@@ -33,9 +33,10 @@ export function MobileMenu({ user }: { user: any }) {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0, x: language === 'ar' ? '100%' : '-100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: language === 'ar' ? '100%' : '-100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             className="fixed inset-0 z-[100] bg-primary/95 backdrop-blur-md flex flex-col items-center justify-center space-y-8 text-primary"
             style={{ paddingTop: 'env(safe-area-inset-top)' }}
           >

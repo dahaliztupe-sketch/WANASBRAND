@@ -1,44 +1,59 @@
-import { NextResponse } from 'next/server';
-import { db, auth } from '@/lib/firebase/server';
-import { encryptPII } from '@/lib/utils/encryption';
-import { sendReservationEmail } from '@/lib/services/email.service';
 import crypto from 'crypto';
+import { NextResponse } from 'next/server';
+import { Redis } from '@upstash/redis';
+import { db, auth } from '@/lib/firebase/server';
+import { sendReservationEmail } from '@/lib/services/email.service';
 import { ReservationSchema } from '@/lib/schemas';
+import { ProductVariant } from '@/types';
+import { encryptPII } from '@/lib/utils/encryption';
+
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
 export const runtime = 'nodejs';
 
-// Basic in-memory rate limiter (for demonstration)
-const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
-const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute
-const MAX_REQUESTS_PER_WINDOW = 5;
+// Upstash Redis Rate Limiter
+const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+  ? new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    })
+  : null;
 
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const record = rateLimitMap.get(ip);
+const ratelimit = redis ? new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, "1 h"),
+  analytics: true,
+}) : null;
 
-  if (!record) {
-    rateLimitMap.set(ip, { count: 1, lastReset: now });
+async function checkRateLimit(ip: string): Promise<boolean> {
+  if (!ratelimit) {
+    console.warn('Upstash Redis not configured, skipping rate limit');
     return true;
   }
 
-  if (now - record.lastReset > RATE_LIMIT_WINDOW_MS) {
-    rateLimitMap.set(ip, { count: 1, lastReset: now });
-    return true;
+  try {
+    const { success } = await ratelimit.limit(ip);
+    return success;
+  } catch (error) {
+    console.error('Rate limit error:', error);
+    return true; // Fail open
   }
-
-  if (record.count >= MAX_REQUESTS_PER_WINDOW) {
-    return false;
-  }
-
-  record.count += 1;
-  return true;
 }
 
 
+/**
+ * Handles the reservation POST request.
+ * Validates data, checks rate limits, ensures idempotency, 
+ * and performs atomic inventory updates via Firestore transactions.
+ * 
+ * @param req - The incoming Request object.
+ * @returns A NextResponse with success status or error details.
+ */
 export async function POST(req: Request) {
   try {
     const ip = req.headers.get('x-forwarded-for') || 'unknown';
-    if (!checkRateLimit(ip)) {
+    if (!(await checkRateLimit(ip))) {
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
     }
 
@@ -98,17 +113,32 @@ export async function POST(req: Request) {
     const result = await firestore.runTransaction(async (transaction) => {
       // 0. Check Idempotency Key
       if (idempotencyKey) {
-        const existingQuery = await firestore.collection('reservations').where('idempotencyKey', '==', idempotencyKey).limit(1).get();
+        // Security: Ensure key is 32 bytes hex (64 chars)
+        if (idempotencyKey.length !== 64) {
+          throw new Error('Invalid idempotency key format');
+        }
+
+        const existingQuery = await firestore.collection('reservations')
+          .where('idempotencyKey', '==', idempotencyKey)
+          .limit(1)
+          .get();
+
         if (!existingQuery.empty) {
           const existingDoc = existingQuery.docs[0].data();
-          return {
-            isDuplicate: true,
-            orderNumber: existingDoc.reservationNumber,
-            id: existingDoc.id,
-            calculatedTotal: existingDoc.financials.total,
-            validatedItems: existingDoc.items,
-            magicLinkToken: existingDoc.magicLinkToken
-          };
+          const createdAt = new Date(existingDoc.createdAt).getTime();
+          const now = Date.now();
+          
+          // 24-hour expiration check
+          if (now - createdAt < 24 * 60 * 60 * 1000) {
+            return {
+              isDuplicate: true,
+              orderNumber: existingDoc.reservationNumber,
+              id: existingDoc.id,
+              calculatedTotal: existingDoc.financials.total,
+              validatedItems: existingDoc.items,
+              magicLinkToken: existingDoc.magicLinkToken
+            };
+          }
         }
       }
 
@@ -120,48 +150,59 @@ export async function POST(req: Request) {
       }
 
       // 2. Verify Inventory and Calculate True Price
-      const updatedProducts = [];
+      const productUpdates = new Map<string, { ref: FirebaseFirestore.DocumentReference, variants: ProductVariant[], name: string, price: number }>();
       let calculatedSubtotal = 0;
       const validatedItems = [];
 
-      for (const item of items) {
-        const productRef = firestore.collection('products').doc(item.productId);
+      // First, collect all unique products involved
+      const productIds = Array.from(new Set(items.map(item => item.productId)));
+      for (const pid of productIds) {
+        const productRef = firestore.collection('products').doc(pid);
         const productDoc = await transaction.get(productRef);
 
         if (!productDoc.exists) {
-          throw new Error(`Product ${item.productId} not found`);
+          throw new Error(`Product ${pid} not found`);
         }
 
         const productData = productDoc.data();
-        if (!productData) throw new Error(`Product ${item.productId} has no data`);
+        if (!productData) throw new Error(`Product ${pid} has no data`);
 
-        // Inventory Verification & Update
-        const variants = productData.variants || [];
-        const variantIndex = variants.findIndex(
-          (v: any) => v.sku === item.variant.sku
+        productUpdates.set(pid, {
+          ref: productRef,
+          variants: [...(productData.variants || [])],
+          name: productData.name,
+          price: productData.price
+        });
+      }
+
+      // Now process items using the cached product data
+      for (const item of items) {
+        const productInfo = productUpdates.get(item.productId);
+        if (!productInfo) throw new Error(`Product info missing for ${item.productId}`);
+
+        const variantIndex = productInfo.variants.findIndex(
+          (v: ProductVariant) => v.sku === item.variant.sku
         );
 
         if (variantIndex === -1) {
-          throw new Error(`Variant not found for product ${item.productId}`);
+          throw new Error(`Variant not found for product ${productInfo.name}`);
         }
 
-        if (variants[variantIndex].stock < item.quantity) {
-          throw new Error(`Insufficient stock for ${productData.name} (${item.variant.sku})`);
+        if (productInfo.variants[variantIndex].stock < item.quantity) {
+          throw new Error(`Insufficient stock for ${productInfo.name} (${item.variant.sku})`);
         }
 
-        // Calculate price based on DB, not client request
-        const truePrice = productData.price;
-        calculatedSubtotal += truePrice * item.quantity;
+        // Calculate price based on DB
+        calculatedSubtotal += productInfo.price * item.quantity;
 
-        // Decrement Stock
-        variants[variantIndex].stock -= item.quantity;
-        updatedProducts.push({ ref: productRef, variants });
+        // Decrement Stock in the cached variants array
+        productInfo.variants[variantIndex].stock -= item.quantity;
         
-        // Store validated item with true price
+        // Store validated item
         validatedItems.push({
           ...item,
-          priceAtPurchase: truePrice,
-          productName: productData.name,
+          priceAtPurchase: productInfo.price,
+          productName: productInfo.name,
           recommendedByAI: item.recommendedByAI || false,
         });
       }
@@ -169,8 +210,11 @@ export async function POST(req: Request) {
       // 3. Commit Changes
       transaction.set(counterRef, { lastId: nextId }, { merge: true });
       
-      for (const p of updatedProducts) {
-        transaction.update(p.ref, { variants: p.variants, updatedAt: new Date().toISOString() });
+      for (const [, info] of productUpdates) {
+        transaction.update(info.ref, { 
+          variants: info.variants, 
+          updatedAt: new Date().toISOString() 
+        });
       }
 
       // Calculate final financials securely on the server
@@ -224,7 +268,7 @@ export async function POST(req: Request) {
     const whatsappLink = `https://wa.me/201000000000?text=${encodeURIComponent(whatsappMessage)}`;
 
     return NextResponse.json({ success: true, id, orderNumber, magicLinkToken: savedMagicLinkToken, whatsappLink });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Reservation Error:', error);
     const message = error instanceof Error ? error.message : 'Failed to create reservation';
     const status = message.includes('Insufficient stock') || message.includes('not found') ? 400 : 500;

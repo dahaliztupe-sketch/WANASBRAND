@@ -3,6 +3,15 @@ import { ReservationItem } from '@/types';
 import { auth } from '../firebase/client';
 import { encrypt } from '../utils/encryption';
 
+/**
+ * Creates a new reservation by sending customer data and items to the API.
+ * Handles PII encryption and idempotency.
+ * 
+ * @param customerData - The customer's personal information.
+ * @param items - The list of products being reserved.
+ * @param totalAmount - The total price of the reservation.
+ * @returns A promise resolving to the success status and reservation ID.
+ */
 export const createReservation = async (
   customerData: {
     fullName: string;

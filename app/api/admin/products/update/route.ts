@@ -3,12 +3,22 @@ import { db } from '@/lib/firebase/server';
 import { logAdminAction } from '@/lib/services/audit.service';
 import { ProductSchema } from '@/lib/schemas';
 import { jwtVerify } from 'jose';
+import { adminRateLimit } from '@/lib/upstash';
 
 const SESSION_SECRET = process.env.SESSION_SECRET || 'default_session_secret_change_me_in_production';
 const secret = new TextEncoder().encode(SESSION_SECRET);
 
 export async function POST(req: Request) {
   try {
+    const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+    
+    if (adminRateLimit) {
+      const { success } = await adminRateLimit.limit(ip);
+      if (!success) {
+        return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+      }
+    }
+
     const sessionToken = req.headers.get('cookie')?.split('session=')[1]?.split(';')[0];
     if (!sessionToken) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

@@ -18,7 +18,7 @@ interface WhatsAppMessage {
  * Prevents URL manipulation in WhatsApp links.
  */
 export const generateCartToken = async (cartData: unknown) => {
-  return await new SignJWT({ cart: cartData as any })
+  return await new SignJWT({ cart: cartData as Record<string, unknown> })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('24h')
@@ -33,6 +33,18 @@ export const verifyCartToken = async (token: string) => {
     console.error('JWT Verification failed:', error);
     return null;
   }
+};
+
+/**
+ * Generates a WhatsApp click-to-chat link for a reservation.
+ * 
+ * @param fullName - The customer's full name.
+ * @param orderNumber - The unique reservation number.
+ * @returns A formatted WhatsApp URL.
+ */
+export const sendWhatsAppLink = (fullName: string, orderNumber: string): string => {
+  const whatsappMessage = `Hello ${fullName}, I am your WANAS Ambassador. I have received your reservation ${orderNumber}. Let us begin your journey...`;
+  return `https://wa.me/201000000000?text=${encodeURIComponent(whatsappMessage)}`;
 };
 
 export const sendWhatsAppNotification = async ({ to: _to, templateName: _templateName, variables: _variables }: WhatsAppMessage) => {

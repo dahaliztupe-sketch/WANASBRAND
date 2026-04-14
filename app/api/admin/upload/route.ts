@@ -2,9 +2,19 @@ import { NextResponse } from 'next/server';
 import sharp from 'sharp';
 import { getStorage } from 'firebase-admin/storage';
 import { initAdmin } from '@/lib/firebase/server';
+import { adminRateLimit } from '@/lib/upstash';
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
+    
+    if (adminRateLimit) {
+      const { success } = await adminRateLimit.limit(ip);
+      if (!success) {
+        return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+      }
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     

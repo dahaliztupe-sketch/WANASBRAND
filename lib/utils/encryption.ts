@@ -6,9 +6,16 @@ const IV_LENGTH = 12;
 // The key should be a 32-byte hex string (64 characters)
 const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
 
+if (process.env.NODE_ENV === 'production' && !ENCRYPTION_KEY) {
+  throw new Error('CRITICAL: ENCRYPTION_KEY environment variable is missing in production');
+}
+
 /**
  * Production-grade encryption utility for PII.
  * Uses AES-256-GCM for authenticated encryption.
+ * 
+ * @param text - The plain text to encrypt.
+ * @returns The encrypted string in the format iv:authTag:encryptedData.
  */
 export function encrypt(text: string): string {
   if (!text) return '';
@@ -44,6 +51,12 @@ export function encrypt(text: string): string {
   }
 }
 
+/**
+ * Decrypts data encrypted with the encrypt function.
+ * 
+ * @param encryptedText - The encrypted string in iv:authTag:encryptedData format.
+ * @returns The decrypted plain text.
+ */
 export function decrypt(encryptedText: string): string {
   if (!encryptedText) return '';
   

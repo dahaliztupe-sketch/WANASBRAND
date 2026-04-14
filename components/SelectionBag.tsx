@@ -82,14 +82,26 @@ export function SelectionBag() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.8 }}
-                  className="flex flex-col items-center justify-center h-full text-primary/50 space-y-8"
+                  className="flex flex-col items-center justify-center h-full text-primary/50 space-y-12"
                 >
-                  <div className="w-px h-24 bg-primary/20" />
-                  <p className="text-[10px] uppercase tracking-[0.4em] text-center leading-loose">
-                    {t.selectionBag.empty}
-                  </p>
-                  <button onClick={closeBag} className="text-xs font-serif italic text-primary hover:text-accent-primary transition-colors border-b border-primary/20 pb-1">
-                    {t.selectionBag.return}
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-accent-primary/5 rounded-full scale-[3] blur-3xl" />
+                    <X className="w-24 h-24 text-primary/10 stroke-[0.3px] relative z-10" />
+                  </div>
+                  <div className="space-y-4 text-center">
+                    <p className="text-[10px] uppercase tracking-[0.6em] text-primary/40 font-bold">
+                      {t.selectionBag.empty}
+                    </p>
+                    <p className="text-sm font-serif italic text-primary/60">Your journey begins with a single selection.</p>
+                  </div>
+                  <button 
+                    onClick={closeBag} 
+                    className="group relative px-12 py-4 bg-transparent border border-primary/10 text-primary text-[10px] uppercase tracking-[0.4em] font-bold overflow-hidden transition-all hover:border-primary"
+                  >
+                    <span className="absolute inset-0 w-0 bg-primary transition-all duration-[800ms] ease-out group-hover:w-full" />
+                    <span className="relative z-10 group-hover:text-primary-foreground group-hover:invert dark:group-hover:invert-0 transition-colors duration-500">
+                      {t.selectionBag.return}
+                    </span>
                   </button>
                 </motion.div>
               ) : (
@@ -117,7 +129,10 @@ export function SelectionBag() {
                           <div>
                             <div className="flex justify-between items-start mb-2">
                               <h3 className="font-serif text-2xl break-words whitespace-normal text-balance leading-snug text-primary">{item.productName}</h3>
-                              <button onClick={() => removeItem(item.variant.sku)} className="text-primary/30 hover:text-accent-primary transition-colors">
+                              <button onClick={() => {
+                                triggerHaptic();
+                                removeItem(item.variant.sku);
+                              }} className="text-primary/30 hover:text-accent-primary transition-colors">
                                 <X strokeWidth={1} className="w-5 h-5" />
                               </button>
                             </div>

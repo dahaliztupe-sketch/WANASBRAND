@@ -25,26 +25,34 @@ export default function EmptyState({ type, title, description, ctaText, ctaLink 
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col items-center justify-center py-40 px-6 text-center"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
+      className="flex flex-col items-center justify-center py-48 px-6 text-center"
     >
-      <div className="relative mb-12">
-        <div className="absolute inset-0 bg-accent-primary/5 rounded-full scale-[2] blur-3xl" />
-        <Icon className="w-24 h-24 text-primary/20 stroke-[0.5px] relative z-10" />
+      <div className="relative mb-16">
+        <motion.div 
+          animate={{ 
+            scale: [1, 1.1, 1],
+            opacity: [0.05, 0.08, 0.05]
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute inset-0 bg-accent-primary rounded-full blur-3xl" 
+        />
+        <Icon className="w-32 h-32 text-primary/10 stroke-[0.3px] relative z-10" />
       </div>
-      <h3 className="text-3xl font-serif text-primary mb-6 tracking-tight">{title}</h3>
-      <p className="text-primary/40 font-light max-w-md mb-16 leading-relaxed">
+      <h3 className="text-4xl md:text-5xl font-serif text-primary mb-8 tracking-tight italic">{title}</h3>
+      <p className="text-primary/40 font-light max-w-md mb-20 leading-relaxed text-lg">
         {description || t.emptyStates.descriptions[type]}
       </p>
       <Link 
         href={ctaLink}
-        className="group flex items-center gap-6 text-[10px] uppercase tracking-[0.4em] text-primary hover:text-accent-primary transition-all duration-700"
+        className="group relative inline-flex items-center justify-center px-16 py-6 bg-transparent border border-primary/20 text-primary text-[10px] uppercase tracking-[0.4em] font-bold overflow-hidden transition-all hover:border-primary"
       >
-        <div className="w-8 h-[1px] bg-inverted/20 group-hover:w-12 group-hover:bg-accent-primary transition-all duration-700" />
-        {ctaText || t.emptyStates.cta}
-        <div className="w-8 h-[1px] bg-inverted/20 group-hover:w-12 group-hover:bg-accent-primary transition-all duration-700" />
+        <span className="absolute inset-0 w-0 bg-primary transition-all duration-[800ms] ease-out group-hover:w-full" />
+        <span className="relative z-10 group-hover:text-primary-foreground group-hover:invert dark:group-hover:invert-0 transition-colors duration-500">
+          {ctaText || t.emptyStates.cta}
+        </span>
       </Link>
     </motion.div>
   );

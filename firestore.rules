@@ -14,9 +14,19 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() &&
-        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
-         (request.auth.token.email == "abdalrahman32008@gmail.com" && request.auth.token.email_verified == true));
+        (request.auth.token.admin == true ||
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+    }
+
+    function isValidReservationStatusTransition(prev, next) {
+      return (prev == next) ||
+             (prev == 'pending_contact' && next in ['contacted', 'cancelled']) ||
+             (prev == 'contacted' && next in ['deposit_paid', 'cancelled']) ||
+             (prev == 'deposit_paid' && next in ['in_production', 'cancelled']) ||
+             (prev == 'in_production' && next in ['shipped', 'cancelled']) ||
+             (prev == 'shipped' && next in ['delivered', 'cancelled']) ||
+             (prev == 'delivered' && next == 'returned');
     }
 
     function isValidEmail(email) {
@@ -138,7 +148,8 @@ service cloud.firestore {
     match /reservations/{reservationId} {
       allow create: if isAuthenticated() && isValidReservation(request.resource.data) && request.resource.data.userId == request.auth.uid;
       allow read: if isAdmin() || (isAuthenticated() && request.auth.uid == resource.data.userId);
-      allow update, delete: if isAdmin();
+      allow update: if isAdmin() && isValidReservation(request.resource.data) && isValidReservationStatusTransition(resource.data.status, request.resource.data.status);
+      allow delete: if isAdmin();
     }
 
     match /counters/{counterId} {

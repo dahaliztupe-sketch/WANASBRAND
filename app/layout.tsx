@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Montserrat, Tajawal } from "next/font/google";
+import { Playfair_Display, Montserrat } from "next/font/google";
+import localFont from 'next/font/local';
 import { cookies } from "next/headers";
 import "./globals.css";
 import { StructuredData } from "@/components/StructuredData";
@@ -7,7 +8,29 @@ import { LanguageWrapper } from "@/components/LanguageWrapper";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-serif", display: "swap" });
-const tajawal = Tajawal({ subsets: ["arabic"], weight: ["400", "500", "700"], variable: "--font-arabic", display: "swap" });
+
+const tajawal = localFont({
+  src: [
+    {
+      path: '../public/fonts/tajawal-regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../public/fonts/tajawal-medium.woff2',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '../public/fonts/tajawal-bold.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-arabic',
+  display: 'swap',
+  preload: true,
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://wanasbrand.com"),
@@ -86,6 +109,8 @@ import { AtelierTour } from "@/components/admin/AtelierTour";
 import ServiceWorkerRegistration from "@/components/PWA/ServiceWorkerRegistration";
 import InstallPrompt from "@/components/PWA/InstallPrompt";
 import PushNotificationModal from "@/components/PushNotificationModal";
+import { Toaster } from "sonner";
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { GlobalConcierge } from "@/components/GlobalConcierge";
 import { CustomCursor } from "@/components/CustomCursor";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -94,8 +119,6 @@ import { NetworkStatus } from "@/components/NetworkStatus";
 import { SmoothScrolling } from "@/components/SmoothScrolling";
 import { SelectionBag } from "@/components/SelectionBag";
 import AudioBranding from "@/components/AudioBranding";
-import { Toaster } from "sonner";
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 export default async function RootLayout({
   children,

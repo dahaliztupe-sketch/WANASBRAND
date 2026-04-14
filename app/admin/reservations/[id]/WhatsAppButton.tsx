@@ -12,9 +12,8 @@ export default function WhatsAppButton({ reservation }: WhatsAppButtonProps) {
   const generateMessage = () => {
     const orderNumber = reservation.orderNumber || reservation.reservationNumber;
     const name = reservation.customerInfo.fullName;
-    const handle = '@wanas.atelier'; // Example InstaPay handle
 
-    return `✨ *WANAS Atelier* ✨\n\nOrder: #${orderNumber}\n\nHello ${name}, your selection is ready. To secure it, please transfer the deposit to our InstaPay: ${handle}.`;
+    return `✨ *WANAS Atelier* ✨\n\nOrder: #${orderNumber}\n\nHello ${name}, your selection is ready. We will contact you soon to confirm the delivery details. Thank you for choosing WANAS.`;
   };
 
   const handleCopy = () => {

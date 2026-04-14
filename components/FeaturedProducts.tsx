@@ -62,8 +62,10 @@ export default function FeaturedProducts({ featuredProductsPromise }: { featured
                 src={product.images[0] || `https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=800&auto=format&fit=crop`}
                 alt={product.name}
                 fill
-                quality={100}
+                quality={90}
                 priority={idx === 0}
+                fetchPriority={idx === 0 ? "high" : "auto"}
+                sizes={idx === 0 ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 33vw"}
                 placeholder="blur"
                 blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
                 className="object-cover object-center transition-transform duration-[2s] group-hover:scale-110"
