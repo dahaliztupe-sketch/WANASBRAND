@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingBag, Heart, Package, ArrowRight, Ghost } from 'lucide-react';
+import { ShoppingBag, Heart, Package } from 'lucide-react';
 import { motion } from 'motion/react';
 
 import { useTranslation } from '@/lib/hooks/useTranslation';

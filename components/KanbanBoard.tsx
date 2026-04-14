@@ -10,7 +10,6 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import {
-  arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
@@ -24,7 +23,7 @@ import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError'
 
 const COLUMNS = ['Pending Contact', 'Deposit Paid', 'In Production', 'Shipped', 'Delivered'];
 
-function SortableCard({ reservation }: { reservation: any }) {
+function SortableCard({ reservation }: { reservation: Record<string, unknown> }) {
   const {
     attributes,
     listeners,
@@ -68,7 +67,7 @@ function SortableCard({ reservation }: { reservation: any }) {
 }
 
 export function KanbanBoard() {
-  const [reservations, setReservations] = useState<any[]>([]);
+  const [reservations, setReservations] = useState<Record<string, unknown>[]>([]);
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -83,15 +82,14 @@ export function KanbanBoard() {
     return () => unsubscribe();
   }, []);
 
-  const handleDragEnd = async (event: any) => {
-    const { active, over } = event;
+  const handleDragEnd = async (event: Record<string, unknown>) => {
+    const { active, over } = event as { active: { id: string }, over: { id: string } | null };
     if (!over) return;
 
     const activeId = active.id;
     const overId = over.id;
 
     if (activeId !== overId) {
-      const activeReservation = reservations.find(r => r.id === activeId);
       const overReservation = reservations.find(r => r.id === overId);
       
       // If dropped on a column, update status

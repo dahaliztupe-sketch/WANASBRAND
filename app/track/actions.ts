@@ -32,7 +32,7 @@ export async function trackByToken(token: string) {
         needsVerification: true 
       } 
     };
-  } catch (error) {
+  } catch {
     return { success: false, error: 'Failed to fetch tracking data.' };
   }
 }
@@ -75,7 +75,7 @@ export async function trackOrder(orderNumber: string, last4Digits: string) {
         items: reservation.items, // Snapshots
       }
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error tracking order:', error);
     return { success: false, error: 'An error occurred during tracking.' };
   }
@@ -110,7 +110,7 @@ export async function verifyGuestTracking(token: string, last4Digits: string) {
         address: reservation.customerInfo.address ? decrypt(reservation.customerInfo.address) : undefined
       }
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error verifying guest tracking:', error);
     throw error;
   }

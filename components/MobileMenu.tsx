@@ -7,7 +7,7 @@ import { X, Menu } from 'lucide-react';
 
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
-export function MobileMenu({ user }: { user: any }) {
+export function MobileMenu({ user }: { user: Record<string, unknown> }) {
   const [isOpen, setIsOpen] = useState(false);
   const { t, language } = useTranslation();
 

@@ -18,7 +18,8 @@ export default function ARViewer({ modelUrl, onClose }: ARViewerProps) {
   const [loadingProgress, setLoadingProgress] = useState(0);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    const currentContainer = containerRef.current;
+    if (!currentContainer) return;
 
     // 1. Scene Setup
     const scene = new THREE.Scene();
@@ -29,10 +30,10 @@ export default function ARViewer({ modelUrl, onClose }: ARViewerProps) {
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+    renderer.setSize(currentContainer.clientWidth, currentContainer.clientHeight);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.2;
-    containerRef.current.appendChild(renderer.domElement);
+    currentContainer.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
@@ -85,10 +86,10 @@ export default function ARViewer({ modelUrl, onClose }: ARViewerProps) {
 
     // 5. Handle Resize
     const handleResize = () => {
-      if (!containerRef.current) return;
-      camera.aspect = containerRef.current.clientWidth / containerRef.current.clientHeight;
+      if (!currentContainer) return;
+      camera.aspect = currentContainer.clientWidth / currentContainer.clientHeight;
       camera.updateProjectionMatrix();
-      renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
+      renderer.setSize(currentContainer.clientWidth, currentContainer.clientHeight);
     };
     window.addEventListener('resize', handleResize);
 
@@ -110,8 +111,8 @@ export default function ARViewer({ modelUrl, onClose }: ARViewerProps) {
 
       renderer.dispose();
       dracoLoader.dispose();
-      if (containerRef.current) {
-        containerRef.current.removeChild(renderer.domElement);
+      if (currentContainer) {
+        currentContainer.removeChild(renderer.domElement);
       }
     };
   }, [modelUrl]);

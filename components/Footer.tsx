@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { Instagram, Facebook, Twitter, ArrowRight, Volume2, VolumeX } from 'lucide-react';
+import { Instagram, Facebook, ArrowRight, Volume2, VolumeX } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAudioStore } from '@/lib/store/useAudioStore';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
+import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 
 export function Footer() {
@@ -20,8 +21,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-16 lg:gap-24 mb-32">
           {/* Column 1: Brand (Takes up more space) */}
           <div className="md:col-span-12 lg:col-span-5 space-y-8">
-            <Link href="/" className="text-4xl md:text-5xl font-serif tracking-[0.4em] text-primary block hover:opacity-70 transition-opacity">
-              WANAS
+            <Link href="/" className="block hover:opacity-70 transition-opacity">
+              <Logo className="w-40 h-auto text-primary" />
             </Link>
             <p className="text-primary/60 text-lg leading-loose font-light max-w-md font-sans">
               {t.nav.brand_desc}

@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     if (!adminApp) throw new Error('Firebase Admin not initialized');
 
     const db = getFirestore(adminApp);
-    const client = (db as any)._firestoreClient || (db as any).client;
+    const client = (db as unknown as Record<string, unknown>)._firestoreClient || (db as unknown as Record<string, unknown>).client;
     
     if (!client || !client.exportDocuments) {
       // Fallback: Use the REST API if the client doesn't expose exportDocuments
@@ -59,8 +59,8 @@ export async function GET(req: Request) {
     // });
 
     return NextResponse.json({ success: true, message: 'Backup operation initiated' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Backup Cron Error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
   }
 }

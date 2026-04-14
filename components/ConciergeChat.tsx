@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { GoogleGenerativeAI, SchemaType, Part } from '@google/generative-ai';
-import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp, doc, getDocs, getDoc } from 'firebase/firestore';
+import { collection, query, where, orderBy, onSnapshot, doc, getDocs, getDoc } from 'firebase/firestore';
 import { Send, Loader2, Bot, User, X, ShoppingBag, ImagePlus } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -150,25 +150,6 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
         : 'No style profile set.';
 
       const availableProductsContext = products.map(p => `{id: "${p.id}", name: "${p.name}", category: "${p.category}", price: ${p.price}}`).join('\n');
-
-      const recommendProductDeclaration = {
-        name: 'recommend_product',
-        description: 'Recommends a specific product from the catalog to the user.',
-        parameters: {
-          type: Type.OBJECT,
-          properties: {
-            productId: {
-              type: Type.STRING,
-              description: 'The exact ID of the product to recommend.',
-            },
-            reason: {
-              type: Type.STRING,
-              description: 'A short, elegant reason why this product fits the user.',
-            }
-          },
-          required: ['productId', 'reason'],
-        },
-      };
 
       const model = genAI.getGenerativeModel({
         model: 'gemini-2.0-flash',

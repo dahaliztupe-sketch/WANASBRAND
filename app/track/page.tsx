@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Search, Package, MapPin, Clock, CheckCircle2, AlertCircle, ShoppingBag } from 'lucide-react';
+import { Package, AlertCircle, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import Image from 'next/image';
@@ -15,7 +15,7 @@ function TrackContent() {
   
   const [orderId, setOrderId] = useState('');
   const [privacyKey, setPrivacyKey] = useState('');
-  const [trackingData, setTrackingData] = useState<any>(null);
+  const [trackingData, setTrackingData] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,7 +41,7 @@ function TrackContent() {
         setError(result.error || 'Failed to track order.');
         toast.error(result.error);
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred.');
     } finally {
       setLoading(false);
@@ -62,7 +62,7 @@ function TrackContent() {
         setError(result.error || 'Failed to track order.');
         toast.error(result.error);
       }
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred.');
     } finally {
       setLoading(false);
@@ -144,7 +144,7 @@ function TrackContent() {
             {/* Timeline */}
             <div className="space-y-0 relative">
               <div className="absolute left-[5.5px] top-2 bottom-2 w-[1px] bg-primary/10" />
-              {trackingData.steps.map((step: any, i: number) => {
+              {trackingData.steps.map((step: Record<string, unknown>, i: number) => {
                 const isActive = step.completed && (i === trackingData.steps.length - 1 || !trackingData.steps[i + 1].completed);
                 return (
                   <div key={i} className="flex items-start gap-8 pb-12 last:pb-0 relative">
@@ -169,7 +169,7 @@ function TrackContent() {
                 <h3 className="text-xs uppercase tracking-[0.2em] text-primary/40 font-bold">Your Selection</h3>
               </div>
               <div className="space-y-6">
-                {trackingData.items?.map((item: any) => (
+                {trackingData.items?.map((item: Record<string, unknown>) => (
                   <div key={item.variant.sku} className="flex gap-6 items-center">
                     <div className="w-16 h-20 bg-inverted/5 relative overflow-hidden flex-shrink-0">
                       {item.coverImageURL ? (

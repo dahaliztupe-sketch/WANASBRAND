@@ -9,7 +9,6 @@ export function CookieConsent() {
   useEffect(() => {
     const consent = localStorage.getItem('cookieConsent');
     if (!consent) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsVisible(() => true);
     }
   }, []);

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, createContext, useContext } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, getDocFromServer } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 
 import { auth, db } from '@/lib/firebase/client';
 
@@ -33,7 +33,7 @@ export function FirebaseProvider({ children }: { children: React.ReactNode }) {
         const parsedUser = JSON.parse(decodeURIComponent(userCookie));
         setUser(parsedUser as User);
         setIsAuthReady(true);
-      } catch (e) {
+      } catch {
         console.error('Failed to parse user cookie');
       }
     }

@@ -5,6 +5,7 @@ const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   productionBrowserSourceMaps: false,
+  compress: true,
   turbopack: {},
   serverExternalPackages: ['firebase-admin', 'sharp'],
   images: {

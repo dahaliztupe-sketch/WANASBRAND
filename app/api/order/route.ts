@@ -21,7 +21,6 @@ export async function POST(req: Request) {
       .get();
 
     if (!existingOrderQuery.empty) {
-      const existingOrder = existingOrderQuery.docs[0].data();
       return NextResponse.json({ 
         success: true, 
         message: 'Order already processed', 

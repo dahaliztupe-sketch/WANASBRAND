@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, query, orderBy, onSnapshot, limit, getDocs, where } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, limit, getDocs } from 'firebase/firestore';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AlertTriangle, ChevronRight, Clock, Loader2, Mail, MessageCircle, ShoppingBag, Sparkles, TrendingUp, User } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
@@ -105,7 +105,7 @@ export default function InsightsPage() {
     // 3. Fetch Funnel Data (Optimized with getCountFromServer and getAggregateFromServer)
     const fetchFunnel = async () => {
       try {
-        const { getCountFromServer, doc, getDoc } = await import('firebase/firestore');
+        const { doc, getDoc } = await import('firebase/firestore');
         
         let activeCartsCount = 0;
         let requested = 0;

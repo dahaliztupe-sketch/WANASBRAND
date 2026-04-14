@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
   signInWithPopup, 
@@ -10,8 +9,8 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged 
 } from 'firebase/auth';
-import { motion, AnimatePresence } from 'motion/react';
-import { Mail, Lock, User, Phone, ArrowRight, Loader2, Sparkles, Moon } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Mail, Lock, Phone, ArrowRight, Loader2, Sparkles, Moon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { auth } from '@/lib/firebase/client';

@@ -7,7 +7,7 @@ import { updateCartItem } from '@/app/actions/cart';
 import { triggerHaptic } from '@/lib/utils/haptics';
 
 export function AddToCartButton({ sku, userId }: { sku: string, userId: string }) {
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [showSuccess, setShowSuccess] = useState(false);
   const [optimisticStatus, setOptimisticStatus] = useOptimistic<'idle' | 'adding'>('idle', (_, action: 'idle' | 'adding') => action);
 

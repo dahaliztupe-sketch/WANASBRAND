@@ -114,7 +114,15 @@ export async function getAdminCustomers() {
       .limit(1000)
       .get();
       
-    const customersMap = new Map<string, Record<string, unknown>>();
+    const customersMap = new Map<string, {
+      id: string;
+      name: string;
+      email: string;
+      phone: string;
+      totalSpend: number;
+      orderCount: number;
+      lastOrderDate: string;
+    }>();
 
     snapshot.docs.forEach(doc => {
       const data = doc.data();
@@ -137,8 +145,8 @@ export async function getAdminCustomers() {
         });
       }
 
-      const customer = customersMap.get(key) as any;
-      customer.totalSpend += data.financials?.total || data.totalAmount || 0;
+      const customer = customersMap.get(key)!;
+      customer.totalSpend += (data.financials?.total as number) || (data.totalAmount as number) || 0;
       customer.orderCount += 1;
       
       if (new Date(data.createdAt) > new Date(customer.lastOrderDate)) {
@@ -146,7 +154,7 @@ export async function getAdminCustomers() {
       }
     });
 
-    return Array.from(customersMap.values()).sort((a: any, b: any) => b.totalSpend - a.totalSpend);
+    return Array.from(customersMap.values()).sort((a, b) => b.totalSpend - a.totalSpend);
   } catch (error) {
     console.error('Error fetching admin customers:', error);
     throw new Error('Failed to fetch customers');

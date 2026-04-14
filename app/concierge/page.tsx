@@ -11,7 +11,7 @@ export default function ConciergePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: Record<string, unknown>) => {
     setIsSubmitting(true);
     try {
       await createConciergeRequest(data);

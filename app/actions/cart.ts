@@ -4,14 +4,13 @@ import { revalidatePath } from 'next/cache';
 
 import { db } from '@/lib/firebase/server';
 
-export async function updateCartItem(userId: string, sku: string, quantity: number) {
+export async function updateCartItem(userId: string, _sku: string, _quantity: number) {
   if (!db) {
     console.warn('Firestore not initialized. Cart update skipped.');
     return { success: false, error: 'Database not available' };
   }
   
   try {
-    const cartRef = db.collection('carts').doc(userId);
     // Transaction logic to update cart items would go here
     // For now, we just simulate the success to allow optimistic UI to work
     

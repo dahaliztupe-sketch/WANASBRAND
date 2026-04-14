@@ -127,7 +127,7 @@ export default function AdminProductsPage() {
       
       setSelectedIds([]);
       setIsBulkMenuOpen(false);
-    } catch (error) {
+    } catch {
       toast.error('Bulk action failed.');
     }
   };

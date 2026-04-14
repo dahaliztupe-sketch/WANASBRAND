@@ -39,8 +39,7 @@ export default function CustomerCRM() {
         const snapshot = await getDocs(q);
         const customerList = snapshot.docs.map(doc => {
           const data = doc.data() as Customer;
-          const { id: _id, ...dataWithoutId } = data as Record<string, unknown>;
-          return { id: doc.id, ...dataWithoutId } as unknown as Customer;
+          return { ...data, id: doc.id };
         });
         setCustomers(customerList);
       } catch (error) {
@@ -60,7 +59,7 @@ export default function CustomerCRM() {
       await updateDoc(customerRef, { isVIP: !customer.isVIP });
       setCustomers(prev => prev.map(c => c.id === customer.id ? { ...c, isVIP: !c.isVIP } : c));
       toast.success(`${customer.displayName} is now ${!customer.isVIP ? 'a VIP' : 'a regular member'}.`);
-    } catch (error) {
+    } catch {
       toast.error('Failed to update VIP status.');
     }
   };

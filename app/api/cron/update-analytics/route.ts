@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { collection, getDocs, query, where, setDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { collection, getDocs, setDoc, doc, serverTimestamp } from 'firebase/firestore';
 
 import { db } from '@/lib/firebase/client';
 

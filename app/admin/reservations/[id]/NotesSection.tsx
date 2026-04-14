@@ -20,7 +20,7 @@ export default function NotesSection({ id, initialNotes }: NotesSectionProps) {
     try {
       await updateConciergeNotes(id, notes);
       toast.success('Concierge notes updated.');
-    } catch (error) {
+    } catch {
       toast.error('Failed to save notes.');
     } finally {
       setIsSaving(false);

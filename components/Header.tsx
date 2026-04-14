@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { User, Search, X, Heart, Package, Sun, Moon, Globe } from 'lucide-react';
+import { User, Search, X, Package, Sun, Moon, Globe } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTheme } from 'next-themes';
 import { doc, getDoc, collection, getDocs, where, query } from 'firebase/firestore';
@@ -18,7 +18,7 @@ import { Logo } from './Logo';
 
 export function Header() {
   const [mounted, setMounted] = useState(false);
-  const [user, setUser] = useState<UserType | null>(null);
+  const [, setUser] = useState<UserType | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
@@ -27,7 +27,6 @@ export function Header() {
   const { setLanguage } = useLanguageStore();
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -84,7 +83,7 @@ export function Header() {
         {/* Center: Logo */}
         <div className="flex justify-center">
           <Link href="/" className="min-h-[44px] flex items-center hover:opacity-70 transition-opacity">
-            <Logo className="h-8 w-auto text-primary" />
+            <Logo className="h-16 w-auto text-primary" />
           </Link>
         </div>
 

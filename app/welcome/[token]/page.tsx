@@ -5,10 +5,7 @@ import { motion } from 'motion/react';
 import Image from 'next/image';
 import { Play, Heart, ShieldCheck, Sparkles, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
 import { toast } from 'sonner';
-
-import { db } from '@/lib/firebase/client';
 
 export default function WelcomePage() {
   const params = useParams();
@@ -28,7 +25,7 @@ export default function WelcomePage() {
         await new Promise(resolve => setTimeout(resolve, 1500));
         
         setLoading(false);
-      } catch (err) {
+      } catch {
         setError('Invalid or expired token');
         setLoading(false);
         toast.error('Invalid or expired token');

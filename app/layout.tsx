@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Montserrat, Tajawal } from "next/font/google";
 import { cookies } from "next/headers";
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { Toaster } from "sonner";
+
+import { LanguageWrapper } from "@/components/LanguageWrapper";
+import { StructuredData } from "@/components/StructuredData";
 
 import "./globals.css";
-import { Toaster } from "sonner";
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
-
-import { StructuredData } from "@/components/StructuredData";
-import { LanguageWrapper } from "@/components/LanguageWrapper";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-serif", display: "swap" });
@@ -31,11 +31,11 @@ export const metadata: Metadata = {
   creator: "WANAS",
   publisher: "WANAS",
   alternates: {
-    canonical: "/",
+    canonical: "https://wanasbrand.com",
     languages: {
-      'en-US': '/en',
-      'ar-EG': '/ar',
-      'x-default': '/',
+      'ar': 'https://wanasbrand.com/ar',
+      'en': 'https://wanasbrand.com/en',
+      'x-default': 'https://wanasbrand.com',
     },
   },
   formatDetection: {
@@ -76,6 +76,10 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
     title: 'WANAS',
   },
+  icons: {
+    icon: '/icon.svg',
+    apple: '/icon.svg',
+  },
 };
 
 export const viewport = {
@@ -104,6 +108,7 @@ import { NetworkStatus } from "@/components/NetworkStatus";
 import { SmoothScrolling } from "@/components/SmoothScrolling";
 import { SelectionBag } from "@/components/SelectionBag";
 import AudioBranding from "@/components/AudioBranding";
+import { PreloaderWrapper } from "@/components/PreloaderWrapper";
 
 export default async function RootLayout({
   children,
@@ -162,27 +167,29 @@ export default async function RootLayout({
             <LanguageWrapper>
               <SmoothScrolling>
                 <ErrorBoundary>
-                <NetworkStatus />
-                <FirebaseBoot />
-                <AudioBranding />
-                <CustomCursor />
-                <StructuredData data={organizationJsonLd} />
-                <StructuredData data={websiteJsonLd} />
-                <AnnouncementBar />
-                <Header />
-                {children}
-                <Footer />
-                <BottomNav />
-                <SelectionBag />
-                <AtelierTour />
-                <CookieBanner />
-                <PushNotificationModal />
-                <ServiceWorkerRegistration />
-                <InstallPrompt />
-                <GlobalConcierge />
-                <Toaster position="bottom-center" toastOptions={{ className: 'font-sans text-sm rounded-sm border border-primary/10 shadow-xl' }} />
-              </ErrorBoundary>
-            </SmoothScrolling>
+                  <PreloaderWrapper>
+                    <NetworkStatus />
+                    <FirebaseBoot />
+                    <AudioBranding />
+                    <CustomCursor />
+                    <StructuredData data={organizationJsonLd} />
+                    <StructuredData data={websiteJsonLd} />
+                    <AnnouncementBar />
+                    <Header />
+                    {children}
+                    <Footer />
+                    <BottomNav />
+                    <SelectionBag />
+                    <AtelierTour />
+                    <CookieBanner />
+                    <PushNotificationModal />
+                    <ServiceWorkerRegistration />
+                    <InstallPrompt />
+                    <GlobalConcierge />
+                    <Toaster position="bottom-center" toastOptions={{ className: 'font-sans text-sm rounded-sm border border-primary/10 shadow-xl' }} />
+                  </PreloaderWrapper>
+                </ErrorBoundary>
+              </SmoothScrolling>
             </LanguageWrapper>
           </ThemeProvider>
         </NuqsAdapter>

@@ -33,7 +33,7 @@ export default function StatusSelector({ id, currentStatus }: StatusSelectorProp
       await updateReservationStatus(id, newStatus);
       setStatus(newStatus);
       toast.success(`Status updated to ${newStatus.replace('_', ' ')}`);
-    } catch (error) {
+    } catch {
       toast.error('Failed to update status');
     } finally {
       setIsUpdating(false);

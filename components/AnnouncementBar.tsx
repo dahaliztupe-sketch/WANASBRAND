@@ -16,7 +16,7 @@ export function AnnouncementBar() {
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'settings', 'global'), (doc) => {
       if (doc.exists()) {
-        setSettings(doc.data() as any);
+        setSettings(doc.data() as { announcementBanner: string; announcementBarEnabled: boolean; });
       }
     }, (error) => handleFirestoreError(error, OperationType.GET, 'settings/global', auth));
     return () => unsub();

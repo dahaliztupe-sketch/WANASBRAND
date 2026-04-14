@@ -16,7 +16,7 @@ import { RevealOnScroll } from './RevealOnScroll';
 
 export default function FeaturedProducts({ featuredProductsPromise }: { featuredProductsPromise: Promise<Product[]> }) {
   const products = use(featuredProductsPromise);
-  const { items: wishlistItems, addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+  const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
   const { t } = useTranslation();
 
   const handleWishlistToggle = (e: React.MouseEvent, product: Product) => {

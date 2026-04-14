@@ -19,7 +19,7 @@ export default function AudioBranding() {
 
   useEffect(() => {
     // Initialize AudioContext in a suspended state
-    audioContext.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioContext.current = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
     audioContext.current.suspend();
 
     const resumeAudio = () => {

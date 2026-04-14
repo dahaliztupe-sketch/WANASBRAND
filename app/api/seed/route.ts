@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 import { db, auth } from '@/lib/firebase/server';
 
-export async function GET(request: Request) {
+export async function GET(_request: Request) {
   const firestore = db;
   const firebaseAuth = auth;
 
@@ -54,13 +54,13 @@ export async function GET(request: Request) {
       const user = await firebaseAuth.getUserByEmail('abdalrahman32008@gmail.com');
       await firebaseAuth.setCustomUserClaims(user.uid, { admin: true });
       console.log('Admin claim set for abdalrahman32008@gmail.com');
-    } catch (e: any) {
-      console.log('User abdalrahman32008@gmail.com not found yet, skipping admin promotion:', e.message);
+    } catch (e: unknown) {
+      console.log('User abdalrahman32008@gmail.com not found yet, skipping admin promotion:', e instanceof Error ? e.message : 'Unknown error');
     }
 
     return NextResponse.json({ success: true, message: 'Seeding complete' });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Seeding error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
   }
 }
