@@ -17,8 +17,9 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { db, auth } from '@/lib/firebase/client';
 import { collection, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+
+import { db, auth } from '@/lib/firebase/client';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 
 const COLUMNS = ['Pending Contact', 'Deposit Paid', 'In Production', 'Shipped', 'Delivered'];

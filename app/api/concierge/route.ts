@@ -1,6 +1,7 @@
-import { db } from '@/lib/firebase/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+
+import { db } from '@/lib/firebase/server';
 
 const ConciergeSchema = z.object({
   fullName: z.string().min(2),

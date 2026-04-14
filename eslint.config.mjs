@@ -1,6 +1,7 @@
-import { FlatCompat } from "@eslint/eslintrc";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { FlatCompat } from "@eslint/eslintrc";
 // import unusedImports from 'eslint-plugin-unused-imports'; // Temporarily disabled due to installation issues
 import importPlugin from 'eslint-plugin-import';
 import reactHooks from 'eslint-plugin-react-hooks';

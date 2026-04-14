@@ -2,14 +2,16 @@
 
 import { useState } from 'react';
 import { ShoppingBag, Clock } from 'lucide-react';
-import { Product } from '@/types';
-import { WaitlistModal } from './WaitlistModal';
-import { useSelectionStore } from '@/store/useSelectionStore';
-import { triggerHaptic } from '@/lib/utils/haptics';
 import { toast } from 'sonner';
 import { motion } from 'motion/react';
-import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useQueryState, parseAsBoolean } from 'nuqs';
+
+import { useSelectionStore } from '@/store/useSelectionStore';
+import { triggerHaptic } from '@/lib/utils/haptics';
+import { useTranslation } from '@/lib/hooks/useTranslation';
+import { Product } from '@/types';
+
+import { WaitlistModal } from './WaitlistModal';
 
 export function VariantSelector({ product, recommendedByAI }: { product: Product, recommendedByAI?: boolean }) {
   const [selectedVariant, setSelectedVariant] = useState<any>(null);

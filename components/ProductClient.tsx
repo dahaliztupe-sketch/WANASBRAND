@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { MessageCircle, ShieldCheck, Truck, Wind, Layers, Camera, X } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { motion, AnimatePresence } from 'motion/react';
+
 import { VariantSelector } from '@/components/VariantSelector';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import { RevealOnScroll } from '@/components/RevealOnScroll';
-import dynamic from 'next/dynamic';
-import { motion, AnimatePresence } from 'motion/react';
 import { Product } from '@/types';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 

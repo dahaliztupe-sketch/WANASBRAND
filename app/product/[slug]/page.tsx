@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { db } from '@/lib/firebase/client';
 import { collection, query, where, getDocs } from 'firebase/firestore';
+
+import { db } from '@/lib/firebase/client';
 import { Product } from '@/types';
 import ProductClient from '@/components/ProductClient';
 import { StructuredData } from '@/components/StructuredData';

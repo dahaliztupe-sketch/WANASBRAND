@@ -4,14 +4,15 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { collection, query, where, limit, getDocs } from 'firebase/firestore';
+import { motion } from 'motion/react';
+import { Heart } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { db } from '@/lib/firebase/client';
 import { ProductDrawer } from '@/components/ProductDrawer';
 import { Product } from '@/types';
-import { motion } from 'motion/react';
 import { formatPrice } from '@/lib/utils';
-import { Heart } from 'lucide-react';
 import { useWishlistStore } from '@/store/useWishlistStore';
-import { toast } from 'sonner';
 import { triggerHaptic } from '@/lib/utils/haptics';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 

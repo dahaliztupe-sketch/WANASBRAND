@@ -1,6 +1,7 @@
-import { db } from '@/lib/firebase/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+
+import { db } from '@/lib/firebase/server';
 import { waitlistRateLimit } from '@/lib/upstash';
 
 const WaitlistSchema = z.object({

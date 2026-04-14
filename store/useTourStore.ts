@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { db, auth } from '@/lib/firebase/client';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
+
+import { db, auth } from '@/lib/firebase/client';
 
 interface TourState {
   isActive: boolean;

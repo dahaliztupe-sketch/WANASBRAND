@@ -1,7 +1,8 @@
-import { db } from '@/lib/firebase/server';
 import { notFound } from 'next/navigation';
 import QRCode from 'qrcode';
 import Image from 'next/image';
+
+import { db } from '@/lib/firebase/server';
 
 export const revalidate = 86400; // ISR: Cache for 24 hours
 

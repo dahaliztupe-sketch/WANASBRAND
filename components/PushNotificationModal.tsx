@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Bell, X, Sparkles } from 'lucide-react';
-import { auth, db, messaging } from '@/lib/firebase/client';
 import { getToken } from 'firebase/messaging';
 import { doc, updateDoc } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+
+import { auth, db, messaging } from '@/lib/firebase/client';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function PushNotificationModal() {

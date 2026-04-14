@@ -1,14 +1,15 @@
 import crypto from 'crypto';
+
 import { NextResponse } from 'next/server';
 import { Redis } from '@upstash/redis';
+import { Ratelimit } from "@upstash/ratelimit";
+
 import { db, auth } from '@/lib/firebase/server';
 import { sendReservationEmail } from '@/lib/services/email.service';
 import { ReservationSchema } from '@/lib/schemas';
 import { ProductVariant } from '@/types';
 import { encryptPII } from '@/lib/utils/encryption';
 
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
 
 export const runtime = 'nodejs';
 

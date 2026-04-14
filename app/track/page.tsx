@@ -4,9 +4,10 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Search, Package, MapPin, Clock, CheckCircle2, AlertCircle, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { trackOrder, trackByToken } from './actions';
 import { toast } from 'sonner';
 import Image from 'next/image';
+
+import { trackOrder, trackByToken } from './actions';
 
 function TrackContent() {
   const searchParams = useSearchParams();

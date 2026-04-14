@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { Product } from '@/types';
 import Image from 'next/image';
-import { useSelectionStore } from '@/store/useSelectionStore';
 import { toast } from 'sonner';
-import { formatPrice } from '@/lib/utils';
 import dynamic from 'next/dynamic';
+
+import { Product } from '@/types';
+import { useSelectionStore } from '@/store/useSelectionStore';
+import { formatPrice } from '@/lib/utils';
+
 
 const ConciergeChat = dynamic(() => import('./ConciergeChat'), {
   ssr: false,

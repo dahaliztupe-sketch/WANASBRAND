@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { initAdmin } from '@/lib/firebase/server';
 import { getFirestore } from 'firebase-admin/firestore';
+
+import { initAdmin } from '@/lib/firebase/server';
 
 export const dynamic = 'force-dynamic';
 

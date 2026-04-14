@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import { Home, ShoppingBag, Heart, Grid } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-import { useSelectionStore } from '@/store/useSelectionStore';
 import { useEffect, useState } from 'react';
-import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useQueryState, parseAsBoolean } from 'nuqs';
+
+import { useSelectionStore } from '@/store/useSelectionStore';
+import { useTranslation } from '@/lib/hooks/useTranslation';
+
 
 export function BottomNav() {
   const pathname = usePathname();

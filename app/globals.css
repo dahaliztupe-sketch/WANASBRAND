@@ -3,23 +3,23 @@
 
 @layer base {
   :root {
-    --bg-primary: #F7F5F0; /* Alabaster / Linen */
-    --bg-secondary: #EFEBE4; /* Cashmere */
-    --text-primary: #1C1B1A; /* Obsidian / Deep Basalt */
-    --text-secondary: #5A5652; /* Warm Gray */
-    --accent-primary: #9C4A36; /* Nile Clay / Terracotta */
-    --accent-hover: #B85D43;
-    --border-primary: #E5DFD5; /* Muted Gold/Sand */
+    --bg-primary: #FDFBF7; /* Cream */
+    --bg-secondary: #F5F0E6; /* Muted Cream */
+    --text-primary: #1A1A1A; /* Black */
+    --text-secondary: #4A4A4A; /* Dark Gray */
+    --accent-primary: #D4AF37; /* Gold */
+    --accent-hover: #B8962D; /* Darker Gold */
+    --border-primary: #D1C7B7; /* Muted Gold/Sand */
   }
 
   .dark {
-    --bg-primary: #141312; /* Midnight Basalt */
-    --bg-secondary: #1C1B1A; /* Obsidian */
-    --text-primary: #F7F5F0; /* Alabaster */
-    --text-secondary: #A39E99; /* Muted Sand */
-    --accent-primary: #B85D43; /* Nile Clay */
-    --accent-hover: #9C4A36;
-    --border-primary: #2A2826;
+    --bg-primary: #1A1A1A; /* Black */
+    --bg-secondary: #262626; /* Dark Gray */
+    --text-primary: #FDFBF7; /* Cream */
+    --text-secondary: #D1C7B7; /* Muted Gold/Sand */
+    --accent-primary: #D4AF37; /* Gold */
+    --accent-hover: #B8962D; /* Darker Gold */
+    --border-primary: #4A4A4A;
   }
 
   [dir="rtl"] {

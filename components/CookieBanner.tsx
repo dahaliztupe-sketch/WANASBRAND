@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X } from 'lucide-react';
+
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function CookieBanner() {

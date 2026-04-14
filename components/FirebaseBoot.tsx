@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { db } from '@/lib/firebase/client';
 import { doc, getDocFromServer } from 'firebase/firestore';
+
+import { db } from '@/lib/firebase/client';
 
 export function FirebaseBoot() {
   useEffect(() => {

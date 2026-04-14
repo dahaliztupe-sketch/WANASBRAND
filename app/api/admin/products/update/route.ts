@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
+
 import { db } from '@/lib/firebase/server';
 import { logAdminAction } from '@/lib/services/audit.service';
 import { ProductSchema } from '@/lib/schemas';
-import { jwtVerify } from 'jose';
 import { adminRateLimit } from '@/lib/upstash';
 
 const SESSION_SECRET = process.env.SESSION_SECRET || 'default_session_secret_change_me_in_production';

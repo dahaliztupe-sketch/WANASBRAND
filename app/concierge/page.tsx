@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 import { ConciergeModal } from '@/components/ConciergeModal';
 import { createConciergeRequest } from '@/lib/services/concierge.service';
-import { useRouter } from 'next/navigation';
 
 export default function ConciergePage() {
   const [isModalOpen, setIsModalOpen] = useState(true);

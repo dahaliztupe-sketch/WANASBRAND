@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { db } from '@/lib/firebase/client';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { 
   Save, 
@@ -17,6 +16,8 @@ import {
   Palette
 } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { db } from '@/lib/firebase/client';
 
 interface SiteSettings {
   announcementBanner: string;

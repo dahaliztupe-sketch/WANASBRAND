@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { db, auth } from '@/lib/firebase/client';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { motion, AnimatePresence } from 'motion/react';
+
+import { db, auth } from '@/lib/firebase/client';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 
 export function AnnouncementBar() {

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { sendStatusUpdateEmail } from '@/lib/services/email.service';
 
 export async function POST(req: Request) {

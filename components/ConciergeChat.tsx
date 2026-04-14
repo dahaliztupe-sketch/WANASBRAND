@@ -1,17 +1,17 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { db, auth } from '@/lib/firebase/client';
+import { GoogleGenerativeAI, SchemaType, Part } from '@google/generative-ai';
 import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp, doc, getDocs, getDoc } from 'firebase/firestore';
-import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { Send, Loader2, Bot, User, X, ShoppingBag, ImagePlus } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { useShoppingBagStore } from '@/store/useShoppingBagStore';
 
+import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
+import { db, auth } from '@/lib/firebase/client';
+import { useShoppingBagStore } from '@/store/useShoppingBagStore';
 import { Product, User, Reservation } from '@/types';
 
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
@@ -195,14 +195,14 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
               name: 'recommend_product',
               description: 'Recommends a specific product from the catalog to the user.',
               parameters: {
-                type: 'OBJECT' as any,
+                type: SchemaType.OBJECT,
                 properties: {
                   productId: {
-                    type: 'STRING' as any,
+                    type: SchemaType.STRING,
                     description: 'The exact ID of the product to recommend.',
                   },
                   reason: {
-                    type: 'STRING' as any,
+                    type: SchemaType.STRING,
                     description: 'A short, elegant reason why this product fits the user.',
                   }
                 },
@@ -213,10 +213,10 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
               name: 'human_handoff',
               description: 'Triggers a handoff to a human agent if the user is frustrated, angry, or explicitly asks for a human.',
               parameters: {
-                type: 'OBJECT' as any,
+                type: SchemaType.OBJECT,
                 properties: {
                   reason: {
-                    type: 'STRING' as any,
+                    type: SchemaType.STRING,
                     description: 'Reason for handoff (e.g., user frustrated, complex request).',
                   }
                 },
@@ -227,10 +227,10 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
               name: 'check_inventory',
               description: 'Checks if a specific product is in stock.',
               parameters: {
-                type: 'OBJECT' as any,
+                type: SchemaType.OBJECT,
                 properties: {
                   productId: {
-                    type: 'STRING' as any,
+                    type: SchemaType.STRING,
                     description: 'The exact ID of the product to check.',
                   }
                 },
@@ -241,18 +241,18 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
               name: 'add_to_cart',
               description: 'Adds a specific product to the user\'s shopping cart.',
               parameters: {
-                type: 'OBJECT' as any,
+                type: SchemaType.OBJECT,
                 properties: {
                   productId: {
-                    type: 'STRING' as any,
+                    type: SchemaType.STRING,
                     description: 'The exact ID of the product to add.',
                   },
                   size: {
-                    type: 'STRING' as any,
+                    type: SchemaType.STRING,
                     description: 'The size of the product (e.g., S, M, L).',
                   },
                   color: {
-                    type: 'STRING' as any,
+                    type: SchemaType.STRING,
                     description: 'The color of the product.',
                   }
                 },
@@ -275,7 +275,7 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
       });
 
       // Prepare current message parts
-      const messageParts: any[] = [];
+      const messageParts: Part[] = [];
       if (input.trim()) messageParts.push({ text: input });
       if (userMessage.imageUrl) {
         // Convert base64 to format Gemini accepts

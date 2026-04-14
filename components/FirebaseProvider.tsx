@@ -3,7 +3,9 @@
 import { useEffect, useState, createContext, useContext } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, getDocFromServer } from 'firebase/firestore';
+
 import { auth, db } from '@/lib/firebase/client';
+
 import StyleProfileQuiz from './StyleProfileQuiz';
 
 interface AuthContextType {

@@ -19,7 +19,7 @@ const walkSync = (dir: string, filelist: string[] = []) => {
 const files = walkSync('./app').concat(walkSync('./components'));
 
 for (const file of files) {
-  let content = fs.readFileSync(file, 'utf-8');
+  const content = fs.readFileSync(file, 'utf-8');
   
   // Find imports from lucide-react
   const importMatch = content.match(/import\s+{([^}]+)}\s+from\s+['"]lucide-react['"]/);

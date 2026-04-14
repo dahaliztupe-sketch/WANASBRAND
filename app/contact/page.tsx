@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+
 import { RevealOnScroll } from '@/components/RevealOnScroll';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 

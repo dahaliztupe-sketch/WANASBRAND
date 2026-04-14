@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
 import { Product, ProductVariant } from '@/types';
 import { syncGuestCartToCloud, recoverGuestCart } from '@/lib/services/cart.service';
 

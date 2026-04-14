@@ -1,8 +1,9 @@
 'use client';
 
-import { Reservation } from '@/types';
 import { Download } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { Reservation } from '@/types';
 
 interface ExportButtonProps {
   reservations: Reservation[];

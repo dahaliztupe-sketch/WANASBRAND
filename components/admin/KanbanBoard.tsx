@@ -11,12 +11,15 @@ import {
   DragOverlay,
   defaultDropAnimationSideEffects
 } from '@dnd-kit/core';
-import { KanbanColumn } from './KanbanColumn';
-import { KanbanCard } from './KanbanCard';
-import { Reservation } from '@/types';
-import { db } from '@/lib/firebase/client';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { toast } from 'sonner';
+
+import { Reservation } from '@/types';
+import { db } from '@/lib/firebase/client';
+
+import { KanbanColumn } from './KanbanColumn';
+import { KanbanCard } from './KanbanCard';
+
 
 interface KanbanBoardProps {
   reservations: Reservation[];

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
+
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export function DigitalCertificate({ reservationId, orderNumber }: { reservationId: string, orderNumber: string }) {

@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { X, Plus, Minus, Gift } from 'lucide-react';
-import { useSelectionStore } from '@/store/useSelectionStore';
-import { triggerHaptic } from '@/lib/utils/haptics';
-import { CountdownTimer } from './CountdownTimer';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
-import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useQueryState, parseAsBoolean } from 'nuqs';
+
+import { useTranslation } from '@/lib/hooks/useTranslation';
+import { triggerHaptic } from '@/lib/utils/haptics';
+import { useSelectionStore } from '@/store/useSelectionStore';
+
+import { CountdownTimer } from './CountdownTimer';
 
 export function SelectionBag() {
   const { items, removeItem, updateQuantity, giftingDetails, setGiftingDetails } = useSelectionStore();

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { db } from '@/lib/firebase/client';
 import { collection, query, getDocs, doc, updateDoc, orderBy } from 'firebase/firestore';
 import { 
   Users, 
@@ -14,6 +13,8 @@ import {
   UserCheck
 } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { db } from '@/lib/firebase/client';
 
 interface Customer {
   id: string;

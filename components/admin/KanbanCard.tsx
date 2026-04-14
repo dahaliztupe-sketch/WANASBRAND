@@ -3,9 +3,10 @@
 import React from 'react';
 import Image from 'next/image';
 import { useDraggable } from '@dnd-kit/core';
-import { Reservation } from '@/types';
 import Link from 'next/link';
 import { Calendar, User, DollarSign, ChevronRight } from 'lucide-react';
+
+import { Reservation } from '@/types';
 
 interface KanbanCardProps {
   reservation: Reservation;

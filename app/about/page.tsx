@@ -1,7 +1,8 @@
 'use client';
 
-import { RevealOnScroll } from '@/components/RevealOnScroll';
 import Image from 'next/image';
+
+import { RevealOnScroll } from '@/components/RevealOnScroll';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function AboutPage() {

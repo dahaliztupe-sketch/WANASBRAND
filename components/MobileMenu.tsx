@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Menu } from 'lucide-react';
+
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export function MobileMenu({ user }: { user: any }) {

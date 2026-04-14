@@ -2,6 +2,7 @@
 
 import { motion } from 'motion/react';
 import Link from 'next/link';
+
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function ReservationSuccessPage() {

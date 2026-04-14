@@ -1,8 +1,9 @@
 import { collection, query, where, orderBy, limit, startAfter, getDocs, QueryDocumentSnapshot } from 'firebase/firestore';
+
 import { db } from '@/lib/firebase/client';
 
 export const getProductsOptimized = async (filters: { category?: string; minPrice?: number }) => {
-  let q = collection(db, 'products');
+  const q = collection(db, 'products');
   const constraints = [];
   if (filters.category) constraints.push(where('category', '==', filters.category));
   if (filters.minPrice) constraints.push(where('price', '>=', filters.minPrice));

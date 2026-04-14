@@ -3,14 +3,16 @@
 import { use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Heart } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { Product } from '@/types';
 import { formatPrice } from '@/lib/utils';
-import { Heart } from 'lucide-react';
 import { useWishlistStore } from '@/store/useWishlistStore';
-import { toast } from 'sonner';
-import { RevealOnScroll } from './RevealOnScroll';
 import { triggerHaptic } from '@/lib/utils/haptics';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+
+import { RevealOnScroll } from './RevealOnScroll';
 
 export default function FeaturedProducts({ featuredProductsPromise }: { featuredProductsPromise: Promise<Product[]> }) {
   const products = use(featuredProductsPromise);

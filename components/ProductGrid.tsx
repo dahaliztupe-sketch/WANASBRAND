@@ -3,19 +3,20 @@
 import { useState, use } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Heart } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { Product } from '@/types';
 import { formatPrice } from '@/lib/utils';
-import { Heart } from 'lucide-react';
 import { useWishlistStore } from '@/store/useWishlistStore';
-import { toast } from 'sonner';
 import { getProducts } from '@/lib/services/product.service';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { auth } from '@/lib/firebase/client';
+import { triggerHaptic } from '@/lib/utils/haptics';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 import { RevealOnScroll } from './RevealOnScroll';
 import { ProductSkeleton } from './ProductSkeleton';
-import { triggerHaptic } from '@/lib/utils/haptics';
-import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function ProductGrid({ viewMode = 'grid', initialProductsPromise }: { viewMode?: 'grid' | 'model', initialProductsPromise: Promise<{ products: Product[], lastDocId: string | null }> }) {
   const initialData = use(initialProductsPromise);
@@ -78,63 +79,7 @@ export default function ProductGrid({ viewMode = 'grid', initialProductsPromise 
               'md:col-span-8 md:col-start-3 md:mt-32'
             }` : 'group flex flex-col items-center cursor-pointer'}
           >
-            <Link 
-              href={`/product/${product.slug}`} 
-              className="w-full"
-            >
-              <div className={`relative w-full mb-8 overflow-hidden bg-primary shadow-sm group-hover:shadow-xl transition-all duration-700 ${
-                viewMode === 'grid' ? (
-                  idx % 3 === 0 ? 'aspect-[3/4]' :
-                  idx % 3 === 1 ? 'aspect-[4/5]' :
-                  'aspect-[16/9]'
-                ) : 'aspect-[3/4]'
-              }`}>
-                <Image
-                  src={product.images[0] || `https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=800&auto=format&fit=crop`}
-                  alt={product.name}
-                  fill
-                  quality={90}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  placeholder="blur"
-                  blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg=="
-                  className="object-cover object-center transition-transform duration-[2s] group-hover:scale-110"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700" />
-                <button 
-                  onClick={(e) => handleWishlistToggle(e, product)} 
-                  className="absolute top-6 end-6 z-10 p-3 bg-primary/90 backdrop-blur-md rounded-full hover:bg-primary transition-colors opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-500"
-                >
-                  <Heart strokeWidth={1} className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-accent-primary text-accent-primary' : 'text-primary'}`} />
-                </button>
-                {/* Quick Add Overlay */}
-                <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-out bg-primary/90 backdrop-blur-md">
-                  <button 
-                    onClick={(e) => { 
-                      e.preventDefault(); 
-                      triggerHaptic();
-                      toast(t.productGrid.quickAddComingSoon); 
-                    }}
-                    className="w-full py-4 bg-transparent border border-primary/20 text-primary text-[10px] uppercase tracking-[0.3em] font-bold hover:bg-primary hover:text-primary-foreground hover:invert dark:hover:invert-0 transition-all"
-                  >
-                    {t.productGrid.quickAdd}
-                  </button>
-                </div>
-              </div>
-              <div className={`flex ${viewMode === 'grid' ? 'flex-col md:flex-row md:items-end justify-between gap-4' : 'flex-col items-center text-center gap-2'}`}>
-                <div className="space-y-1">
-                  <h2 className={`font-serif tracking-tight group-hover:text-accent-primary transition-colors text-primary ${viewMode === 'grid' ? 'text-3xl md:text-4xl leading-snug' : 'text-2xl'}`}>
-                    {product.name}
-                  </h2>
-                  <p className="text-primary/50 text-[10px] uppercase tracking-[0.3em] font-bold">
-                    {product.category}
-                  </p>
-                </div>
-                <p className="text-secondary text-[10px] uppercase tracking-[0.3em] font-bold">
-                  <bdi>{formatPrice(product.price)}</bdi>
-                </p>
-              </div>
-            </Link>
+            <ProductCard product={product} viewMode={viewMode} idx={idx} />
           </RevealOnScroll>
         ))}
       </div>

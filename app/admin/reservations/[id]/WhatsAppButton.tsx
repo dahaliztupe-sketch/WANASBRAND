@@ -1,8 +1,9 @@
 'use client';
 
-import { Reservation } from '@/types';
 import { MessageCircle, Copy } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { Reservation } from '@/types';
 
 interface WhatsAppButtonProps {
   reservation: Reservation;

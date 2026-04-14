@@ -7,11 +7,13 @@ import { User, Search, X, Heart, Package, Sun, Moon, Globe } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react';
 import { useTheme } from 'next-themes';
 import { doc, getDoc, collection, getDocs, where, query } from 'firebase/firestore';
+
 import { auth, db } from '@/lib/firebase/client';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useLanguageStore } from '@/lib/store/useLanguageStore';
 import { User as UserType, Product } from '@/types';
+
 import { Logo } from './Logo';
 
 export function Header() {

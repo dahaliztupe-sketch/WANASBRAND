@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+
 import { useAudioStore } from '@/lib/store/useAudioStore';
 
 const SUCCESS_TONE_URL = 'https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3';

@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+
 import CollectionsClient from '@/components/CollectionsClient';
 import { StructuredData } from '@/components/StructuredData';
 import { db } from '@/lib/firebase/server';

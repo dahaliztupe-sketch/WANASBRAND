@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { sendReservationEmail } from '@/lib/services/email.service';
 import { ReservationItem } from '@/types';
 

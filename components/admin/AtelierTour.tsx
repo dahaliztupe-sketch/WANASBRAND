@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useTourStore } from '@/store/useTourStore';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
+
+import { useTourStore } from '@/store/useTourStore';
 
 const TOUR_STEPS = [
   { id: 'tour-sidebar', title: 'Atelier Portal', description: 'Navigate through your Atelier: Reservations, Products, Customers, and more.' },

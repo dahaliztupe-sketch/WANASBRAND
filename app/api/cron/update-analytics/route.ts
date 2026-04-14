@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase/client';
 import { collection, getDocs, query, where, setDoc, doc, serverTimestamp } from 'firebase/firestore';
+
+import { db } from '@/lib/firebase/client';
 
 export async function GET(req: Request) {
   const authHeader = req.headers.get('authorization');

@@ -12,7 +12,7 @@ import {
   Heart, 
   RotateCcw, 
   LogOut, 
-  User,
+  User as UserIcon,
   ChevronRight
 } from 'lucide-react';
 
@@ -23,7 +23,7 @@ const navItems = [
   { name: 'My Collection', href: '/account/orders', icon: Package },
   { name: 'The Vault', href: '/account/wishlist', icon: Heart },
   { name: 'Atelier Services', href: '/account/returns', icon: RotateCcw },
-  { name: 'Settings', href: '/account/settings', icon: User },
+  { name: 'Settings', href: '/account/settings', icon: UserIcon },
 ];
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
@@ -68,7 +68,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
           <div className="mb-12">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-full bg-accent-primary/10 flex items-center justify-center text-accent-primary">
-                <User strokeWidth={1} className="w-6 h-6 stroke-[1.5px]" />
+                <UserIcon strokeWidth={1} className="w-6 h-6 stroke-[1.5px]" />
               </div>
               <div>
                 <h2 className="font-serif text-xl text-primary truncate max-w-[180px]">

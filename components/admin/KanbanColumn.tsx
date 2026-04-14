@@ -2,9 +2,11 @@
 
 import React from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import { KanbanCard } from './KanbanCard';
-import { Reservation } from '@/types';
 import { motion } from 'motion/react';
+
+import { Reservation } from '@/types';
+
+import { KanbanCard } from './KanbanCard';
 
 interface KanbanColumnProps {
   id: string;

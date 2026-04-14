@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
-import { auth, db } from '@/lib/firebase/server';
 import { SignJWT } from 'jose';
 import { cookies } from 'next/headers';
+
+import { auth, db } from '@/lib/firebase/server';
 
 export const runtime = 'nodejs';
 

@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { ConciergeLogo } from './ConciergeLogo';
 import dynamic from 'next/dynamic';
 import { AnimatePresence, motion } from 'motion/react';
+
+import { ConciergeLogo } from './ConciergeLogo';
 
 const ConciergeChat = dynamic(() => import('./ConciergeChat'), {
   ssr: false,

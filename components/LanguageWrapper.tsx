@@ -1,7 +1,8 @@
 'use client';
 
-import { useLanguageStore } from '@/lib/store/useLanguageStore';
 import { useEffect } from 'react';
+
+import { useLanguageStore } from '@/lib/store/useLanguageStore';
 import { useHydrated } from '@/lib/hooks/useHydrated';
 
 export function LanguageWrapper({ children }: { children: React.ReactNode }) {

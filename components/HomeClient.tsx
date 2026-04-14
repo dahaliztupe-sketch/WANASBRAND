@@ -4,12 +4,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'motion/react';
 import { Star, ShieldCheck, Clock } from 'lucide-react';
+import { Suspense } from 'react';
+
 import FeaturedProducts from '@/components/FeaturedProducts';
 import { RevealOnScroll } from '@/components/RevealOnScroll';
-
 import { useTranslation } from '@/lib/hooks/useTranslation';
-
-import { Suspense } from 'react';
 import { Product } from '@/types';
 
 export default function HomeClient({ featuredProductsPromise }: { featuredProductsPromise: Promise<Product[]> }) {

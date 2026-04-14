@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { doc, updateDoc } from 'firebase/firestore';
-import { db, auth } from '@/lib/firebase/client';
 import { toast } from 'sonner';
+
+import { db, auth } from '@/lib/firebase/client';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 interface StyleProfileQuizProps {

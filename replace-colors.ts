@@ -19,8 +19,8 @@ const walkSync = (dir: string, filelist: string[] = []) => {
 const files = walkSync('./app').concat(walkSync('./components'));
 
 for (const file of files) {
-  let content = fs.readFileSync(file, 'utf-8');
-  let newContent = content
+  const content = fs.readFileSync(file, 'utf-8');
+  const newContent = content
     // Backgrounds
     .replace(/bg-pearl-white/g, 'bg-primary')
     .replace(/bg-charcoal-dark/g, 'bg-inverted')

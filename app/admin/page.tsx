@@ -12,11 +12,11 @@ import {
   Tooltip, ResponsiveContainer,
   FunnelChart, Funnel, LabelList
 } from 'recharts';
+import { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
 
 import { db, auth } from '@/lib/firebase/client';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { Product, Reservation } from '@/types';
-import { QueryDocumentSnapshot, DocumentData } from 'firebase/firestore';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({

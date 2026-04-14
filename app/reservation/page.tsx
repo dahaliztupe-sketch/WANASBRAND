@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { z } from 'zod';
+
 import { useSelectionStore } from '@/store/useSelectionStore';
 import { createReservation } from '@/lib/services/reservation.service';
 import { auth } from '@/lib/firebase/client';
-import Image from 'next/image';
 import { ConciergeModal } from '@/components/ConciergeModal';
-import { z } from 'zod';
 import { formatPrice } from '@/lib/utils';
 import { triggerHaptic } from '@/lib/utils/haptics';
 

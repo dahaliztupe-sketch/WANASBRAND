@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+
 import HomeClient from '@/components/HomeClient';
 import { db } from '@/lib/firebase/server';
 import { Product } from '@/types';

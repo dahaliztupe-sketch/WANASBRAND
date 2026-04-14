@@ -6,8 +6,9 @@ import Image from 'next/image';
 import { Play, Heart, ShieldCheck, Sparkles, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase/client';
 import { toast } from 'sonner';
+
+import { db } from '@/lib/firebase/client';
 
 export default function WelcomePage() {
   const params = useParams();

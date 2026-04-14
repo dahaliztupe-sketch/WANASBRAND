@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { verifyCartToken } from '@/lib/integrations/whatsapp';
 
 export async function GET(req: Request) {

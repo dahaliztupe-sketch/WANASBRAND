@@ -2,10 +2,10 @@
 
 import { ChevronDown } from 'lucide-react';
 import { Suspense, useState } from 'react';
+
 import ProductGrid from '@/components/ProductGrid';
 import { ProductSkeleton } from '@/components/ProductSkeleton';
 import { Product } from '@/types';
-
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function CollectionsClient({ initialProductsPromise }: { initialProductsPromise: Promise<{ products: Product[], lastDocId: string | null }> }) {

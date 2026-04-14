@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
+
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 interface WaitlistModalProps {

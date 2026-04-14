@@ -2,6 +2,7 @@
 
 import { useOptimistic, useTransition, useState } from 'react';
 import { motion } from 'motion/react';
+
 import { updateCartItem } from '@/app/actions/cart';
 import { triggerHaptic } from '@/lib/utils/haptics';
 

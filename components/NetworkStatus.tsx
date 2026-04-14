@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { WifiOff } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
+
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export function NetworkStatus() {

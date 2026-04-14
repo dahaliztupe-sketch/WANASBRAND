@@ -3,9 +3,11 @@
 import Link from 'next/link';
 import { Instagram, Facebook, Twitter, ArrowRight, Volume2, VolumeX } from 'lucide-react';
 import { toast } from 'sonner';
-import { ThemeToggle } from './ThemeToggle';
+
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAudioStore } from '@/lib/store/useAudioStore';
+
+import { ThemeToggle } from './ThemeToggle';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();

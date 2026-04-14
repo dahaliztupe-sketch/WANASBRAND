@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { initializeProductionDatabase } from '../actions';
 import Link from 'next/link';
+
+import { initializeProductionDatabase } from '../actions';
 
 export default function InitializePage() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');

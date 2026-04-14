@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Plus, Minus, Heart } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { triggerHaptic } from '@/lib/utils/haptics';
 import { useSelectionStore } from '@/store/useSelectionStore';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { Product } from '@/types';
-import { toast } from 'sonner';
 import { formatPrice } from '@/lib/utils';
 
 interface ProductInfoProps {

@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { Playfair_Display, Montserrat } from "next/font/google";
 import localFont from 'next/font/local';
 import { cookies } from "next/headers";
+
 import "./globals.css";
+import { Toaster } from "sonner";
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
+
 import { StructuredData } from "@/components/StructuredData";
 import { LanguageWrapper } from "@/components/LanguageWrapper";
 
@@ -109,8 +113,6 @@ import { AtelierTour } from "@/components/admin/AtelierTour";
 import ServiceWorkerRegistration from "@/components/PWA/ServiceWorkerRegistration";
 import InstallPrompt from "@/components/PWA/InstallPrompt";
 import PushNotificationModal from "@/components/PushNotificationModal";
-import { Toaster } from "sonner";
-import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { GlobalConcierge } from "@/components/GlobalConcierge";
 import { CustomCursor } from "@/components/CustomCursor";
 import { ErrorBoundary } from "@/components/ErrorBoundary";

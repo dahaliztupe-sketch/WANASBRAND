@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { db } from '@/lib/firebase/server';
 import { sendWhatsAppNotification, templates, generateCartToken } from '@/lib/integrations/whatsapp';
 
