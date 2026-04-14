@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 
 import { db } from '@/lib/firebase/server';
 
-export async function updateCartItem(userId: string, _sku: string, _quantity: number) {
+export async function updateCartItem(_userId: string, _sku: string, _quantity: number) {
   if (!db) {
     console.warn('Firestore not initialized. Cart update skipped.');
     return { success: false, error: 'Database not available' };

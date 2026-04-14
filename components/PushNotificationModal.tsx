@@ -12,7 +12,7 @@ import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function PushNotificationModal() {
   const [show, setShow] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<Record<string, unknown> | null>(null);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function PushNotificationModal() {
           });
           
           if (token && user) {
-            await updateDoc(doc(db, 'users', user.uid), {
+            await updateDoc(doc(db, 'users', (user as any).uid), {
               fcmToken: token,
               pushEnabled: true,
               updatedAt: new Date()

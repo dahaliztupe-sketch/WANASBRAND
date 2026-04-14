@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     const waitlistRef = firestore.collection('waitlist').doc();
     
     // Remove honeypot field before saving
-    const { website, ...dataToSave } = validation.data;
+    const { website: _website, ...dataToSave } = validation.data;
 
     await waitlistRef.set({
       ...dataToSave,

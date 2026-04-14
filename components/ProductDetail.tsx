@@ -4,16 +4,12 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { doc, getDoc } from 'firebase/firestore';
 import { notFound } from 'next/navigation';
-import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
 
 import { ProductInfo } from '@/components/ProductInfo';
 import { Product } from '@/types';
 import { db, auth } from '@/lib/firebase/client';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
-
-const ARViewer = dynamic(() => import('./ARViewer'), { ssr: false });
-
 import { triggerHaptic } from '@/lib/utils/haptics';
 
 import { RevealOnScroll } from './RevealOnScroll';
@@ -22,7 +18,7 @@ export default function ProductDetail({ id }: { id: string }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [isAROpen, setIsAROpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const [lensPos, setLensPos] = useState({ x: 0, y: 0, bgX: 0, bgY: 0 });
   const [isHovering, setIsHovering] = useState(false);
 

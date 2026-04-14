@@ -6,7 +6,6 @@ import { Toaster } from "sonner";
 
 import { LanguageWrapper } from "@/components/LanguageWrapper";
 import { StructuredData } from "@/components/StructuredData";
-
 import "./globals.css";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans", display: "swap" });

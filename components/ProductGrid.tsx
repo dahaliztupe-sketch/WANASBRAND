@@ -7,7 +7,6 @@ import { getProducts } from '@/lib/services/product.service';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { auth } from '@/lib/firebase/client';
 import { useTranslation } from '@/lib/hooks/useTranslation';
-
 import { RevealOnScroll } from './RevealOnScroll';
 import ProductCard from './ProductCard';
 
@@ -15,23 +14,10 @@ export default function ProductGrid({ viewMode = 'grid', initialProductsPromise 
   const initialData = use(initialProductsPromise);
   const [products, setProducts] = useState<Product[]>(initialData.products);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
   const [lastCreatedAt, setLastCreatedAt] = useState<string | null>(initialData.lastDocId);
   const [hasMore, setHasMore] = useState(initialData.products.length >= 12);
-  const { items: wishlistItems, addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
   const { t } = useTranslation();
-
-  const handleWishlistToggle = (e: React.MouseEvent, product: Product) => {
-    e.preventDefault();
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id);
-      toast(t.featuredProducts.removedFromVault);
-    } else {
-      addToWishlist(product);
-      triggerHaptic();
-      toast(t.featuredProducts.addedToVault);
-    }
-  };
 
   const loadMore = async () => {
     if (!lastCreatedAt || loadingMore) return;
