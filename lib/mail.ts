@@ -3,10 +3,27 @@ import { Resend } from 'resend';
 import { OrderConfirmationEmail } from '@/components/emails/OrderConfirmationEmail';
 import { StatusUpdateEmail } from '@/components/emails/StatusUpdateEmail';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: Resend | null = null;
+
+try {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (apiKey) {
+    resend = new Resend(apiKey);
+  } else {
+    console.warn('⚠️ RESEND_API_KEY is missing. Email features will be disabled.');
+  }
+} catch (error) {
+  console.error('❌ Failed to initialize Resend:', error);
+}
+
 const fromEmail = process.env.SMTP_FROM || 'atelier@wanasbrand.com';
 
 export async function sendStatusUpdateEmail(email: string, orderId: string, status: 'deposit_paid' | 'shipped', trackingInfo?: string, customerName: string = 'Client') {
+  if (!resend) {
+    console.warn('Skipping email send: Resend not initialized.');
+    return;
+  }
+  
   let subject = '';
 
   if (status === 'deposit_paid') {
@@ -28,6 +45,11 @@ export async function sendStatusUpdateEmail(email: string, orderId: string, stat
 }
 
 export async function sendOrderConfirmation(email: string, orderId: string, magicLink: string, customerName: string = 'Client') {
+  if (!resend) {
+    console.warn('Skipping email send: Resend not initialized.');
+    return;
+  }
+  
   try {
     await resend.emails.send({
       from: `WANAS Atelier <${fromEmail}>`,

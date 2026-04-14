@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   DndContext, 
   DragEndEvent, 
@@ -11,7 +11,7 @@ import {
   DragOverlay,
   defaultDropAnimationSideEffects
 } from '@dnd-kit/core';
-import { doc, updateDoc, getDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { toast } from 'sonner';
 
 import { Reservation } from '@/types';
@@ -85,7 +85,7 @@ export function KanbanBoard({ reservations, onStatusChange }: KanbanBoardProps) 
           
           toast.info(`${status === 'deposit_paid' ? 'Confirmation' : 'Shipping'} email sent.`);
         }
-      } catch (error) {
+      } catch {
         toast.error('Failed to update reservation status.');
       }
     }

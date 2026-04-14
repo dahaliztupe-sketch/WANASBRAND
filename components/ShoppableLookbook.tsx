@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { collection, query, where, limit, getDocs } from 'firebase/firestore';
 import { motion } from 'motion/react';
 import { Heart } from 'lucide-react';
@@ -21,7 +20,7 @@ export default function ShoppableLookbook() {
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const { items: wishlistItems, addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+  const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
   const { t } = useTranslation();
 
   const handleProductClick = (product: Product) => {

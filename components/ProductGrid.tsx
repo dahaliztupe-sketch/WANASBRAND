@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, use } from 'react';
+
 import { Product } from '@/types';
-import { useWishlistStore } from '@/store/useWishlistStore';
 import { getProducts } from '@/lib/services/product.service';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { auth } from '@/lib/firebase/client';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+
 import { RevealOnScroll } from './RevealOnScroll';
 import ProductCard from './ProductCard';
 

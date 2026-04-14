@@ -1,7 +1,5 @@
 'use client';
 
-import Head from 'next/head';
-
 interface SEOProps {
   title?: string;
   description?: string;

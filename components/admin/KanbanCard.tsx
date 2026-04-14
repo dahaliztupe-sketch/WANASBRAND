@@ -4,7 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import { useDraggable } from '@dnd-kit/core';
 import Link from 'next/link';
-import { Calendar, User, DollarSign, ChevronRight } from 'lucide-react';
+import { Calendar, DollarSign, ChevronRight } from 'lucide-react';
 
 import { Reservation } from '@/types';
 
