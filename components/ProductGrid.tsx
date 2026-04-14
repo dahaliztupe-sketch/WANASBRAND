@@ -1,22 +1,15 @@
 'use client';
 
 import { useState, use } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Heart } from 'lucide-react';
-import { toast } from 'sonner';
-
 import { Product } from '@/types';
-import { formatPrice } from '@/lib/utils';
 import { useWishlistStore } from '@/store/useWishlistStore';
 import { getProducts } from '@/lib/services/product.service';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { auth } from '@/lib/firebase/client';
-import { triggerHaptic } from '@/lib/utils/haptics';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 import { RevealOnScroll } from './RevealOnScroll';
-import { ProductSkeleton } from './ProductSkeleton';
+import ProductCard from './ProductCard';
 
 export default function ProductGrid({ viewMode = 'grid', initialProductsPromise }: { viewMode?: 'grid' | 'model', initialProductsPromise: Promise<{ products: Product[], lastDocId: string | null }> }) {
   const initialData = use(initialProductsPromise);
