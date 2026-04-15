@@ -8,6 +8,13 @@ const nextConfig = {
   compress: true,
   turbopack: {},
   serverExternalPackages: ['firebase-admin', 'sharp'],
+  webpack: (config, { isServer }) => {
+    config.ignoreWarnings = [
+      { module: /node_modules\/@opentelemetry\/instrumentation/ },
+      { module: /node_modules\/@prisma\/instrumentation/ },
+    ];
+    return config;
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 31536000,

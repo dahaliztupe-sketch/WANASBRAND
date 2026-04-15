@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { CreateEmailOptions, CreateEmailResponse } from 'resend/build/src/emails/interfaces';
 
 import { OrderConfirmationEmail } from '@/components/emails/OrderConfirmationEmail';
 import { StatusUpdateEmail } from '@/components/emails/StatusUpdateEmail';
@@ -18,6 +19,22 @@ try {
 
 const fromEmail = process.env.SMTP_FROM || 'atelier@wanasbrand.com';
 
+async function sendWithRetry(params: CreateEmailOptions, maxRetries = 2): Promise<CreateEmailResponse> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      if (!resend) throw new Error('Resend not initialized');
+      return await resend.emails.send(params);
+    } catch (error) {
+      lastError = error;
+      if (attempt < maxRetries) {
+        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt)));
+      }
+    }
+  }
+  throw lastError;
+}
+
 export async function sendStatusUpdateEmail(email: string, orderId: string, status: 'deposit_paid' | 'shipped', trackingInfo?: string, customerName: string = 'Client') {
   if (!resend) {
     console.warn('Skipping email send: Resend not initialized.');
@@ -33,7 +50,7 @@ export async function sendStatusUpdateEmail(email: string, orderId: string, stat
   }
 
   try {
-    await resend.emails.send({
+    await sendWithRetry({
       from: `WANAS Atelier <${fromEmail}>`,
       to: email,
       subject: subject,
@@ -51,7 +68,7 @@ export async function sendOrderConfirmation(email: string, orderId: string, magi
   }
   
   try {
-    await resend.emails.send({
+    await sendWithRetry({
       from: `WANAS Atelier <${fromEmail}>`,
       to: email,
       subject: `Reservation Confirmed: #${orderId} | WANAS`,

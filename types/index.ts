@@ -112,18 +112,10 @@ export interface Reservation {
   emailDeliveryStatus?: 'pending' | 'sent' | 'failed';
 }
 
-export interface Order {
-  id: string;
-  orderNumber: string;
-  userId: string;
-  totalAmount: number;
-  status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'CANCELLED';
-  createdAt: string;
-  updatedAt: string;
-  version?: number;
-  items: ReservationItem[];
-  customerInfo: Reservation['customerInfo'];
-}
+/**
+ * Order represents a simplified view of a Reservation for customer-facing displays.
+ */
+export type Order = Pick<Reservation, 'id' | 'orderNumber' | 'userId' | 'totalAmount' | 'status' | 'createdAt' | 'updatedAt' | 'version' | 'items' | 'customerInfo'>;
 
 export interface Log {
   id: string;
