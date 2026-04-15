@@ -10,6 +10,9 @@ const SESSION_SECRET = process.env.SESSION_SECRET || 'default_session_secret_cha
 const secret = new TextEncoder().encode(SESSION_SECRET);
 
 export async function POST(req: Request) {
+  if (!db) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+  }
   try {
     const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
     
@@ -31,10 +34,8 @@ export async function POST(req: Request) {
 
     const body = await req.json();
     const { id, updates } = body;
-    const firestore = db;
-    if (!firestore) throw new Error('Database not initialized');
 
-    const productRef = firestore.collection('products').doc(id);
+    const productRef = db.collection('products').doc(id);
     const productDoc = await productRef.get();
 
     if (!productDoc.exists) {

@@ -1,3 +1,10 @@
+/**
+ * IMPORTANT: Always check if `db` and `auth` are not null before using them.
+ * During Vercel builds, Firebase Admin credentials may not be available.
+ * 
+ * @example
+ * if (!db) return <AdminUnavailable />;
+ */
 import { initializeApp, getApps, cert, type App } from 'firebase-admin/app';
 import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 import { getAuth, type Auth } from 'firebase-admin/auth';
