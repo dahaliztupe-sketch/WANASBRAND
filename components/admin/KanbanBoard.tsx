@@ -77,7 +77,7 @@ export function KanbanBoard({ reservations, onStatusChange }: KanbanBoardProps) 
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               email: reservation.customerInfo.email || '',
-              orderNumber: reservation.reservationNumber,
+              reservationNumber: reservation.reservationNumber,
               status: status,
               customerName: reservation.customerInfo.fullName
             }),

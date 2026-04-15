@@ -209,7 +209,7 @@ export default function AdminDashboard() {
                 <div className="space-y-1">
                   <p className="text-sm font-serif text-primary">{res.customerInfo.fullName}</p>
                   <p className="text-[10px] uppercase tracking-widest text-primary/40">
-                    Order #{res.orderNumber || res.reservationNumber}
+                    Reservation #{res.reservationNumber}
                   </p>
                 </div>
                 <div className="text-right">

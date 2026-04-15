@@ -6,17 +6,17 @@ import { ReservationItem } from '@/types';
 
 export async function POST(req: Request) {
   try {
-    const { reservationId, email, orderNumber, items, totalAmount, magicLinkToken } = await req.json() as {
+    const { reservationId, email, reservationNumber, items, totalAmount, magicLinkToken } = await req.json() as {
       reservationId: string;
       email: string;
-      orderNumber: string;
+      reservationNumber: string;
       items: ReservationItem[];
       totalAmount: number;
       magicLinkToken: string;
     };
     
     if (email) {
-      await sendReservationEmail(reservationId, email, orderNumber, items, totalAmount, magicLinkToken);
+      await sendReservationEmail(reservationId, email, reservationNumber, items, totalAmount, magicLinkToken);
     }
     
     return NextResponse.json({ success: true });

@@ -79,6 +79,7 @@ export const metadata: Metadata = {
     icon: '/icon.svg',
     apple: '/icon.svg',
   },
+  manifest: '/manifest.json',
 };
 
 export const viewport = {

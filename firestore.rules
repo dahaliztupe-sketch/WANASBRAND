@@ -94,11 +94,11 @@ service cloud.firestore {
     }
 
     function isValidReturn(data) {
-      return data.keys().hasAll(['userId', 'userEmail', 'orderId', 'orderNumber', 'item', 'reason', 'status', 'createdAt']) &&
+      return data.keys().hasAll(['userId', 'userEmail', 'reservationId', 'reservationNumber', 'item', 'reason', 'status', 'createdAt']) &&
              data.userId is string && data.userId.size() < 100 &&
              data.userEmail is string && isValidEmail(data.userEmail) && data.userEmail.size() < 255 &&
-             data.orderId is string && data.orderId.size() < 100 &&
-             data.orderNumber is string && data.orderNumber.size() < 100 &&
+             data.reservationId is string && data.reservationId.size() < 100 &&
+             data.reservationNumber is string && data.reservationNumber.size() < 100 &&
              data.item is map &&
              data.reason is string && data.reason.size() > 0 && data.reason.size() < 1000 &&
              data.status in ['pending', 'approved', 'rejected', 'completed'] &&

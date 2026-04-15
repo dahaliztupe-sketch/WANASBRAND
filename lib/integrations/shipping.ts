@@ -4,14 +4,14 @@
  */
 
 interface ShippingLabelRequest {
-  orderId: string;
+  reservationId: string;
   customerName: string;
   address: string;
   city: string;
   items: { name: string; weight: number }[];
 }
 
-export const generateShippingLabel = async ({ orderId, customerName: _customerName, address: _address, city: _city, items: _items }: ShippingLabelRequest) => {
+export const generateShippingLabel = async ({ reservationId, customerName: _customerName, address: _address, city: _city, items: _items }: ShippingLabelRequest) => {
   // TODO: Integrate with Shipping API (e.g., Aramex, DHL, ShipStation)
   // Shipping label generated
   
@@ -25,7 +25,7 @@ export const generateShippingLabel = async ({ orderId, customerName: _customerNa
     },
     body: JSON.stringify({
       shipment_details: {
-        reference: orderId,
+        reference: reservationId,
         recipient: {
           name: customerName,
           address,
@@ -41,7 +41,7 @@ export const generateShippingLabel = async ({ orderId, customerName: _customerNa
   return { 
     success: true, 
     trackingNumber: `WANAS-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-    labelUrl: `https://wanasbrand.com/labels/${orderId}.pdf`
+    labelUrl: `https://wanasbrand.com/labels/${reservationId}.pdf`
   };
 };
 

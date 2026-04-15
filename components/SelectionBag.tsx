@@ -241,7 +241,7 @@ export function SelectionBag() {
                   </span>
                 </div>
                 <Link 
-                  href="/reserve" 
+                  href="/reservation" 
                   onClick={() => {
                     triggerHaptic();
                     closeBag();

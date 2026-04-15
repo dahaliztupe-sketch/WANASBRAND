@@ -12,20 +12,20 @@ import {
 } from '@react-email/components';
 import * as React from 'react';
 
-interface OrderConfirmationEmailProps {
+interface ReservationConfirmationEmailProps {
   customerName: string;
-  orderId: string;
+  reservationId: string;
   magicLink: string;
 }
 
-export const OrderConfirmationEmail = ({
+export const ReservationConfirmationEmail = ({
   customerName,
-  orderId,
+  reservationId,
   magicLink,
-}: OrderConfirmationEmailProps) => (
+}: ReservationConfirmationEmailProps) => (
   <Html>
     <Head />
-    <Preview>Your WANAS Reservation #{orderId} is confirmed</Preview>
+    <Preview>Your WANAS Reservation #{reservationId} is confirmed</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}>
@@ -39,7 +39,7 @@ export const OrderConfirmationEmail = ({
             Dear {customerName},
           </Text>
           <Text style={text}>
-            It is our distinct pleasure to confirm that your reservation <strong>#{orderId}</strong> has been received at the WANAS Atelier. 
+            It is our distinct pleasure to confirm that your reservation <strong>#{reservationId}</strong> has been received at the WANAS Atelier. 
             Our master artisans are now preparing to bring your selection to life with the meticulous care it deserves.
           </Text>
         </Section>

@@ -13,14 +13,14 @@ import * as React from 'react';
 
 interface StatusUpdateEmailProps {
   customerName: string;
-  orderId: string;
+  reservationNumber: string;
   status: 'deposit_paid' | 'shipped';
   trackingInfo?: string;
 }
 
 export const StatusUpdateEmail = ({
   customerName,
-  orderId,
+  reservationNumber,
   status,
   trackingInfo,
 }: StatusUpdateEmailProps) => {
@@ -31,7 +31,7 @@ export const StatusUpdateEmail = ({
   return (
     <Html>
       <Head />
-      <Preview>WANAS Reservation Update: #{orderId}</Preview>
+      <Preview>WANAS Reservation Update: #{reservationNumber}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>

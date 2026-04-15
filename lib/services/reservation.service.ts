@@ -10,7 +10,7 @@ import { encrypt } from '../utils/encryption';
  * @param customerData - The customer's personal information.
  * @param items - The list of products being reserved.
  * @param totalAmount - The total price of the reservation.
- * @returns A promise resolving to the success status and reservation ID.
+ * @returns A promise resolving to the success status, reservation ID, and WhatsApp link.
  */
 export const createReservation = async (
   customerData: {
@@ -23,7 +23,7 @@ export const createReservation = async (
   },
   items: ReservationItem[],
   totalAmount: number
-): Promise<{ success: boolean; reservationId: string }> => {
+): Promise<{ success: boolean; id: string; reservationNumber: string; whatsappLink: string }> => {
   const user = auth.currentUser;
   const userId = user?.uid || 'guest';
   let idToken = '';
@@ -41,7 +41,7 @@ export const createReservation = async (
 
   try {
     const idempotencyKey = crypto.randomUUID();
-    const response = await fetch('/api/reserve', {
+    const response = await fetch('/api/reservation', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

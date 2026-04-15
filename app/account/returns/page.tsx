@@ -12,17 +12,17 @@ import { Reservation, ReservationItem } from '@/types';
 import { triggerHaptic } from '@/lib/utils/haptics';
 
 export default function ReturnsPage() {
-  const [orders, setOrders] = useState<Reservation[]>([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(1);
-  const [selectedOrder, setSelectedOrder] = useState<Reservation | null>(null);
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
   const [selectedItem, setSelectedItem] = useState<ReservationItem | null>(null);
   const [reason, setReason] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchReservations = async () => {
       if (!auth.currentUser) return;
       try {
         const q = query(
@@ -31,19 +31,19 @@ export default function ReturnsPage() {
           where('status', '==', 'delivered')
         );
         const snapshot = await getDocs(q);
-        const ordersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Reservation));
-        setOrders(ordersData);
+        const reservationsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Reservation));
+        setReservations(reservationsData);
       } catch (error) {
-        console.error('Error fetching orders for returns:', error);
+        console.error('Error fetching reservations for returns:', error);
       } finally {
         setLoading(false);
       }
     };
-    fetchOrders();
+    fetchReservations();
   }, []);
 
   const handleSubmit = async () => {
-    if (!selectedOrder || !selectedItem || !reason) return;
+    if (!selectedReservation || !selectedItem || !reason) return;
     
     triggerHaptic();
     setIsSubmitting(true);
@@ -52,8 +52,8 @@ export default function ReturnsPage() {
       await addDoc(collection(db, 'returnRequests'), {
         userId: auth.currentUser?.uid,
         userEmail: auth.currentUser?.email,
-        orderId: selectedOrder.id,
-        orderNumber: selectedOrder.orderNumber || selectedOrder.reservationNumber,
+        reservationId: selectedReservation.id,
+        reservationNumber: selectedReservation.reservationNumber,
         item: selectedItem,
         reason,
         status: 'pending',
@@ -132,13 +132,13 @@ export default function ReturnsPage() {
                 <div className="space-y-4">
                   {[1, 2].map(i => <div key={i} className="h-24 bg-inverted/5 animate-pulse" />)}
                 </div>
-              ) : orders.length > 0 ? (
+              ) : reservations.length > 0 ? (
                 <div className="space-y-4">
-                  {orders.map((order) => (
+                  {reservations.map((reservation) => (
                     <button
-                      key={order.id}
+                      key={reservation.id}
                       onClick={() => {
-                        setSelectedOrder(order);
+                        setSelectedReservation(reservation);
                         setStep(2);
                       }}
                       className="w-full flex items-center justify-between p-6 border border-primary/5 hover:border-accent-primary/30 transition-all group text-left"
@@ -146,8 +146,8 @@ export default function ReturnsPage() {
                       <div className="flex items-center gap-6">
                         <Package strokeWidth={1} className="w-6 h-6 text-primary/20 group-hover:text-accent-primary transition-colors" />
                         <div>
-                          <p className="text-xs uppercase tracking-widest text-primary/40 mb-1">Order {order.orderNumber || order.reservationNumber}</p>
-                          <p className="text-sm font-medium text-primary">{new Date(order.createdAt).toLocaleDateString()}</p>
+                          <p className="text-xs uppercase tracking-widest text-primary/40 mb-1">Reservation {reservation.reservationNumber}</p>
+                          <p className="text-sm font-medium text-primary">{new Date(reservation.createdAt).toLocaleDateString()}</p>
                         </div>
                       </div>
                       <ChevronRight strokeWidth={1} className="w-4 h-4 text-primary/20 group-hover:text-accent-primary group-hover:translate-x-1 transition-all" />
@@ -157,13 +157,13 @@ export default function ReturnsPage() {
               ) : (
                 <div className="p-12 text-center border border-dashed border-primary/10 rounded-sm space-y-4">
                   <AlertCircle strokeWidth={1} className="w-8 h-8 text-primary/20 mx-auto" />
-                  <p className="text-primary/40 text-sm font-light italic">No eligible orders found for returns.</p>
+                  <p className="text-primary/40 text-sm font-light italic">No eligible reservations found for returns.</p>
                 </div>
               )}
             </motion.div>
           )}
 
-          {step === 2 && selectedOrder && (
+          {step === 2 && selectedReservation && (
             <motion.div 
               key="step2"
               initial={{ opacity: 0, x: 20 }}
@@ -173,7 +173,7 @@ export default function ReturnsPage() {
             >
               <h2 className="text-xl font-serif text-primary">Select Item to Refine</h2>
               <div className="space-y-4">
-                {selectedOrder.items.map((item, idx) => (
+                {selectedReservation.items.map((item, idx) => (
                   <button
                     key={idx}
                     onClick={() => {
@@ -205,7 +205,7 @@ export default function ReturnsPage() {
                 onClick={() => setStep(1)}
                 className="text-[10px] uppercase tracking-widest text-primary/40 hover:text-primary transition-colors"
               >
-                Back to Orders
+                Back to Reservations
               </button>
             </motion.div>
           )}

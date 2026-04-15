@@ -9,6 +9,7 @@ import { sendReservationEmail } from '@/lib/services/email.service';
 import { ReservationSchema } from '@/lib/schemas';
 import { ProductVariant } from '@/types';
 import { encryptPII } from '@/lib/utils/encryption';
+import { addPointsServer } from '@/lib/services/loyalty.server';
 
 
 export const runtime = 'nodejs';
@@ -133,7 +134,7 @@ export async function POST(req: Request) {
           if (now - createdAt < 24 * 60 * 60 * 1000) {
             return {
               isDuplicate: true,
-              orderNumber: existingDoc.reservationNumber,
+              reservationNumber: existingDoc.reservationNumber,
               id: existingDoc.id,
               calculatedTotal: existingDoc.financials.total,
               validatedItems: existingDoc.items,
@@ -221,11 +222,11 @@ export async function POST(req: Request) {
       // Calculate final financials securely on the server
       const vat = calculatedSubtotal * 0.14; // Assuming 14% VAT is included or added
       const calculatedTotal = calculatedSubtotal + shippingFee;
-      const orderNumber = `#AUR-${nextId}`;
+      const reservationNumber = `#RES-${nextId}`;
 
       const reservation = {
         id,
-        reservationNumber: orderNumber,
+        reservationNumber,
         customerInfo: {
           ...customerData,
           phone: encryptedPhone,
@@ -248,27 +249,32 @@ export async function POST(req: Request) {
 
       transaction.set(reservationRef, reservation);
 
-      return { isDuplicate: false, orderNumber, id, calculatedTotal, validatedItems, magicLinkToken };
+      return { isDuplicate: false, reservationNumber, id, calculatedTotal, validatedItems, magicLinkToken };
     });
 
-    const { isDuplicate, orderNumber, calculatedTotal, validatedItems, magicLinkToken: savedMagicLinkToken } = result;
+    const { isDuplicate, reservationNumber, calculatedTotal, validatedItems, magicLinkToken: savedMagicLinkToken } = result;
 
     // Send Email only if it's not a duplicate
     if (!isDuplicate && customerData.email) {
       await sendReservationEmail(
         id,
         customerData.email,
-        orderNumber,
+        reservationNumber,
         validatedItems,
         calculatedTotal,
         savedMagicLinkToken
       );
     }
 
-    const whatsappMessage = `Hello ${customerData.fullName}, I am your WANAS Ambassador. I have received your reservation ${orderNumber}. Let us begin your journey...`;
+    const whatsappMessage = `Hello ${customerData.fullName}, I am your WANAS Ambassador. I have received your reservation ${reservationNumber}. Let us begin your journey...`;
     const whatsappLink = `https://wa.me/201000000000?text=${encodeURIComponent(whatsappMessage)}`;
 
-    return NextResponse.json({ success: true, id, orderNumber, magicLinkToken: savedMagicLinkToken, whatsappLink });
+    // Award loyalty points (1 point per 10 EGP spent)
+    if (userId && userId !== 'guest') {
+      await addPointsServer(userId, Math.floor(calculatedTotal / 10));
+    }
+
+    return NextResponse.json({ success: true, id, reservationNumber, magicLinkToken: savedMagicLinkToken, whatsappLink });
   } catch (error: unknown) {
     console.error('Reservation Error:', error);
     const message = error instanceof Error ? error.message : 'Failed to create reservation';

@@ -44,7 +44,7 @@ export default function ReservationDetailsPage({ params }: { params: Promise<{ i
   return (
     <div className="space-y-16">
       <Link 
-        href="/account/orders" 
+        href="/account/reservations" 
         className="inline-flex items-center gap-4 text-[10px] uppercase tracking-[0.3em] text-primary/40 hover:text-accent-primary transition-colors group"
       >
         <ArrowLeft strokeWidth={1} className={`w-4 h-4 transition-transform ${locale === 'ar' ? 'group-hover:translate-x-1 rotate-180' : 'group-hover:-translate-x-1'}`} />
@@ -54,7 +54,7 @@ export default function ReservationDetailsPage({ params }: { params: Promise<{ i
       <div className="flex flex-col lg:flex-row justify-between items-start gap-12 border-b border-primary/5 pb-12">
         <div className="space-y-4">
           <h1 className="text-5xl font-serif text-primary tracking-wide italic">
-            <span dir="ltr">{t.orderDetails.reservation} {reservation.reservationNumber || reservation.orderNumber}</span>
+            <span dir="ltr">{t.orderDetails.reservation} {reservation.reservationNumber}</span>
           </h1>
           <p className="text-primary/50 font-light tracking-widest uppercase text-xs">
             {t.orderDetails.acquiredOn} {new Date(reservation.createdAt).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
@@ -193,14 +193,14 @@ export default function ReservationDetailsPage({ params }: { params: Promise<{ i
                 <div className="space-y-8">
                   <h3 className="text-6xl font-serif text-[#1A1A1A] italic">{t.orderDetails.certificate.atelier}</h3>
                   <p className="max-w-xl mx-auto text-sm text-[#4A4A4A] leading-relaxed font-light italic">
-                    {t.orderDetails.certificate.description.replace('{orderNumber}', reservation.reservationNumber || reservation.orderNumber)}
+                    {t.orderDetails.certificate.description.replace('{reservationNumber}', reservation.reservationNumber)}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-12 border-t border-[#1A1A1A]/5">
                   <div>
                     <span className="text-[8px] uppercase tracking-widest text-[#1A1A1A]/30 block mb-2">{t.orderDetails.certificate.reservationId}</span>
-                    <span className="text-xs font-serif text-[#1A1A1A]">{reservation.reservationNumber || reservation.orderNumber}</span>
+                    <span className="text-xs font-serif text-[#1A1A1A]">{reservation.reservationNumber}</span>
                   </div>
                   <div>
                     <span className="text-[8px] uppercase tracking-widest text-[#1A1A1A]/30 block mb-2">{t.orderDetails.certificate.issueDate}</span>

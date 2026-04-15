@@ -39,11 +39,11 @@ export const verifyCartToken = async (token: string) => {
  * Generates a WhatsApp click-to-chat link for a reservation.
  * 
  * @param fullName - The customer's full name.
- * @param orderNumber - The unique reservation number.
+ * @param reservationNumber - The unique reservation number.
  * @returns A formatted WhatsApp URL.
  */
-export const sendWhatsAppLink = (fullName: string, orderNumber: string): string => {
-  const whatsappMessage = `Hello ${fullName}, I am your WANAS Ambassador. I have received your reservation ${orderNumber}. Let us begin your journey...`;
+export const sendWhatsAppLink = (fullName: string, reservationNumber: string): string => {
+  const whatsappMessage = `Hello ${fullName}, I am your WANAS Ambassador. I have received your reservation ${reservationNumber}. Let us begin your journey...`;
   return `https://wa.me/201000000000?text=${encodeURIComponent(whatsappMessage)}`;
 };
 

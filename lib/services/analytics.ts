@@ -16,7 +16,7 @@ export const getBusinessDashboard = async () => {
     
     return {
       revenue,
-      averageOrderValue: aov,
+      averageReservationValue: aov,
       totalReservations: reservations.length,
       conversionRate: 0.035, // Mock conversion rate
       churnRate: 0.05,

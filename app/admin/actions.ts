@@ -1,10 +1,33 @@
 'use server';
 
+import { cookies } from 'next/headers';
+import { jwtVerify } from 'jose';
 import { db } from '@/lib/firebase/server';
 import { sendStatusUpdateEmail } from '@/lib/mail';
 import { sendPushNotification } from '@/lib/services/push.service';
 import { decryptPII } from '@/lib/utils/encryption';
+import { logAdminAction } from '@/lib/services/audit.service';
 import { Reservation } from '@/types';
+
+const SESSION_SECRET = process.env.SESSION_SECRET || 'default_session_secret_change_me_in_production';
+const secret = new TextEncoder().encode(SESSION_SECRET);
+
+async function getAdminFromSession() {
+  try {
+    const cookieStore = await cookies();
+    const sessionToken = cookieStore.get('session')?.value;
+    if (!sessionToken) return null;
+
+    const { payload } = await jwtVerify(sessionToken, secret);
+    return {
+      uid: payload.uid as string,
+      name: (payload.name as string) || 'Admin',
+    };
+  } catch (error) {
+    console.error('Auth verification failed:', error);
+    return null;
+  }
+}
 
 export async function getAdminReservations(statusFilter: string | string[] = 'active', limitCount: number = 100) {
   try {
@@ -70,12 +93,33 @@ export async function getAdminReservationById(id: string) {
 
 export async function updateConciergeNotes(id: string, notes: string) {
   try {
+    const admin = await getAdminFromSession();
+    if (!admin) return { success: false, error: 'Unauthorized' };
+
     const firestore = db;
     if (!firestore) return { success: false, error: 'Database not initialized' };
-    await firestore.collection('reservations').doc(id).update({
+    
+    const ref = firestore.collection('reservations').doc(id);
+    const doc = await ref.get();
+    if (!doc.exists) return { success: false, error: 'Reservation not found' };
+    
+    const oldData = doc.data();
+
+    await ref.update({
       conciergeNotes: notes,
       updatedAt: new Date().toISOString()
     });
+
+    await logAdminAction(
+      admin.uid,
+      admin.name,
+      'update_concierge_notes',
+      id,
+      'reservation',
+      { notes: oldData?.conciergeNotes },
+      { notes }
+    );
+
     return { success: true };
   } catch (error) {
     console.error('Error updating notes:', error);
@@ -120,8 +164,8 @@ export async function getAdminCustomers() {
       email: string;
       phone: string;
       totalSpend: number;
-      orderCount: number;
-      lastOrderDate: string;
+      reservationCount: number;
+      lastReservationDate: string;
     }>();
 
     snapshot.docs.forEach(doc => {
@@ -140,17 +184,17 @@ export async function getAdminCustomers() {
           email: email || 'N/A',
           phone: phone,
           totalSpend: 0,
-          orderCount: 0,
-          lastOrderDate: data.createdAt,
+          reservationCount: 0,
+          lastReservationDate: data.createdAt,
         });
       }
 
       const customer = customersMap.get(key)!;
       customer.totalSpend += (data.financials?.total as number) || (data.totalAmount as number) || 0;
-      customer.orderCount += 1;
+      customer.reservationCount += 1;
       
-      if (new Date(data.createdAt) > new Date(customer.lastOrderDate)) {
-        customer.lastOrderDate = data.createdAt;
+      if (new Date(data.createdAt) > new Date(customer.lastReservationDate)) {
+        customer.lastReservationDate = data.createdAt;
       }
     });
 
@@ -163,10 +207,15 @@ export async function getAdminCustomers() {
 
 export async function updateReservationStatus(id: string, status: Reservation['status'], clientUpdatedAt?: number) {
   try {
+    const admin = await getAdminFromSession();
+    if (!admin) return { success: false, error: 'Unauthorized' };
+
     const firestore = db;
     if (!firestore) return { success: false, error: 'Database not initialized' };
     const ref = firestore.collection('reservations').doc(id);
     
+    let oldStatus: string | undefined;
+
     await firestore.runTransaction(async (transaction) => {
       const doc = await transaction.get(ref);
       if (!doc.exists) {
@@ -174,6 +223,7 @@ export async function updateReservationStatus(id: string, status: Reservation['s
       }
       
       const data = doc.data();
+      oldStatus = data?.status;
       const serverUpdatedAt = data?.updatedAt ? new Date(data.updatedAt).getTime() : 0;
       
       if (clientUpdatedAt && serverUpdatedAt > clientUpdatedAt) {
@@ -185,6 +235,16 @@ export async function updateReservationStatus(id: string, status: Reservation['s
         updatedAt: new Date().toISOString()
       });
     });
+
+    await logAdminAction(
+      admin.uid,
+      admin.name,
+      'update_reservation_status',
+      id,
+      'reservation',
+      { status: oldStatus },
+      { status }
+    );
     
     // Optional: Send email notification if status is shipped or deposit_paid
     const doc = await ref.get();
@@ -194,7 +254,7 @@ export async function updateReservationStatus(id: string, status: Reservation['s
       // Handle Email
       if (data.customerInfo.email && (status === 'deposit_paid' || status === 'shipped')) {
         try {
-          await sendStatusUpdateEmail(data.customerInfo.email, data.orderNumber || data.reservationNumber, status, undefined, data.customerInfo.fullName);
+          await sendStatusUpdateEmail(data.customerInfo.email, data.reservationNumber, status, undefined, data.customerInfo.fullName);
         } catch (e) {
           console.error('Failed to send status update email:', e);
         }
@@ -232,6 +292,9 @@ export async function updateReservationStatus(id: string, status: Reservation['s
 
 export async function bulkUpdateReservations(ids: string[], status: Reservation['status']) {
   try {
+    const admin = await getAdminFromSession();
+    if (!admin) return { success: false, error: 'Unauthorized' };
+
     const database = db;
     if (!database) return { success: false, error: 'Database not initialized' };
     const batch = database.batch();
@@ -246,6 +309,17 @@ export async function bulkUpdateReservations(ids: string[], status: Reservation[
     });
 
     await batch.commit();
+
+    // Log bulk action
+    await logAdminAction(
+      admin.uid,
+      admin.name,
+      'bulk_update_reservations',
+      ids.join(','),
+      'reservation',
+      { count: ids.length },
+      { status }
+    );
 
     // Send emails
     for (const doc of reservations) {

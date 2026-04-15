@@ -39,3 +39,50 @@ export const getProducts = async (
     handleError(error, 'ProductService.getProducts');
   }
 };
+
+export const checkInventory = async (sku: string) => {
+  try {
+    const q = query(collection(db, 'products'), where('status', '==', 'Published'));
+    const snapshot = await getDocs(q);
+    
+    for (const doc of snapshot.docs) {
+      const product = doc.data() as Product;
+      const variant = product.variants.find(v => v.sku === sku);
+      if (variant) {
+        return {
+          productName: product.name,
+          stock: variant.stock,
+          size: variant.size,
+          color: variant.color,
+          price: product.price
+        };
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('Error checking inventory:', error);
+    return null;
+  }
+};
+
+export const addToWaitlist = async (userId: string, sku: string) => {
+  try {
+    // In a real app, we might have a dedicated waitlist collection
+    // For now, we'll log it or add to a 'waitlist' collection
+    const waitlistRef = collection(db, 'waitlist');
+    await getDocs(query(waitlistRef, where('userId', '==', userId), where('sku', '==', sku)));
+    
+    // Simplified: just add a new entry
+    const { addDoc } = await import('firebase/firestore');
+    await addDoc(waitlistRef, {
+      userId,
+      sku,
+      createdAt: new Date().toISOString(),
+      status: 'pending'
+    });
+    return true;
+  } catch (error) {
+    console.error('Error adding to waitlist:', error);
+    return false;
+  }
+};

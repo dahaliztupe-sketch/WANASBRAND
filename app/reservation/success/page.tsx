@@ -29,10 +29,10 @@ function SuccessContent() {
           <Check strokeWidth={1} className="w-10 h-10 text-accent-primary" />
         </div>
         
-        <h1 className="font-serif text-4xl text-primary mb-4">Your Order is Confirmed</h1>
+        <h1 className="font-serif text-4xl text-primary mb-4">Your Reservation is Confirmed</h1>
         
         <p className="text-primary/70 mb-8 leading-relaxed">
-          We are honored to receive your request. A WANAS Client Services representative will reach out shortly to finalize your order.
+          We are honored to receive your request. A WANAS Client Services representative will reach out shortly to finalize your reservation.
         </p>
         
         {whatsappLink && (
@@ -51,7 +51,7 @@ function SuccessContent() {
         </div>
         
         <p className="text-sm text-primary/60 mb-12">
-          Our customer care team will contact you shortly to confirm your order and arrange delivery details.
+          Our customer care team will contact you shortly to confirm your reservation and arrange delivery details.
         </p>
         
         <Link 

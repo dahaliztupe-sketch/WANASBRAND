@@ -98,7 +98,7 @@ export default function ReservationPage() {
             {error && <p className="text-red-500 mt-4 text-sm">{error}</p>}
           </div>
 
-          {/* Order Summary Section */}
+          {/* Reservation Summary Section */}
           <div className="lg:col-span-5">
             <div className="bg-primary p-8 shadow-sm border border-primary/5 sticky top-24">
               <h2 className="font-serif text-2xl text-primary mb-6">Your Selection</h2>

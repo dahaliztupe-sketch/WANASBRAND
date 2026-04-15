@@ -15,7 +15,7 @@ const getTransporter = () => nodemailer.createTransport({
 
 export async function sendStatusUpdateEmail(
   customerEmail: string,
-  orderNumber: string,
+  reservationNumber: string,
   status: 'deposit_paid' | 'shipped',
   trackingInfo?: string,
   customerName: string = 'Client'
@@ -26,10 +26,10 @@ export async function sendStatusUpdateEmail(
   let message = '';
 
   if (status === 'deposit_paid') {
-    subject = `Deposit Received: #${orderNumber} | WANAS`;
+    subject = `Deposit Received: #${reservationNumber} | WANAS`;
     message = `Your deposit is received, weaving has begun.`;
   } else if (status === 'shipped') {
-    subject = `Your Order is on its way: #${orderNumber} | WANAS`;
+    subject = `Your Reservation is on its way: #${reservationNumber} | WANAS`;
     message = `Your sanctuary piece is on its way.${trackingInfo ? ` Tracking: ${trackingInfo}` : ''}`;
   }
 
@@ -57,7 +57,7 @@ export async function sendStatusUpdateEmail(
 export async function sendReservationEmail(
   reservationId: string,
   customerEmail: string,
-  orderNumber: string,
+  reservationNumber: string,
   items: ReservationItem[],
   totalAmount: number,
   magicLinkToken: string
@@ -70,7 +70,7 @@ export async function sendReservationEmail(
     <div style="font-family: 'Georgia', serif; background-color: #F9F7F5; color: #1A1A1A; padding: 40px; max-width: 600px; margin: 0 auto;">
       <h1 style="text-align: center; font-weight: normal; margin-bottom: 30px; letter-spacing: 2px;">AURA</h1>
       <p style="font-size: 16px; line-height: 1.6;">Thank you for your reservation at The Atelier.</p>
-      <p style="font-size: 16px; line-height: 1.6;">Your reservation <strong>${orderNumber}</strong> has been received and is currently being reviewed by our concierge team.</p>
+      <p style="font-size: 16px; line-height: 1.6;">Your reservation <strong>${reservationNumber}</strong> has been received and is currently being reviewed by our concierge team.</p>
       
       <div style="margin: 30px 0; border-top: 1px solid #EAE5E5; border-bottom: 1px solid #EAE5E5; padding: 20px 0;">
         <h2 style="font-size: 18px; font-weight: normal; margin-bottom: 20px;">The Collection Details</h2>
@@ -104,7 +104,7 @@ export async function sendReservationEmail(
       await transporter.sendMail({
         from: '"WANAS Concierge" <concierge@wanasbrand.com>',
         to: customerEmail,
-        subject: `Your WANAS Reservation ${orderNumber}`,
+        subject: `Your WANAS Reservation ${reservationNumber}`,
         html: htmlContent,
       });
       const firestore = db;

@@ -1,9 +1,13 @@
 import { z } from 'zod';
 
+import { isValidEgyptianPhone } from '@/lib/utils/validation';
+
 export const ReservationSchema = z.object({
   customerData: z.object({
     fullName: z.string().min(2),
-    phone: z.string().min(10),
+    phone: z.string().refine(isValidEgyptianPhone, {
+      message: 'Invalid Egyptian phone number. Must start with 010, 011, 012, or 015 and be 11 digits.',
+    }),
     city: z.string().min(2),
     address: z.string().min(5),
     email: z.string().email().optional(),

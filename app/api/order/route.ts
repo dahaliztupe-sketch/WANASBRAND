@@ -14,17 +14,17 @@ export async function POST(req: Request) {
     const firestore = db;
     if (!firestore) throw new Error('Database not initialized');
 
-    // Check if order already exists with this key
-    const existingOrderQuery = await firestore.collection('orders')
+    // Check if reservation already exists with this key
+    const existingReservationQuery = await firestore.collection('reservations')
       .where('idempotencyKey', '==', idempotencyKey)
       .limit(1)
       .get();
 
-    if (!existingOrderQuery.empty) {
+    if (!existingReservationQuery.empty) {
       return NextResponse.json({ 
         success: true, 
-        message: 'Order already processed', 
-        orderId: existingOrderQuery.docs[0].id,
+        message: 'Reservation already processed', 
+        reservationId: existingReservationQuery.docs[0].id,
         isDuplicate: true 
       });
     }
@@ -33,8 +33,8 @@ export async function POST(req: Request) {
     const { customerInfo, items, totalAmount } = body;
 
     // 3. Phase 1: Write to Firestore with 'pending_whatsapp' status
-    const orderRef = firestore.collection('orders').doc();
-    const orderData = {
+    const reservationRef = firestore.collection('reservations').doc();
+    const reservationData = {
       idempotencyKey,
       customerInfo,
       items,
@@ -44,40 +44,40 @@ export async function POST(req: Request) {
       updatedAt: new Date().toISOString(),
     };
 
-    await orderRef.set(orderData);
+    await reservationRef.set(reservationData);
 
     // 4. Phase 2: Call WhatsApp API with secure JWT link
     try {
       const cartToken = await generateCartToken({ items, totalAmount });
-      const resumeLink = `https://wanas.app/api/order/resume?token=${cartToken}`;
+      const resumeLink = `https://wanas.app/api/reservation/resume?token=${cartToken}`;
 
       await sendWhatsAppNotification({
         to: customerInfo.phone,
         templateName: templates.RESERVATION_RECEIVED,
         variables: {
           customer_name: customerInfo.fullName,
-          order_id: orderRef.id,
+          reservation_id: reservationRef.id,
           resume_link: resumeLink
         }
       });
 
       // WhatsApp Success: Update status to 'confirmed'
-      await orderRef.update({
+      await reservationRef.update({
         status: 'confirmed',
         updatedAt: new Date().toISOString()
       });
 
       return NextResponse.json({ 
         success: true, 
-        orderId: orderRef.id, 
-        message: 'Order created and WhatsApp notification sent.' 
+        reservationId: reservationRef.id, 
+        message: 'Reservation created and WhatsApp notification sent.' 
       });
 
     } catch (waError) {
       console.error('WhatsApp notification failed:', waError);
       
       // WhatsApp Failure: Rollback status to 'failed_whatsapp'
-      await orderRef.update({
+      await reservationRef.update({
         status: 'failed_whatsapp',
         updatedAt: new Date().toISOString(),
         error: waError instanceof Error ? waError.message : 'Unknown WhatsApp error'
@@ -85,16 +85,16 @@ export async function POST(req: Request) {
 
       return NextResponse.json({ 
         success: false, 
-        orderId: orderRef.id, 
-        message: 'Order created but WhatsApp notification failed.' 
+        reservationId: reservationRef.id, 
+        message: 'Reservation created but WhatsApp notification failed.' 
       }, { status: 502 });
     }
 
   } catch (error) {
-    console.error('Order processing error:', error);
+    console.error('Reservation processing error:', error);
     return NextResponse.json({ 
       success: false, 
-      message: 'Failed to process order.' 
+      message: 'Failed to process reservation.' 
     }, { status: 500 });
   }
 }

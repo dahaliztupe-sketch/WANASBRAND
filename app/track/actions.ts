@@ -26,7 +26,7 @@ export async function trackByToken(token: string) {
       success: true, 
       data: { 
         id: doc.id, 
-        orderNumber: data.orderNumber,
+        reservationNumber: data.reservationNumber,
         status: data.status,
         // Don't return full data yet if we need phone verification
         needsVerification: true 
@@ -37,9 +37,9 @@ export async function trackByToken(token: string) {
   }
 }
 
-export async function trackOrder(orderNumber: string, last4Digits: string) {
+export async function trackReservation(reservationNumber: string, last4Digits: string) {
   try {
-    const q = query(collection(db, 'reservations'), where('orderNumber', '==', orderNumber));
+    const q = query(collection(db, 'reservations'), where('reservationNumber', '==', reservationNumber));
     const snapshot = await getDocs(q);
 
     if (snapshot.empty) {
@@ -69,14 +69,14 @@ export async function trackOrder(orderNumber: string, last4Digits: string) {
     return {
       success: true,
       data: {
-        id: reservation.orderNumber,
+        id: reservation.reservationNumber,
         status: reservation.status,
         steps,
         items: reservation.items, // Snapshots
       }
     };
   } catch (error: unknown) {
-    console.error('Error tracking order:', error);
+    console.error('Error tracking reservation:', error);
     return { success: false, error: 'An error occurred during tracking.' };
   }
 }

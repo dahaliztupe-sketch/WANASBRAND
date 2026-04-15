@@ -15,6 +15,7 @@ export interface User {
   phone?: string;
   role: 'customer' | 'admin';
   tier?: 'Guest' | 'Member' | 'InnerCircle';
+  loyaltyPoints?: number;
   savedAddresses?: Address[];
   isVIP?: boolean;
   totalSpent?: number;
@@ -73,7 +74,6 @@ export interface ReservationItem {
 
 export interface Reservation {
   id: string;
-  orderNumber: string; // Sequential
   reservationNumber: string; // Mandatory
   customerInfo: {
     fullName: string;
@@ -111,11 +111,6 @@ export interface Reservation {
   };
   emailDeliveryStatus?: 'pending' | 'sent' | 'failed';
 }
-
-/**
- * Order represents a simplified view of a Reservation for customer-facing displays.
- */
-export type Order = Pick<Reservation, 'id' | 'orderNumber' | 'userId' | 'totalAmount' | 'status' | 'createdAt' | 'updatedAt' | 'version' | 'items' | 'customerInfo'>;
 
 export interface Log {
   id: string;
@@ -156,10 +151,10 @@ export interface About {
   };
 }
 
-export interface OrderDetailsTranslations {
+export interface ReservationDetailsTranslations {
   notFound: string;
   backToCollection: string;
-  order: string;
+  reservation: string;
   acquiredOn: string;
   viewCertificate: string;
   acquiredPieces: string;
@@ -176,7 +171,7 @@ export interface OrderDetailsTranslations {
     title: string;
     atelier: string;
     description: string;
-    orderId: string;
+    reservationId: string;
     issueDate: string;
     material: string;
     materialValue: string;
@@ -227,7 +222,7 @@ export interface Translations {
   contact: Record<string, unknown>;
   account: Record<string, unknown>;
   ordersList: Record<string, unknown>;
-  orderDetails: OrderDetailsTranslations;
+  orderDetails: ReservationDetailsTranslations;
   auth: AuthTranslations;
   reserve: Record<string, unknown>;
   reserveSuccess: Record<string, unknown>;

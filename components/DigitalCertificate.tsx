@@ -4,7 +4,7 @@ import { motion } from 'motion/react';
 
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
-export function DigitalCertificate({ reservationId, orderNumber }: { reservationId: string, orderNumber: string }) {
+export function DigitalCertificate({ reservationId, reservationNumber }: { reservationId: string, reservationNumber: string }) {
   const { t } = useTranslation();
   return (
     <motion.div 
@@ -14,7 +14,7 @@ export function DigitalCertificate({ reservationId, orderNumber }: { reservation
     >
       <h2 className="font-serif text-2xl italic text-inverted mb-4">{t.digitalCertificate.title}</h2>
       <p className="text-inverted/60 text-xs uppercase tracking-widest mb-8">
-        {t.digitalCertificate.description.replace('{orderNumber}', orderNumber)}
+        {t.digitalCertificate.description.replace('{reservationNumber}', reservationNumber)}
       </p>
       <div className="font-mono text-[10px] text-inverted/40">
         {t.digitalCertificate.id.replace('{reservationId}', reservationId)}

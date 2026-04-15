@@ -7,13 +7,13 @@ import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 
-import { trackOrder, trackByToken } from './actions';
+import { trackReservation, trackByToken } from './actions';
 
 function TrackContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   
-  const [orderId, setOrderId] = useState('');
+  const [reservationId, setReservationId] = useState('');
   const [privacyKey, setPrivacyKey] = useState('');
   const [trackingData, setTrackingData] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(false);
@@ -32,13 +32,13 @@ function TrackContent() {
       const result = await trackByToken(token);
       if (result.success && result.data) {
         if (result.data.needsVerification) {
-          setOrderId(result.data.orderNumber);
+          setReservationId(result.data.reservationNumber);
           toast.info('Please enter the last 4 digits of your phone number to unlock tracking.');
         } else {
           setTrackingData(result.data);
         }
       } else {
-        setError(result.error || 'Failed to track order.');
+        setError(result.error || 'Failed to track reservation.');
         toast.error(result.error);
       }
     } catch {
@@ -55,11 +55,11 @@ function TrackContent() {
     setTrackingData(null);
     
     try {
-      const result = await trackOrder(orderId, privacyKey);
+      const result = await trackReservation(reservationId, privacyKey);
       if (result.success) {
         setTrackingData(result.data);
       } else {
-        setError(result.error || 'Failed to track order.');
+        setError(result.error || 'Failed to track reservation.');
         toast.error(result.error);
       }
     } catch {
@@ -84,8 +84,8 @@ function TrackContent() {
               <label className="text-[10px] uppercase tracking-widest text-primary/40">Reservation ID</label>
               <input
                 type="text"
-                value={orderId}
-                onChange={(e) => setOrderId(e.target.value)}
+                value={reservationId}
+                onChange={(e) => setReservationId(e.target.value)}
                 placeholder="e.g. #WNS-10001"
                 className="w-full border-b border-primary/20 py-3 bg-transparent outline-none focus:border-primary transition-colors"
                 required

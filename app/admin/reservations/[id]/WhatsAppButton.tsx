@@ -11,10 +11,10 @@ interface WhatsAppButtonProps {
 
 export default function WhatsAppButton({ reservation }: WhatsAppButtonProps) {
   const generateMessage = () => {
-    const orderNumber = reservation.orderNumber || reservation.reservationNumber;
+    const reservationNumber = reservation.reservationNumber;
     const name = reservation.customerInfo.fullName;
 
-    return `✨ *WANAS Atelier* ✨\n\nOrder: #${orderNumber}\n\nHello ${name}, your selection is ready. We will contact you soon to confirm the delivery details. Thank you for choosing WANAS.`;
+    return `✨ *WANAS Atelier* ✨\n\nReservation: #${reservationNumber}\n\nHello ${name}, your selection is ready. We will contact you soon to confirm the delivery details. Thank you for choosing WANAS.`;
   };
 
   const handleCopy = () => {

@@ -12,7 +12,7 @@ export function TrackingTimeline({ reservation }: TrackingTimelineProps) {
 
   return (
     <div className="space-y-4">
-      <h3 className="font-serif text-lg text-primary">Order Tracking</h3>
+      <h3 className="font-serif text-lg text-primary">Reservation Tracking</h3>
       <div className="flex justify-between">
         {steps.map((step, index) => (
           <div key={step} className={`flex flex-col items-center ${index <= currentIndex ? 'text-accent-primary' : 'text-primary/30'}`}>

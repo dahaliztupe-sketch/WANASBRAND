@@ -14,15 +14,15 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
     }
 
-    // 1. Aggregate Orders & Revenue
-    const ordersSnap = await getDocs(collection(db, 'orders'));
-    const totalOrders = ordersSnap.size;
+    // 1. Aggregate Reservations & Revenue
+    const reservationsSnap = await getDocs(collection(db, 'reservations'));
+    const totalReservations = reservationsSnap.size;
     let totalRevenue = 0;
     
-    ordersSnap.forEach(doc => {
+    reservationsSnap.forEach(doc => {
       const data = doc.data();
-      if (data.status === 'confirmed' || data.status === 'delivered') {
-        totalRevenue += data.totalAmount || 0;
+      if (data.status === 'deposit_paid' || data.status === 'delivered' || data.status === 'shipped') {
+        totalRevenue += data.financials?.total || data.totalAmount || 0;
       }
     });
 
@@ -30,27 +30,21 @@ export async function GET(req: Request) {
     const usersSnap = await getDocs(collection(db, 'users'));
     const totalUsers = usersSnap.size;
 
-    // 3. Aggregate Reservations
-    const reservationsSnap = await getDocs(collection(db, 'reservations'));
-    const totalReservations = reservationsSnap.size;
-
-    // 4. Write to stats/latest
+    // 3. Write to stats/latest
     const statsRef = doc(db, 'stats', 'latest');
     await setDoc(statsRef, {
-      totalOrders,
+      totalReservations,
       totalRevenue,
       totalUsers,
-      totalReservations,
       updatedAt: serverTimestamp(),
     }, { merge: true });
 
     return NextResponse.json({
       success: true,
       stats: {
-        totalOrders,
+        totalReservations,
         totalRevenue,
         totalUsers,
-        totalReservations,
       }
     });
   } catch (error) {

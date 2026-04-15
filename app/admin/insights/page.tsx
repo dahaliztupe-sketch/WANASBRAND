@@ -116,7 +116,7 @@ export default function InsightsPage() {
         
         if (statsDoc.exists()) {
           const statsData = statsDoc.data();
-          requested = statsData.totalOrders || 0;
+          requested = statsData.totalReservations || 0;
           confirmed = statsData.totalConfirmed || 0;
           activeCartsCount = statsData.activeCarts || 0;
         } else {

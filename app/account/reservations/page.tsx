@@ -112,7 +112,7 @@ export default function OrdersPage() {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
                   <div className="space-y-2">
                     <p className="text-[10px] uppercase tracking-[0.2em] text-primary/40 font-bold">
-                      {t.ordersList.order} {reservation.reservationNumber || reservation.orderNumber}
+                      {t.ordersList.order} {reservation.reservationNumber}
                     </p>
                     <div className="flex items-center gap-4 text-xs text-primary/60">
                       <div className="flex items-center gap-2">
@@ -157,7 +157,7 @@ export default function OrdersPage() {
                       <p className="text-2xl font-serif text-primary"><bdi>EGP {reservation.totalAmount.toLocaleString()}</bdi></p>
                     </div>
                     <Link 
-                      href={`/account/orders/${reservation.id}`}
+                      href={`/account/reservations/${reservation.id}`}
                       className="flex items-center gap-4 text-[10px] uppercase tracking-[0.3em] text-accent-primary hover:text-primary transition-all group/link"
                     >
                       {t.ordersList.viewDetails}

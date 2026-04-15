@@ -4,10 +4,10 @@ import { sendStatusUpdateEmail } from '@/lib/services/email.service';
 
 export async function POST(req: Request) {
   try {
-    const { email, orderNumber, status, trackingInfo, customerName } = await req.json();
+    const { email, reservationNumber, status, trackingInfo, customerName } = await req.json();
     
     if (email) {
-      await sendStatusUpdateEmail(email, orderNumber, status, trackingInfo, customerName);
+      await sendStatusUpdateEmail(email, reservationNumber, status, trackingInfo, customerName);
     }
     
     return NextResponse.json({ success: true });

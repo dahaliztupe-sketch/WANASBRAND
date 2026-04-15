@@ -80,7 +80,7 @@ export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
         
       await updateReservationStatus(reservationId, newStatus, clientUpdatedAt);
       
-      toast.success(`Order status updated to ${newStatus.replace('_', ' ')}`);
+      toast.success(`Reservation status updated to ${newStatus.replace('_', ' ')}`);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to update status';
       toast.error(message);
@@ -132,7 +132,7 @@ export default function KanbanBoard({ initialReservations }: KanbanBoardProps) {
                               <div className="flex justify-between items-start">
                                 <div className="flex items-center gap-2">
                                   <span className="text-[10px] uppercase tracking-widest text-primary/40 font-bold">
-                                    #<bdi>{res.orderNumber || res.reservationNumber}</bdi>
+                                    #<bdi>{res.reservationNumber}</bdi>
                                   </span>
                                   {res.giftingDetails?.isGift && (
                                     <Gift size={12} className="text-accent-primary animate-pulse" />

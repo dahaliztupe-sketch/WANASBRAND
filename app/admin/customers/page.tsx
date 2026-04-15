@@ -23,8 +23,8 @@ interface Customer {
   isVIP?: boolean;
   createdAt: string;
   totalSpent?: number;
-  orderCount?: number;
-  lastOrderDate?: string;
+  reservationCount?: number;
+  lastReservationDate?: string;
 }
 
 export default function CustomerCRM() {
@@ -162,7 +162,7 @@ export default function CustomerCRM() {
                   </td>
                   <td className="px-8 py-6">
                     <p className="text-sm font-serif text-primary">${(customer.totalSpent || 0).toLocaleString()}</p>
-                    <p className="text-[10px] text-primary/40 uppercase tracking-widest">{customer.orderCount || 0} Reservations</p>
+                    <p className="text-[10px] text-primary/40 uppercase tracking-widest">{customer.reservationCount || 0} Reservations</p>
                   </td>
                   <td className="px-8 py-6">
                     <p className="text-xs text-primary/60 font-light">

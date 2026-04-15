@@ -97,7 +97,7 @@ export default function ReservePage() {
         recommendedByAI: item.recommendedByAI || false,
       }));
 
-      const response = await fetch('/api/reserve', {
+      const response = await fetch('/api/reservation', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -125,8 +125,9 @@ export default function ReservePage() {
       });
 
       if (response.ok) {
+        const data = await response.json();
         useSelectionStore.getState().clearSelection();
-        router.push('/reserve/success');
+        router.push(`/reservation/success?id=${data.id}&whatsapp=${encodeURIComponent(data.whatsappLink)}`);
       } else {
         const errorData = await response.json();
         import('sonner').then(({ toast }) => toast.error(errorData.error || t.reserve.errors.failed));
@@ -242,7 +243,7 @@ export default function ReservePage() {
         </div>
       </div>
 
-      {/* Right: Sticky Order Summary */}
+      {/* Right: Sticky Reservation Summary */}
       <div className="md:w-1/3 bg-primary/50 p-8 md:p-24 border-l border-primary/5">
         <div className="sticky top-24 space-y-8">
           <h2 className="text-xl font-serif">{t.reserve.summary}</h2>

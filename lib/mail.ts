@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 import { CreateEmailOptions, CreateEmailResponse } from 'resend/build/src/emails/interfaces';
 
-import { OrderConfirmationEmail } from '@/components/emails/OrderConfirmationEmail';
+import { ReservationConfirmationEmail } from '@/components/emails/ReservationConfirmationEmail';
 import { StatusUpdateEmail } from '@/components/emails/StatusUpdateEmail';
 
 let resend: Resend | null = null;
@@ -35,7 +35,7 @@ async function sendWithRetry(params: CreateEmailOptions, maxRetries = 2): Promis
   throw lastError;
 }
 
-export async function sendStatusUpdateEmail(email: string, orderId: string, status: 'deposit_paid' | 'shipped', trackingInfo?: string, customerName: string = 'Client') {
+export async function sendStatusUpdateEmail(email: string, reservationNumber: string, status: 'deposit_paid' | 'shipped', trackingInfo?: string, customerName: string = 'Client') {
   if (!resend) {
     console.warn('Skipping email send: Resend not initialized.');
     return;
@@ -44,9 +44,9 @@ export async function sendStatusUpdateEmail(email: string, orderId: string, stat
   let subject = '';
 
   if (status === 'deposit_paid') {
-    subject = `Deposit Received: #${orderId} | WANAS`;
+    subject = `Deposit Received: #${reservationNumber} | WANAS`;
   } else if (status === 'shipped') {
-    subject = `Your Order is on its way: #${orderId} | WANAS`;
+    subject = `Your Reservation is on its way: #${reservationNumber} | WANAS`;
   }
 
   try {
@@ -54,14 +54,14 @@ export async function sendStatusUpdateEmail(email: string, orderId: string, stat
       from: `WANAS Atelier <${fromEmail}>`,
       to: email,
       subject: subject,
-      react: StatusUpdateEmail({ customerName, orderId, status, trackingInfo }),
+      react: StatusUpdateEmail({ customerName, reservationNumber, status, trackingInfo }),
     });
   } catch (error) {
     console.error('Error sending status update email:', error);
   }
 }
 
-export async function sendOrderConfirmation(email: string, orderId: string, magicLink: string, customerName: string = 'Client') {
+export async function sendReservationConfirmation(email: string, reservationId: string, magicLink: string, customerName: string = 'Client') {
   if (!resend) {
     console.warn('Skipping email send: Resend not initialized.');
     return;
@@ -71,10 +71,10 @@ export async function sendOrderConfirmation(email: string, orderId: string, magi
     await sendWithRetry({
       from: `WANAS Atelier <${fromEmail}>`,
       to: email,
-      subject: `Reservation Confirmed: #${orderId} | WANAS`,
-      react: OrderConfirmationEmail({ customerName, orderId, magicLink }),
+      subject: `Reservation Confirmed: #${reservationId} | WANAS`,
+      react: ReservationConfirmationEmail({ customerName, reservationId, magicLink }),
     });
   } catch (error) {
-    console.error('Error sending order confirmation email:', error);
+    console.error('Error sending reservation confirmation email:', error);
   }
 }

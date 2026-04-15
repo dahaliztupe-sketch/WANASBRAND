@@ -22,9 +22,9 @@ export default function ExportButton({ reservations }: ExportButtonProps) {
         return;
       }
 
-      const headers = ['Order ID', 'Date', 'Customer', 'Email', 'Net Amount (EGP)', 'Status'];
+      const headers = ['Reservation ID', 'Date', 'Customer', 'Email', 'Net Amount (EGP)', 'Status'];
       const rows = confirmed.map(res => [
-        res.orderNumber || res.reservationNumber,
+        res.reservationNumber,
         new Date(res.createdAt).toLocaleDateString(),
         res.customerInfo.fullName,
         res.customerInfo.email,

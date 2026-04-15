@@ -99,13 +99,14 @@
       "type": "object",
       "properties": {
         "userId": { "type": "string" },
-        "orderId": { "type": "string" },
+        "reservationId": { "type": "string" },
+        "reservationNumber": { "type": "string" },
         "reason": { "type": "string" },
         "notes": { "type": "string" },
         "status": { "type": "string", "enum": ["pending", "approved", "rejected", "completed"] },
         "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["userId", "orderId", "reason", "status", "createdAt"]
+      "required": ["userId", "reservationId", "reservationNumber", "reason", "status", "createdAt"]
     },
     "WaitlistEntry": {
       "title": "WaitlistEntry",

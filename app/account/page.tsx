@@ -13,7 +13,7 @@ import { Reservation, User } from '@/types';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function AccountDashboard() {
-  const [recentOrders, setRecentOrders] = useState<Reservation[]>([]);
+  const [recentReservations, setRecentReservations] = useState<Reservation[]>([]);
   const [userData, setUserData] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const { t, locale } = useTranslation();
@@ -28,7 +28,7 @@ export default function AccountDashboard() {
         setUserData(userDoc.docs[0].data());
       }
 
-      // Fetch Recent Orders
+      // Fetch Recent Reservations
       const q = query(
         collection(db, 'reservations'),
         where('userId', '==', uid),
@@ -36,8 +36,8 @@ export default function AccountDashboard() {
         limit(2)
       );
       const snapshot = await getDocs(q);
-      const orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Reservation));
-      setRecentOrders(orders);
+      const reservations = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Reservation));
+      setRecentReservations(reservations);
     } catch (error) {
       handleFirestoreError(error, OperationType.GET, 'account_dashboard', auth);
     } finally {
@@ -103,10 +103,11 @@ export default function AccountDashboard() {
       </div>
 
       {/* Quick Stats - Minimalist */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-16">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 lg:gap-16">
         {[
-          { label: t.account.activeOrders, value: recentOrders.length, icon: Package },
-          { label: t.account.theVault, value: '12', icon: Heart },
+          { label: t.account.activeOrders, value: recentReservations.length, icon: Package },
+          { label: 'Loyalty Points', value: userData?.loyaltyPoints || 0, icon: Heart },
+          { label: 'Current Tier', value: userData?.tier || 'Guest', icon: Clock },
           { label: t.account.returnsPending, value: '0', icon: RotateCcw },
         ].map((stat, idx) => (
           <div key={idx} className="group relative p-8 border border-primary/10 hover:border-accent-primary/50 transition-colors duration-700 bg-secondary/30">
@@ -123,11 +124,11 @@ export default function AccountDashboard() {
 
       {/* Recent Activity & Details - Asymmetrical */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
-        {/* Recent Orders */}
+        {/* Recent Reservations */}
         <section className="lg:col-span-7 space-y-12">
           <div className="flex items-center justify-between border-b border-primary/10 pb-6">
             <h2 className="text-3xl font-serif text-primary">{t.account.recentAcquisitions}</h2>
-            <Link href="/account/orders" className="text-[9px] uppercase tracking-[0.3em] text-accent-primary hover:text-primary transition-colors font-bold flex items-center gap-2 group">
+            <Link href="/account/reservations" className="text-[9px] uppercase tracking-[0.3em] text-accent-primary hover:text-primary transition-colors font-bold flex items-center gap-2 group">
               {t.account.viewArchive} <ArrowRight strokeWidth={1} className={`w-3 h-3 transition-transform ${locale === 'ar' ? 'group-hover:-translate-x-1 rotate-180' : 'group-hover:translate-x-1'}`} />
             </Link>
           </div>
@@ -135,24 +136,24 @@ export default function AccountDashboard() {
           <div className="space-y-8">
             {loading ? (
               [1, 2].map(i => <div key={i} className="h-40 bg-secondary/50 animate-pulse" />)
-            ) : recentOrders.length > 0 ? (
-              recentOrders.map((order) => (
+            ) : recentReservations.length > 0 ? (
+              recentReservations.map((reservation) => (
                 <Link 
-                  key={order.id} 
-                  href={`/account/orders/${order.id}`}
+                  key={reservation.id} 
+                  href={`/account/reservations/${reservation.id}`}
                   className="block p-8 border border-primary/10 hover:border-accent-primary/50 transition-colors duration-700 group bg-secondary/20"
                 >
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                     <div className="space-y-2">
-                      <p className="text-[9px] uppercase tracking-[0.3em] text-primary/40 font-bold">{t.account.order} <bdi>{order.reservationNumber}</bdi></p>
-                      <p className="text-lg font-serif text-primary">{new Date(order.createdAt).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                      <p className="text-[9px] uppercase tracking-[0.3em] text-primary/40 font-bold">{t.account.reservation} <bdi>{reservation.reservationNumber}</bdi></p>
+                      <p className="text-lg font-serif text-primary">{new Date(reservation.createdAt).toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
                     </div>
                     <span className="px-4 py-2 bg-primary/5 text-primary text-[9px] uppercase tracking-[0.3em] font-bold border border-primary/10">
-                      {order.status.replace('_', ' ')}
+                      {reservation.status.replace('_', ' ')}
                     </span>
                   </div>
                   <div className="flex justify-between items-end pt-6 border-t border-primary/10">
-                    <p className="text-2xl font-serif text-primary"><bdi>{order.totalAmount.toLocaleString()} EGP</bdi></p>
+                    <p className="text-2xl font-serif text-primary"><bdi>{reservation.totalAmount.toLocaleString()} EGP</bdi></p>
                     <span className="text-[9px] uppercase tracking-[0.3em] text-accent-primary font-bold group-hover:text-primary transition-colors">{t.account.viewDetails}</span>
                   </div>
                 </Link>
