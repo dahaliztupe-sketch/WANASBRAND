@@ -8,6 +8,14 @@ export const dynamic = 'force-dynamic';
 export default async function ReservationsAdminPage() {
   const reservations = await getAdminReservations();
 
+  if (!reservations) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-primary/60">Database connection not available.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-end">

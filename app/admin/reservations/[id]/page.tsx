@@ -1,3 +1,4 @@
+import { db } from '@/lib/firebase/server';
 import { ArrowLeft, Shield, User, MapPin, Phone, Mail, Package, Clock, DollarSign, Gift } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -15,7 +16,16 @@ export default async function ReservationDetailsAdminPage({ params }: { params: 
   const { id } = await params;
   const reservation = await getAdminReservationById(id);
 
-  if (!reservation) notFound();
+  if (!reservation) {
+    if (!db) {
+      return (
+        <div className="flex items-center justify-center h-screen">
+          <p className="text-primary/60">Database connection not available.</p>
+        </div>
+      );
+    }
+    notFound();
+  }
 
   return (
     <div className="space-y-12 pb-24">

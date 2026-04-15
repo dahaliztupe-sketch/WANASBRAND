@@ -9,7 +9,7 @@ import { Reservation } from '@/types';
 export async function getAdminReservations(statusFilter: string | string[] = 'active', limitCount: number = 100) {
   try {
     const firestore = db;
-    if (!firestore) throw new Error('Database not initialized');
+    if (!firestore) return null;
     let query: FirebaseFirestore.Query = firestore.collection('reservations').orderBy('createdAt', 'desc');
     
     if (statusFilter === 'active') {
@@ -41,14 +41,14 @@ export async function getAdminReservations(statusFilter: string | string[] = 'ac
     return reservations;
   } catch (error) {
     console.error('Error fetching admin reservations:', error);
-    throw new Error('Failed to fetch reservations');
+    return null;
   }
 }
 
 export async function getAdminReservationById(id: string) {
   try {
     const firestore = db;
-    if (!firestore) throw new Error('Database not initialized');
+    if (!firestore) return null;
     const doc = await firestore.collection('reservations').doc(id).get();
     if (!doc.exists) return null;
 
@@ -64,7 +64,7 @@ export async function getAdminReservationById(id: string) {
     } as Reservation;
   } catch (error) {
     console.error('Error fetching admin reservation:', error);
-    throw new Error('Failed to fetch reservation');
+    return null;
   }
 }
 
