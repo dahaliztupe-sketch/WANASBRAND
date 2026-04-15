@@ -1,4 +1,5 @@
 import { getAdminReservations } from '@/app/admin/actions';
+import { db } from '@/lib/firebase/server';
 
 import ExportButton from './ExportButton';
 import KanbanBoard from './KanbanBoard';
@@ -6,12 +7,21 @@ import KanbanBoard from './KanbanBoard';
 export const dynamic = 'force-dynamic';
 
 export default async function ReservationsAdminPage() {
+  if (!db) {
+    return (
+      <div className="p-8 text-center">
+        <h1 className="text-2xl font-serif text-primary">Database Unavailable</h1>
+        <p className="text-primary/60 mt-4">Please try again later.</p>
+      </div>
+    );
+  }
+
   const reservations = await getAdminReservations();
 
   if (!reservations) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <p className="text-primary/60">Database connection not available.</p>
+        <p className="text-primary/60">No reservations found.</p>
       </div>
     );
   }
