@@ -1,10 +1,8 @@
+import { headers } from 'next/headers';
 import { ArrowLeft, Shield, User, MapPin, Phone, Mail, Package, Clock, DollarSign, Gift } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-
-import { db } from '@/lib/firebase/server';
-import { getAdminReservationById } from '@/app/admin/actions';
 
 import NotesSection from './NotesSection';
 import StatusSelector from './StatusSelector';
@@ -12,20 +10,43 @@ import WhatsAppButton from './WhatsAppButton';
 
 export const dynamic = 'force-dynamic';
 
+async function getReservation(id: string) {
+  const host = (await headers()).get('host');
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  const baseUrl = `${protocol}://${host}`;
+  
+  try {
+    const res = await fetch(`${baseUrl}/api/admin/reservations/${id}`, {
+      cache: 'no-store'
+    });
+    
+    if (!res.ok) {
+      if (res.status === 404) return 'not-found';
+      return null;
+    }
+    
+    return res.json();
+  } catch (error) {
+    console.error('Error in getReservation:', error);
+    return null;
+  }
+}
+
 export default async function ReservationDetailsAdminPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const reservation = await getAdminReservationById(id);
+  const reservation = await getReservation(id);
+
+  if (reservation === 'not-found') {
+    notFound();
+  }
 
   if (!reservation) {
-    if (!db) {
-      return (
-        <div className="p-8 text-center">
-          <h1 className="text-2xl font-serif text-primary">Database Unavailable</h1>
-          <p className="text-primary/60 mt-4">Please try again later.</p>
-        </div>
-      );
-    }
-    notFound();
+    return (
+      <div className="p-8 text-center">
+        <h1 className="text-2xl font-serif text-primary">Database Unavailable</h1>
+        <p className="text-primary/60 mt-4">Please try again later or check your configuration.</p>
+      </div>
+    );
   }
 
   return (

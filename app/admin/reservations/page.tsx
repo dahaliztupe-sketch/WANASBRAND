@@ -1,27 +1,39 @@
-import { getAdminReservations } from '@/app/admin/actions';
-import { db } from '@/lib/firebase/server';
-
+import { headers } from 'next/headers';
 import ExportButton from './ExportButton';
 import KanbanBoard from './KanbanBoard';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ReservationsAdminPage() {
-  if (!db) {
-    return (
-      <div className="p-8 text-center">
-        <h1 className="text-2xl font-serif text-primary">Database Unavailable</h1>
-        <p className="text-primary/60 mt-4">Please try again later.</p>
-      </div>
-    );
+async function getReservations() {
+  const host = (await headers()).get('host');
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  const baseUrl = `${protocol}://${host}`;
+  
+  try {
+    const res = await fetch(`${baseUrl}/api/admin/reservations`, {
+      cache: 'no-store'
+    });
+    
+    if (!res.ok) {
+      if (res.status === 503) return null; // Database not configured
+      return null;
+    }
+    
+    return res.json();
+  } catch (error) {
+    console.error('Error in getReservations:', error);
+    return null;
   }
+}
 
-  const reservations = await getAdminReservations();
+export default async function ReservationsAdminPage() {
+  const reservations = await getReservations();
 
   if (!reservations) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-primary/60">No reservations found.</p>
+      <div className="p-8 text-center">
+        <h1 className="text-2xl font-serif text-primary">Database Unavailable</h1>
+        <p className="text-primary/60 mt-4">Please try again later or check your configuration.</p>
       </div>
     );
   }
