@@ -71,7 +71,7 @@ export async function getAdminReservationById(id: string) {
 export async function updateConciergeNotes(id: string, notes: string) {
   try {
     const firestore = db;
-    if (!firestore) throw new Error('Database not initialized');
+    if (!firestore) return { success: false, error: 'Database not initialized' };
     await firestore.collection('reservations').doc(id).update({
       conciergeNotes: notes,
       updatedAt: new Date().toISOString()
@@ -79,14 +79,14 @@ export async function updateConciergeNotes(id: string, notes: string) {
     return { success: true };
   } catch (error) {
     console.error('Error updating notes:', error);
-    throw new Error('Failed to update notes');
+    return { success: false, error: 'Failed to update notes' };
   }
 }
 
 export async function initializeProductionDatabase() {
   try {
     const firestore = db;
-    if (!firestore) throw new Error('Database not initialized');
+    if (!firestore) return { success: false, error: 'Database not initialized' };
     const counterRef = firestore.collection('counters').doc('reservations');
     const counterDoc = await counterRef.get();
 
@@ -97,14 +97,14 @@ export async function initializeProductionDatabase() {
     return { success: true };
   } catch (error) {
     console.error('Error initializing production database:', error);
-    throw new Error('Failed to initialize database');
+    return { success: false, error: 'Failed to initialize database' };
   }
 }
 
 export async function getAdminCustomers() {
   try {
     const firestore = db;
-    if (!firestore) throw new Error('Database not initialized');
+    if (!firestore) return null;
     
     // OPTIMIZATION: Instead of fetching ALL reservations in history (which causes N+1 reads and OOM),
     // we fetch only the most recent 1000 reservations to build the active customer directory.
@@ -157,14 +157,14 @@ export async function getAdminCustomers() {
     return Array.from(customersMap.values()).sort((a, b) => b.totalSpend - a.totalSpend);
   } catch (error) {
     console.error('Error fetching admin customers:', error);
-    throw new Error('Failed to fetch customers');
+    return null;
   }
 }
 
 export async function updateReservationStatus(id: string, status: Reservation['status'], clientUpdatedAt?: number) {
   try {
     const firestore = db;
-    if (!firestore) throw new Error('Database not initialized');
+    if (!firestore) return { success: false, error: 'Database not initialized' };
     const ref = firestore.collection('reservations').doc(id);
     
     await firestore.runTransaction(async (transaction) => {
@@ -206,7 +206,7 @@ export async function updateReservationStatus(id: string, status: Reservation['s
           // Fetch user to get FCM token
           if (data.userId && data.userId !== 'guest') {
             const firestore = db;
-            if (!firestore) throw new Error('Database not initialized');
+            if (!firestore) return { success: false, error: 'Database not initialized' };
             const userDoc = await firestore.collection('users').doc(data.userId).get();
             const userData = userDoc.data();
             if (userData?.fcmToken) {
@@ -226,14 +226,14 @@ export async function updateReservationStatus(id: string, status: Reservation['s
     return { success: true };
   } catch (error) {
     console.error('Error updating reservation status:', error);
-    throw new Error('Failed to update status');
+    return { success: false, error: 'Failed to update status' };
   }
 }
 
 export async function bulkUpdateReservations(ids: string[], status: Reservation['status']) {
   try {
     const database = db;
-    if (!database) throw new Error('Database not initialized');
+    if (!database) return { success: false, error: 'Database not initialized' };
     const batch = database.batch();
     const now = new Date().toISOString();
 
@@ -259,6 +259,6 @@ export async function bulkUpdateReservations(ids: string[], status: Reservation[
     return { success: true };
   } catch (error) {
     console.error('Error bulk updating reservations:', error);
-    throw new Error('Failed to update reservations');
+    return { success: false, error: 'Failed to update reservations' };
   }
 }
