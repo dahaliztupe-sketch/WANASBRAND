@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import * as Sentry from "@sentry/nextjs";
 import { motion } from "motion/react";
 
+import "./globals.css";
 import { Logo } from "@/components/Logo";
 
 export default function GlobalError({
@@ -18,7 +19,10 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html>
+    <html lang="en">
+      <head>
+        <title>Something went wrong | WANAS</title>
+      </head>
       <body className="bg-[#FDFBF7]">
         <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center bg-[#FDFBF7] relative overflow-hidden">
           {/* Subtle Texture Overlay */}

@@ -1,8 +1,8 @@
 import { collection, query, where, getDocs, limit, startAfter, orderBy } from 'firebase/firestore';
 
 import { Product } from '@/types';
-
 import { db } from '../firebase/client';
+import { handleError } from '../utils/error-handler';
 
 export const getProducts = async (
   pageSize: number = 12,
@@ -36,7 +36,6 @@ export const getProducts = async (
 
     return { products, lastVisible };
   } catch (error) {
-    console.error('Error fetching products:', error);
-    throw error;
+    handleError(error, 'ProductService.getProducts');
   }
 };

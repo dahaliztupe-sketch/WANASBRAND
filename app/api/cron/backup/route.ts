@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getFirestore } from 'firebase-admin/firestore';
 
-import { initAdmin } from '@/lib/firebase/server';
+import { db } from '@/lib/firebase/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,10 +21,10 @@ export async function GET(req: Request) {
   }
 
   try {
-    const adminApp = initAdmin();
-    if (!adminApp) throw new Error('Firebase Admin not initialized');
+    if (!db) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
 
-    const db = getFirestore(adminApp);
     const client = (db as unknown as Record<string, unknown>)._firestoreClient || (db as unknown as Record<string, unknown>).client;
     
     if (!client || !client.exportDocuments) {

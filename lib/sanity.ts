@@ -1,4 +1,6 @@
 import { createClient } from '@sanity/client';
+import ar from '@/locales/ar';
+import en from '@/locales/en';
 
 export const sanityClient = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'demo',
@@ -11,12 +13,18 @@ export async function fetchTranslations(lang: 'en' | 'ar') {
   try {
     const query = `*[_type == "translation"]{ key, "text": text_${lang} }`;
     const results = await sanityClient.fetch(query);
-    return results.reduce((acc: Record<string, string>, curr: { key: string; text: string }) => {
-      acc[curr.key] = curr.text;
+    
+    if (!results || results.length === 0) {
+      console.warn('⚠️ Sanity returned empty translations, using local fallback.');
+      return lang === 'ar' ? ar : en;
+    }
+    
+    return results.reduce((acc: any, item: any) => {
+      acc[item.key] = item.text;
       return acc;
-    }, {});
+    }, {} as Record<string, string>);
   } catch (error) {
-    console.error('Error fetching translations from Sanity:', error);
-    return {};
+    console.error('❌ Error fetching from Sanity, using local fallback:', error);
+    return lang === 'ar' ? ar : en;
   }
 }

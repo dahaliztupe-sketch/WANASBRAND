@@ -2,11 +2,15 @@ import { NextResponse } from 'next/server';
 import sharp from 'sharp';
 import { getStorage } from 'firebase-admin/storage';
 
-import { initAdmin } from '@/lib/firebase/server';
+import { db } from '@/lib/firebase/server';
 import { adminRateLimit } from '@/lib/upstash';
 
 export async function POST(request: Request) {
   try {
+    if (!db) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+
     const ip = request.headers.get('x-forwarded-for') || '127.0.0.1';
     
     if (adminRateLimit) {
@@ -31,12 +35,8 @@ export async function POST(request: Request) {
       .webp({ quality: 80 })
       .toBuffer();
 
-    // Initialize Firebase Admin
-    const adminApp = initAdmin();
-    if (!adminApp) {
-      return NextResponse.json({ error: 'Firebase Admin not configured' }, { status: 500 });
-    }
-    const bucket = getStorage(adminApp).bucket();
+    // Use db.app to access the initialized admin app
+    const bucket = getStorage(db.app).bucket();
     
     const filename = `products/${Date.now()}_${file.name.replace(/\.[^/.]+$/, "")}.webp`;
     const fileRef = bucket.file(filename);
