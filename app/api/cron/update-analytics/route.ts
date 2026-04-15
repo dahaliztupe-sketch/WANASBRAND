@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { collection, getDocs, setDoc, doc, serverTimestamp } from 'firebase/firestore';
 
-import { db } from '@/lib/firebase/client';
+import { db } from '@/lib/firebase/server';
 
 export async function GET(req: Request) {
   const authHeader = req.headers.get('authorization');
@@ -10,6 +10,10 @@ export async function GET(req: Request) {
   }
 
   try {
+    if (!db) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+
     // 1. Aggregate Orders & Revenue
     const ordersSnap = await getDocs(collection(db, 'orders'));
     const totalOrders = ordersSnap.size;
