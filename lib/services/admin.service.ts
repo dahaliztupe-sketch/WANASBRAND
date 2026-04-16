@@ -18,6 +18,7 @@ export const logAction = async (adminName: string, action: string, targetId?: st
 export const bulkUpdatePrice = async (ids: string[], _percentage: number) => {
   const batch = writeBatch(db);
   ids.forEach(id => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const _ref = doc(db, 'products', id);
     // Note: This requires fetching the product first, but for now I'll assume we have the price in the UI or fetch it.
     // Actually, I should probably fetch the products first in the UI and pass the new prices.

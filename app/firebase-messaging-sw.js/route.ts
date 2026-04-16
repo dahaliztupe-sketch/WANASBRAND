@@ -2,12 +2,12 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   const config = {
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "wanas-4e90e",
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || "1:873229911604:web:7c90dcfcb63a8c19f4ec61",
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || "AIzaSyBLVuRyOiw0IMEzU7ialYqCrPFZ7gO4z4s",
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || "wanas-4e90e.firebaseapp.com",
-    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || "wanas-4e90e.firebasestorage.app",
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "873229911604",
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   };
 
   const content = `

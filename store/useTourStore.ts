@@ -14,7 +14,7 @@ interface TourState {
   syncTourStatus: () => Promise<void>;
 }
 
-export const useTourStore = create<TourState>((set, get) => ({
+export const useTourStore = create<TourState>((set, _get) => ({
   isActive: false,
   currentStep: 0,
   hasCompletedTour: false,

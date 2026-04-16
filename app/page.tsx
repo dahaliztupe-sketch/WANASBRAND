@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 
 import HomeClient from '@/components/HomeClient';
+import DatabaseUnavailable from '@/components/DatabaseUnavailable';
 import { db } from '@/lib/firebase/server';
 import { Product } from '@/types';
 
@@ -48,6 +49,14 @@ async function getFeaturedProducts(): Promise<Product[]> {
 }
 
 export default async function LandingPage() {
+  if (!db) {
+    return (
+      <main className="min-h-screen bg-primary flex items-center justify-center p-6">
+        <DatabaseUnavailable />
+      </main>
+    );
+  }
+
   const featuredProductsPromise = getFeaturedProducts();
   
   return <HomeClient featuredProductsPromise={featuredProductsPromise} />;

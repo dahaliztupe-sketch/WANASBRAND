@@ -31,7 +31,7 @@ interface ShoppingBagStore {
 
 export const useShoppingBagStore = create<ShoppingBagStore>()(
   persist(
-    (set, get) => ({
+    (set, _get) => ({
       items: [],
       addItem: (product, variant, quantity) => {
         set((state) => {

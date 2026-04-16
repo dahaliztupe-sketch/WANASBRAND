@@ -46,6 +46,7 @@ export async function POST(req: Request) {
     const waitlistRef = firestore.collection('waitlist').doc();
     
     // Remove honeypot field before saving
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { website: _, ...dataToSave } = validation.data;
 
     await waitlistRef.set({

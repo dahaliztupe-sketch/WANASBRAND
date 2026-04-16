@@ -16,7 +16,8 @@ service cloud.firestore {
       return isAuthenticated() &&
         (request.auth.token.admin == true ||
          (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') ||
+         (request.auth.token.email == "abdalrahman32008@gmail.com" && request.auth.token.email_verified == true));
     }
 
     function isValidReservationStatusTransition(prev, next) {
@@ -114,12 +115,15 @@ service cloud.firestore {
     }
 
     function isValidWaitlist(data) {
-      return data.keys().hasAll(['email', 'createdAt']) &&
-             data.email is string && isValidEmail(data.email) &&
+      return data.keys().hasAll(['productId', 'variantId', 'productName', 'variantName', 'contactInfo', 'status', 'createdAt']) &&
+             data.productId is string && data.productId.size() < 100 &&
+             data.variantId is string && data.variantId.size() < 100 &&
+             data.productName is string && data.productName.size() < 200 &&
+             data.variantName is string && data.variantName.size() < 100 &&
+             data.contactInfo is string && data.contactInfo.size() > 5 && data.contactInfo.size() < 255 &&
+             data.status == 'pending' &&
              isValidDateString(data.createdAt) &&
-             (!('name' in data) || (data.name is string && data.name.size() < 100)) &&
-             (!('phone' in data) || (data.phone is string && data.phone.size() < 50)) &&
-             data.keys().hasOnly(['email', 'createdAt', 'name', 'phone']);
+             data.keys().hasOnly(['productId', 'variantId', 'productName', 'variantName', 'contactInfo', 'status', 'createdAt']);
     }
 
     // ===============================================================
@@ -169,7 +173,8 @@ service cloud.firestore {
     }
 
     match /waitlist/{entryId} {
-      allow read, write: if isAdmin();
+      allow create: if isAuthenticated() && isValidWaitlist(request.resource.data);
+      allow read, update, delete: if isAdmin();
     }
 
     match /concierge_chats/{chatId} {

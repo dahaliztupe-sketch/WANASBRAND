@@ -9,12 +9,12 @@ import { useQueryState, parseAsBoolean } from 'nuqs';
 import { useSelectionStore } from '@/store/useSelectionStore';
 import { triggerHaptic } from '@/lib/utils/haptics';
 import { useTranslation } from '@/lib/hooks/useTranslation';
-import { Product } from '@/types';
+import { Product, ProductVariant } from '@/types';
 
 import { WaitlistModal } from './WaitlistModal';
 
 export function VariantSelector({ product, recommendedByAI }: { product: Product, recommendedByAI?: boolean }) {
-  const [selectedVariant, setSelectedVariant] = useState<any>(null);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [isWaitlistModalOpen, setIsWaitlistModalOpen] = useState(false);
   const { addItem } = useSelectionStore();
   const [, setIsBagOpen] = useQueryState('bag', parseAsBoolean.withDefault(false));

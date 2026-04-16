@@ -22,11 +22,10 @@ export function SelectionBag() {
   const closeBag = () => setIsBagOpen(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
 
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') closeBag();
+      if (e.key === 'Escape') setIsBagOpen(false);
     };
 
     if (isBagOpen) {
@@ -38,7 +37,7 @@ export function SelectionBag() {
       window.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
     };
-  }, [isBagOpen]);
+  }, [isBagOpen, setIsBagOpen]);
 
   if (!mounted) return null;
 

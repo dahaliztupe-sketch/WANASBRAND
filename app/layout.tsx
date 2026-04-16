@@ -3,9 +3,30 @@ import { Playfair_Display, Montserrat, Tajawal } from "next/font/google";
 import { cookies } from "next/headers";
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Toaster } from "sonner";
+import { Analytics } from '@vercel/analytics/react';
 
 import { LanguageWrapper } from "@/components/LanguageWrapper";
 import { StructuredData } from "@/components/StructuredData";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { AnnouncementBar } from "@/components/AnnouncementBar";
+import CookieBanner from "@/components/CookieBanner";
+import { BottomNav } from "@/components/BottomNav";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { AtelierTour } from "@/components/admin/AtelierTour";
+import ServiceWorkerRegistration from "@/components/PWA/ServiceWorkerRegistration";
+import InstallPrompt from "@/components/PWA/InstallPrompt";
+import PushNotificationModal from "@/components/PushNotificationModal";
+import { GlobalConcierge } from "@/components/GlobalConcierge";
+import { CustomCursor } from "@/components/CustomCursor";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { FirebaseBoot } from "@/components/FirebaseBoot";
+import { NetworkStatus } from "@/components/NetworkStatus";
+import { SmoothScrolling } from "@/components/SmoothScrolling";
+import { SelectionBag } from "@/components/SelectionBag";
+import AudioBranding from "@/components/AudioBranding";
+import { PreloaderWrapper } from "@/components/PreloaderWrapper";
+
 import "./globals.css";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
@@ -90,26 +111,6 @@ export const viewport = {
   userScalable: true,
 };
 
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { AnnouncementBar } from "@/components/AnnouncementBar";
-import CookieBanner from "@/components/CookieBanner";
-import { BottomNav } from "@/components/BottomNav";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { AtelierTour } from "@/components/admin/AtelierTour";
-import ServiceWorkerRegistration from "@/components/PWA/ServiceWorkerRegistration";
-import InstallPrompt from "@/components/PWA/InstallPrompt";
-import PushNotificationModal from "@/components/PushNotificationModal";
-import { GlobalConcierge } from "@/components/GlobalConcierge";
-import { CustomCursor } from "@/components/CustomCursor";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { FirebaseBoot } from "@/components/FirebaseBoot";
-import { NetworkStatus } from "@/components/NetworkStatus";
-import { SmoothScrolling } from "@/components/SmoothScrolling";
-import { SelectionBag } from "@/components/SelectionBag";
-import AudioBranding from "@/components/AudioBranding";
-import { PreloaderWrapper } from "@/components/PreloaderWrapper";
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -187,6 +188,7 @@ export default async function RootLayout({
                     <InstallPrompt />
                     <GlobalConcierge />
                     <Toaster position="bottom-center" toastOptions={{ className: 'font-sans text-sm rounded-sm border border-primary/10 shadow-xl' }} />
+                    <Analytics />
                   </PreloaderWrapper>
                 </ErrorBoundary>
               </SmoothScrolling>

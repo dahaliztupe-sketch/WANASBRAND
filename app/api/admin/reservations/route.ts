@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+
 import { db } from '@/lib/firebase/server';
 import { decryptPII } from '@/lib/utils/encryption';
 import { Reservation } from '@/types';

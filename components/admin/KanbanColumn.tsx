@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import { motion } from 'motion/react';
 
 import { Reservation } from '@/types';
 

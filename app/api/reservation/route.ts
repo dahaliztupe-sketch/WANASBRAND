@@ -1,8 +1,6 @@
 import crypto from 'crypto';
 
 import { NextResponse } from 'next/server';
-import { Redis } from '@upstash/redis';
-import { Ratelimit } from "@upstash/ratelimit";
 
 import { db, auth } from '@/lib/firebase/server';
 import { sendReservationEmail } from '@/lib/services/email.service';
@@ -10,39 +8,10 @@ import { ReservationSchema } from '@/lib/schemas';
 import { ProductVariant } from '@/types';
 import { encryptPII } from '@/lib/utils/encryption';
 import { addPointsServer } from '@/lib/services/loyalty.server';
+import { reservationRateLimit } from '@/lib/upstash';
 
 
 export const runtime = 'nodejs';
-
-// Upstash Redis Rate Limiter
-const redis = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
-  ? new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    })
-  : null;
-
-const ratelimit = redis ? new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(5, "1 h"),
-  analytics: true,
-}) : null;
-
-async function checkRateLimit(ip: string): Promise<boolean> {
-  if (!ratelimit) {
-    console.warn('Upstash Redis not configured, skipping rate limit');
-    return true;
-  }
-
-  try {
-    const { success } = await ratelimit.limit(ip);
-    return success;
-  } catch (error) {
-    console.error('Rate limit error:', error);
-    return true; // Fail open
-  }
-}
-
 
 /**
  * Handles the reservation POST request.
@@ -54,9 +23,13 @@ async function checkRateLimit(ip: string): Promise<boolean> {
  */
 export async function POST(req: Request) {
   try {
-    const ip = req.headers.get('x-forwarded-for') || 'unknown';
-    if (!(await checkRateLimit(ip))) {
-      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+    const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
+    
+    if (reservationRateLimit) {
+      const { success } = await reservationRateLimit.limit(ip);
+      if (!success) {
+        return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+      }
     }
 
     const body = await req.json();

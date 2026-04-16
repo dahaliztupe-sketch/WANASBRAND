@@ -1,5 +1,6 @@
-import { db } from '../firebase/server';
 import { Product } from '@/types';
+
+import { db } from '../firebase/server';
 
 export const checkInventoryServer = async (sku: string) => {
   try {

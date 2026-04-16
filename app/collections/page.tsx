@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 
 import CollectionsClient from '@/components/CollectionsClient';
 import { StructuredData } from '@/components/StructuredData';
+import DatabaseUnavailable from '@/components/DatabaseUnavailable';
 import { db } from '@/lib/firebase/server';
 import { Product } from '@/types';
 
@@ -52,6 +53,14 @@ async function getInitialProducts(): Promise<{ products: Product[], lastDocId: s
 }
 
 export default async function CollectionsPage() {
+  if (!db) {
+    return (
+      <main className="min-h-screen bg-primary flex items-center justify-center p-6">
+        <DatabaseUnavailable />
+      </main>
+    );
+  }
+
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",

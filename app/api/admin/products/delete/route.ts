@@ -19,7 +19,6 @@ export async function POST(request: Request) {
 
     const { payload } = await jwtVerify(sessionToken, secret);
     const adminId = payload.uid as string;
-    const adminName = payload.name as string || 'Admin';
 
     const { id } = await request.json();
     if (!id) return NextResponse.json({ error: 'ID is required' }, { status: 400 });
@@ -37,10 +36,9 @@ export async function POST(request: Request) {
 
     await logAdminAction(
       adminId,
-      adminName,
       'delete_product',
-      id,
       'product',
+      id,
       oldProduct,
       null
     );

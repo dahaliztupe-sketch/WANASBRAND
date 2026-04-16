@@ -30,7 +30,6 @@ export async function POST(req: Request) {
 
     const { payload } = await jwtVerify(sessionToken, secret);
     const adminId = payload.uid as string;
-    const adminName = payload.name as string || 'Admin';
 
     const body = await req.json();
     const { id, updates } = body;
@@ -57,10 +56,9 @@ export async function POST(req: Request) {
 
     await logAdminAction(
       adminId,
-      adminName,
       'update_product',
-      id,
       'product',
+      id,
       oldProduct,
       updates
     );

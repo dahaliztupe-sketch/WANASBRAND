@@ -17,5 +17,16 @@ export function validateEnv(): void {
   if (missing.length > 0) {
     throw new Error(`❌ Missing required environment variables: ${missing.join(', ')}`);
   }
-  console.log('✅ All required environment variables are present');
+
+  // Security check: ensure no private keys leaked to NEXT_PUBLIC_
+  const privatePattern = /SECRET|TOKEN|PRIVATE_KEY|PASSWORD/i;
+  const publicLeakedKeys = Object.keys(process.env).filter(
+    (key) => key.startsWith('NEXT_PUBLIC_') && privatePattern.test(key)
+  );
+
+  if (publicLeakedKeys.length > 0) {
+    throw new Error(`🚨 SECURITY FATAL: Private keys exposed as public! Remove NEXT_PUBLIC_ from: ${publicLeakedKeys.join(', ')}`);
+  }
+
+  console.log('✅ All required environment variables are present and secure');
 }

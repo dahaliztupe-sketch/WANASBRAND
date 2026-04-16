@@ -1,6 +1,8 @@
 import { doc, updateDoc, increment, getDoc } from 'firebase/firestore';
-import { db } from '../firebase/client';
+
 import { User } from '@/types';
+
+import { db } from '../firebase/client';
 
 export type Tier = 'Guest' | 'Member' | 'InnerCircle';
 

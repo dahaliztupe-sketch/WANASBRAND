@@ -25,6 +25,6 @@ export const trackLiveInventory = async (productId: string) => {
   console.log(`Tracking live inventory for product: ${productId}`);
 };
 
-export const notifySubscribers = async (eventId: string, data: any) => {
+export const notifySubscribers = async (eventId: string, data: Record<string, unknown>) => {
   console.log(`Notifying subscribers for event ${eventId}:`, data);
 };

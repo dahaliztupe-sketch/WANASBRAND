@@ -1,5 +1,6 @@
-import { db } from '../firebase/server';
 import { User } from '@/types';
+
+import { db } from '../firebase/server';
 
 export type Tier = 'Guest' | 'Member' | 'InnerCircle';
 

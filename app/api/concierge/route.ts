@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 
 import { db } from '@/lib/firebase/server';
-import { checkInventoryServer, addToWaitlistServer } from '@/lib/services/product.server';
 
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
+const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY! });
 
 const ConciergeSchema = z.object({
   message: z.string().optional(),
@@ -17,6 +16,51 @@ const ConciergeSchema = z.object({
   consent: z.boolean().optional(),
 });
 
+const tools = [
+  {
+    functionDeclarations: [
+      {
+        name: "checkInventory",
+        description: "Check available stock for a product variant",
+        parameters: {
+          type: "object",
+          properties: {
+            productId: { type: "string" },
+            size: { type: "string" },
+            color: { type: "string" }
+          },
+          required: ["productId"]
+        }
+      },
+      {
+        name: "addToWaitlist",
+        description: "Add customer to waitlist for out-of-stock product",
+        parameters: {
+          type: "object",
+          properties: {
+            productId: { type: "string" },
+            size: { type: "string" },
+            color: { type: "string" },
+            email: { type: "string" }
+          },
+          required: ["productId", "email"]
+        }
+      },
+      {
+        name: "getProductDetails",
+        description: "Get detailed information about a product",
+        parameters: {
+          type: "object",
+          properties: {
+            productId: { type: "string" }
+          },
+          required: ["productId"]
+        }
+      }
+    ]
+  }
+];
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -26,10 +70,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid data', details: validation.error.errors }, { status: 400 });
     }
 
-    const { message, userId, fullName, phone, contactMethod, vibe, consent } = validation.data;
+    const { message, fullName, phone, contactMethod, vibe, consent } = validation.data;
 
     // Handle traditional form submission if all fields are present
     if (fullName && phone && contactMethod && vibe && consent) {
+      if (!db) return NextResponse.json({ error: 'Database unavailable' }, { status: 503 });
       const conciergeRef = db.collection('concierge_requests').doc();
       await conciergeRef.set({
         fullName,
@@ -45,85 +90,81 @@ export async function POST(req: Request) {
 
     // Handle AI Chat
     if (message) {
-      const model = genAI.getGenerativeModel({
-        model: 'gemini-2.0-flash',
+      const model = ai.getGenerativeModel({
+        model: 'gemini-2.5-flash',
         systemInstruction: `You are the WANAS AI Concierge, a luxury fashion expert. 
-        Your goal is to assist customers with inventory inquiries and waitlist management.
+        Your goal is to assist customers with inventory inquiries, product details, and waitlist management.
         Be sophisticated, helpful, and professional.
-        If a user asks about a product's availability, use 'checkInventory'.
-        If a product is out of stock and the user wants to be notified, use 'addToWaitlist'.`,
-        tools: [{
-          functionDeclarations: [
-            {
-              name: 'checkInventory',
-              description: 'Checks the stock level of a product by its SKU.',
-              parameters: {
-                type: SchemaType.OBJECT,
-                properties: {
-                  sku: { type: SchemaType.STRING, description: 'The SKU of the product variant.' }
-                },
-                required: ['sku']
-              }
-            },
-            {
-              name: 'addToWaitlist',
-              description: 'Adds a user to the waitlist for a specific product SKU.',
-              parameters: {
-                type: SchemaType.OBJECT,
-                properties: {
-                  sku: { type: SchemaType.STRING, description: 'The SKU of the product variant.' },
-                  userId: { type: SchemaType.STRING, description: 'The ID of the user.' }
-                },
-                required: ['sku', 'userId']
-              }
-            }
-          ]
-        }]
+        Use tools when necessary to fetch real-time data.`,
+        tools
       });
 
       const chat = model.startChat();
-      const result = await chat.sendMessage(message);
-      const response = await result.response;
-      const functionCalls = response.functionCalls();
+      let response = await chat.sendMessage(message);
 
-      if (functionCalls && functionCalls.length > 0) {
-        const call = functionCalls[0];
-        if (call.name === 'checkInventory') {
-          const { sku } = call.args as { sku: string };
-          const inventory = await checkInventoryServer(sku);
-          
-          const toolResponse = inventory 
-            ? `The ${inventory.productName} (Size: ${inventory.size}) has ${inventory.stock} units in stock.`
-            : `I couldn't find any stock for SKU ${sku}.`;
-            
-          const finalResult = await chat.sendMessage([{
-            functionResponse: {
-              name: 'checkInventory',
-              response: { content: toolResponse }
+      if (response.functionCalls && response.functionCalls.length > 0) {
+        const call = response.functionCalls[0];
+        let toolResponseContent = "";
+
+        if (!db) {
+          toolResponseContent = "Database is currently offline.";
+        } else {
+          if (call.name === 'checkInventory') {
+            const { productId, size, color } = call.args as Record<string, string>;
+            const doc = await db.collection('products').doc(productId).get();
+            if (!doc.exists) {
+              toolResponseContent = "Product not found.";
+            } else {
+              const product = doc.data();
+              let variants = product?.variants || [];
+              if (size) variants = variants.filter((v: Record<string, string>) => v.size === size);
+              if (color) variants = variants.filter((v: Record<string, string>) => v.color === color);
+              
+              if (variants.length === 0) {
+                toolResponseContent = "No matching variants found.";
+              } else {
+                toolResponseContent = variants.map((v: Record<string, string>) => `Size: ${v.size}, Color: ${v.color || 'N/A'}, Stock: ${v.stock}`).join('\n');
+              }
             }
-          }]);
-          return NextResponse.json({ reply: finalResult.response.text() });
+          } else if (call.name === 'addToWaitlist') {
+            const { productId, email, size, color } = call.args as Record<string, string>;
+            const doc = await db.collection('products').doc(productId).get();
+            if (!doc.exists) {
+              toolResponseContent = "Product not found.";
+            } else {
+              const product = doc.data();
+              await db.collection('waitlist').add({
+                productId,
+                productName: product?.name || 'Unknown',
+                variantId: `${size || 'any'}-${color || 'any'}`,
+                variantName: `${size || 'any'} ${color || 'any'}`,
+                contactInfo: email,
+                status: 'pending',
+                createdAt: new Date().toISOString(),
+              });
+              toolResponseContent = "Successfully added to waitlist.";
+            }
+          } else if (call.name === 'getProductDetails') {
+            const { productId } = call.args as Record<string, string>;
+            const doc = await db.collection('products').doc(productId).get();
+            if (!doc.exists) {
+              toolResponseContent = "Product not found.";
+            } else {
+              const product = doc.data();
+              toolResponseContent = `Name: ${product?.name}\nDescription: ${product?.description}\nPrice: EGP ${product?.price}\nMaterials: ${product?.materials?.join(', ')}`;
+            }
+          }
         }
 
-        if (call.name === 'addToWaitlist') {
-          const { sku, userId: callUserId } = call.args as { sku: string, userId: string };
-          const success = await addToWaitlistServer(callUserId || userId || 'guest', sku);
-          
-          const toolResponse = success 
-            ? `Successfully added to the waitlist for SKU ${sku}.`
-            : `Failed to add to the waitlist. Please try again later.`;
-            
-          const finalResult = await chat.sendMessage([{
-            functionResponse: {
-              name: 'addToWaitlist',
-              response: { content: toolResponse }
-            }
-          }]);
-          return NextResponse.json({ reply: finalResult.response.text() });
-        }
+        response = await chat.sendMessage([{
+          functionResponse: {
+            name: call.name,
+            response: { content: toolResponseContent }
+          }
+        }]);
       }
 
-      return NextResponse.json({ reply: response.text() });
+      return NextResponse.json({ reply: response.text });
     }
 
     return NextResponse.json({ error: 'No message or form data provided' }, { status: 400 });

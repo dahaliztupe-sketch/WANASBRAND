@@ -1,5 +1,7 @@
 import { headers } from 'next/headers';
 
+import DatabaseUnavailable from '@/components/DatabaseUnavailable';
+
 import ExportButton from './ExportButton';
 import KanbanBoard from './KanbanBoard';
 
@@ -32,9 +34,8 @@ export default async function ReservationsAdminPage() {
 
   if (!reservations) {
     return (
-      <div className="p-8 text-center">
-        <h1 className="text-2xl font-serif text-primary">Database Unavailable</h1>
-        <p className="text-primary/60 mt-4">Please try again later or check your configuration.</p>
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <DatabaseUnavailable />
       </div>
     );
   }

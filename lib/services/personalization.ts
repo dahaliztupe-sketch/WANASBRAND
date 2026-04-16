@@ -10,6 +10,7 @@ import { db } from '@/lib/firebase/client';
 export const getPersonalizedHomepage = async (userId: string) => {
   try {
     const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', userId)));
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const userData = userDoc.docs[0]?.data();
     
     // Implementation of personalization logic

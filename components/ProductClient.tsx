@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { VariantSelector } from '@/components/VariantSelector';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import { RevealOnScroll } from '@/components/RevealOnScroll';
+import { ShareButtons } from '@/components/ShareButtons';
 import { Product } from '@/types';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
@@ -120,6 +121,8 @@ export default function ProductClient({ product }: ProductClientProps) {
                 {t.product.concierge}
               </a>
             </div>
+
+            <ShareButtons url={`https://wanasbrand.com/product/${product.slug || product.id}`} title={product.name} />
           </div>
         </div>
 

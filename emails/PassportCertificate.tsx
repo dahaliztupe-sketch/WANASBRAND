@@ -48,7 +48,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export const PassportCertificate = ({ passport }: { passport: any }) => (
+interface PassportData {
+  productName: string;
+  certificateNumber: string;
+  customerName: string;
+  purchaseDate: string;
+  materials: string;
+  craftsmanship: string;
+  careInstructions: string;
+}
+
+export const PassportCertificate = ({ passport }: { passport: PassportData }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       <View style={styles.container}>

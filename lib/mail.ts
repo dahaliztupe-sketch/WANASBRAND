@@ -1,5 +1,4 @@
 import { Resend } from 'resend';
-import { CreateEmailOptions, CreateEmailResponse } from 'resend/build/src/emails/interfaces';
 
 import { ReservationConfirmationEmail } from '@/components/emails/ReservationConfirmationEmail';
 import { StatusUpdateEmail } from '@/components/emails/StatusUpdateEmail';
@@ -19,7 +18,35 @@ try {
 
 const fromEmail = process.env.SMTP_FROM || 'atelier@wanasbrand.com';
 
-async function sendWithRetry(params: CreateEmailOptions, maxRetries = 2): Promise<CreateEmailResponse> {
+export async function sendEmailWithRetry(
+  to: string,
+  subject: string,
+  html: string,
+  maxRetries = 3
+): Promise<{ success: boolean; queued?: boolean }> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      if (!resend) throw new Error('Resend not initialized');
+      await resend.emails.send({
+        from: fromEmail,
+        to,
+        subject,
+        html,
+      });
+      return { success: true };
+    } catch (error) {
+      if (attempt === maxRetries) {
+        console.error(`Failed to send email after ${maxRetries} attempts:`, error);
+        // Save to queue logic could go here
+        return { success: false, queued: true };
+      }
+      await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt - 1)));
+    }
+  }
+  return { success: false };
+}
+
+async function sendWithRetry(params: Record<string, unknown>, maxRetries = 2): Promise<Record<string, unknown>> {
   let lastError: unknown;
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {

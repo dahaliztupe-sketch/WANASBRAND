@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     }
 
     if (!auth || !db) {
-      throw new Error('Firebase Admin not initialized');
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
     }
 
     // Verify ID token

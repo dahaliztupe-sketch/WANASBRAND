@@ -6,7 +6,7 @@ const db = admin.firestore();
 
 export const aggregateReservationStats = functions.firestore
   .document('reservations/{reservationId}')
-  .onWrite(async (change, context) => {
+  .onWrite(async (change, _context) => {
     const statsRef = db.collection('stats').doc('latest');
     
     await db.runTransaction(async (transaction) => {

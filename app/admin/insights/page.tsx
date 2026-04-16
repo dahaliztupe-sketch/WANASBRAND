@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, limit, getDocs } from 'firebase/firestore';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import { AlertTriangle, ChevronRight, Clock, Loader2, Mail, MessageCircle, ShoppingBag, Sparkles, TrendingUp, User } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import Image from 'next/image';
@@ -15,7 +15,7 @@ import { auth, db } from '@/lib/firebase/client';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { Product } from '@/types';
 
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '');
+const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || '' });
 
 interface Cart {
   id: string;
@@ -61,10 +61,11 @@ export default function InsightsPage() {
         Keep the tone professional, elegant, and insightful.
       `;
 
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      setAiReport(response.text() || '');
+      const response = await ai.models.generateContent({ 
+        model: 'gemini-3.1-pro-preview',
+        contents: prompt
+      });
+      setAiReport(response.text || '');
     } catch (error) {
       console.error('Error generating AI report:', error);
     } finally {

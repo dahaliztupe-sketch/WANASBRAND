@@ -1,34 +1,30 @@
-import { Log } from '@/types';
+import { db } from '@/lib/firebase/server';
 
-import { db } from '../firebase/server';
-
-export const logAdminAction = async (
+export async function logAdminAction(
   adminId: string,
-  adminName: string,
   action: string,
-  targetId: string,
   targetType: 'product' | 'reservation' | 'user' | 'system',
+  targetId?: string,
   oldValue?: unknown,
   newValue?: unknown
-): Promise<void> => {
+): Promise<void> {
+  if (!db) return;
+  
   try {
-    const firestore = db;
-    if (!firestore) throw new Error('Database not initialized');
-    const logRef = firestore.collection('logs').doc();
-    const log: Log = {
-      id: logRef.id,
+    const adminDoc = await db.collection('users').doc(adminId).get();
+    const adminName = adminDoc.exists ? adminDoc.data()?.fullName || 'Unknown' : 'Unknown';
+    
+    await db.collection('audit_logs').add({
       adminId,
       adminName,
       action,
-      targetId,
       targetType,
-      oldValue,
-      newValue,
+      targetId: targetId || null,
+      oldValue: oldValue || null,
+      newValue: newValue || null,
       createdAt: new Date().toISOString(),
-    };
-    await logRef.set(log);
+    });
   } catch (error) {
-    console.error('Error logging admin action:', error);
-    // Do not throw, as logging should not block the main operation
+    console.error('Failed to log admin action:', error);
   }
-};
+}

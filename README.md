@@ -10,6 +10,7 @@ WANAS is a luxury fashion house dedicated to handcrafted excellence and timeless
 *   **Digital Product Passport (DPP):** A unique digital certificate for each handcrafted piece, detailing its provenance, materials, and care instructions, accessible via QR code.
 *   **Exclusive Checkout Flow:** A streamlined WhatsApp + Cash on Delivery (COD) reservation system, ensuring a personalized and secure purchasing experience.
 *   **Performance & Scalability:** Built on Next.js 15.5 App Router, utilizing React 19 features, Upstash Redis for rate limiting, and optimized Firestore queries.
+*   **Security & Stability:** Advanced security measures including IP-based rate limiting, comprehensive audit logging for administrative actions, and a "Safe Mode" architecture that ensures platform stability even when backend services are partially unavailable.
 *   **Audio Branding:** A sophisticated, user-controlled audio experience that respects browser autoplay policies.
 
 ## Tech Stack

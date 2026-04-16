@@ -4,7 +4,7 @@ import { sendWhatsAppMessage } from '@/lib/services/whatsapp';
  * Multi-channel Messaging service (SMS & WhatsApp).
  */
 
-export const sendSmartNotification = async (userId: string, event: string, data: any) => {
+export const sendSmartNotification = async (userId: string, event: string, data: { phone: string; message: string }) => {
   console.log(`Smart Notification for user ${userId} on event ${event}`);
   
   // Logic to check user preferences and send via best channel

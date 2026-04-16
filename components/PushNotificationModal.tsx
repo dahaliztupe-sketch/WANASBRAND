@@ -5,14 +5,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Bell, X, Sparkles } from 'lucide-react';
 import { getToken } from 'firebase/messaging';
 import { doc, updateDoc } from 'firebase/firestore';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 import { auth, db, messaging } from '@/lib/firebase/client';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
 export default function PushNotificationModal() {
   const [show, setShow] = useState(false);
-  const [user, setUser] = useState<Record<string, unknown> | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function PushNotificationModal() {
           });
           
           if (token && user) {
-            await updateDoc(doc(db, 'users', (user as any).uid), {
+            await updateDoc(doc(db, 'users', user.uid), {
               fcmToken: token,
               pushEnabled: true,
               updatedAt: new Date()

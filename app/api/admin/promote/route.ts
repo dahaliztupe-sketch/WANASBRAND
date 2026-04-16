@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const firebaseAuth = auth;
     
     if (!firestore || !firebaseAuth) {
-      return NextResponse.json({ error: 'Firebase Admin not initialized' }, { status: 500 });
+      return NextResponse.json({ error: 'Firebase Admin not initialized' }, { status: 503 });
     }
 
     const { email } = await req.json();

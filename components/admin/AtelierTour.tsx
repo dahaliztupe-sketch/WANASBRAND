@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { X, ChevronRight, ChevronLeft } from 'lucide-react';
+import { motion } from 'motion/react';
+import { X, ChevronLeft } from 'lucide-react';
 
 import { useTourStore } from '@/store/useTourStore';
 
@@ -15,12 +15,12 @@ const TOUR_STEPS = [
 ];
 
 export function AtelierTour() {
-  const { isActive, currentStep, nextStep, prevStep, endTour, syncTourStatus, hasCompletedTour } = useTourStore();
+  const { isActive, currentStep, nextStep, prevStep, endTour, syncTourStatus } = useTourStore();
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
 
   useEffect(() => {
     syncTourStatus();
-  }, []);
+  }, [syncTourStatus]);
 
   useEffect(() => {
     if (!isActive) return;

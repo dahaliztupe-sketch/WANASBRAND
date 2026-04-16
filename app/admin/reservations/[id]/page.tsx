@@ -4,6 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import DatabaseUnavailable from '@/components/DatabaseUnavailable';
+
 import NotesSection from './NotesSection';
 import StatusSelector from './StatusSelector';
 import WhatsAppButton from './WhatsAppButton';
@@ -42,9 +44,8 @@ export default async function ReservationDetailsAdminPage({ params }: { params: 
 
   if (!reservation) {
     return (
-      <div className="p-8 text-center">
-        <h1 className="text-2xl font-serif text-primary">Database Unavailable</h1>
-        <p className="text-primary/60 mt-4">Please try again later or check your configuration.</p>
+      <div className="p-8 flex items-center justify-center min-h-[60vh]">
+        <DatabaseUnavailable />
       </div>
     );
   }

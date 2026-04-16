@@ -1,4 +1,5 @@
 import { createClient } from '@sanity/client';
+
 import ar from '@/locales/ar';
 import en from '@/locales/en';
 
@@ -19,7 +20,7 @@ export async function fetchTranslations(lang: 'en' | 'ar') {
       return lang === 'ar' ? ar : en;
     }
     
-    return results.reduce((acc: any, item: any) => {
+    return results.reduce((acc: Record<string, string>, item: { key: string; text: string }) => {
       acc[item.key] = item.text;
       return acc;
     }, {} as Record<string, string>);

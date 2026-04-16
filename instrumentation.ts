@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs";
+
 import { validateEnv } from "@/lib/utils/validate-env";
 
 export function register() {

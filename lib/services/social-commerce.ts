@@ -36,6 +36,7 @@ export const processReferral = async (referralCode: string, newUserId: string) =
   const snapshot = await getDocs(q);
   
   if (!snapshot.empty) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const referral = snapshot.docs[0].data();
     // Award rewards to both referrer and referee
     console.log(`Processing referral: ${referralCode} for new user ${newUserId}`);

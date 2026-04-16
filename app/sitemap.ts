@@ -12,6 +12,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date().toISOString(),
     changeFrequency: 'weekly' as const,
     priority: route === '' ? 1.0 : 0.8,
+    alternates: {
+      languages: {
+        en: `${baseUrl}/en${route}`,
+        ar: `${baseUrl}/ar${route}`,
+      },
+    },
   }));
 
   try {
@@ -20,12 +26,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const q = query(productsRef, where('status', '==', 'Published'));
     const snapshot = await getDocs(q);
 
-    const productRoutes = snapshot.docs.map((doc) => ({
-      url: `${baseUrl}/product/${doc.data().slug || doc.id}`,
-      lastModified: new Date().toISOString(),
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    }));
+    const productRoutes = snapshot.docs.map((doc) => {
+      const slug = doc.data().slug || doc.id;
+      return {
+        url: `${baseUrl}/product/${slug}`,
+        lastModified: new Date().toISOString(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+        alternates: {
+          languages: {
+            en: `${baseUrl}/en/product/${slug}`,
+            ar: `${baseUrl}/ar/product/${slug}`,
+          },
+        },
+      };
+    });
 
     return [...routes, ...productRoutes];
   } catch (error) {

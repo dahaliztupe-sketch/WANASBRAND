@@ -1,14 +1,11 @@
-import { withSentryConfig } from "@sentry/nextjs";
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   productionBrowserSourceMaps: false,
   compress: true,
   turbopack: {},
   serverExternalPackages: ['firebase-admin', 'sharp'],
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer: _isServer }) => {
     config.ignoreWarnings = [
       { module: /node_modules\/@opentelemetry\/instrumentation/ },
       { module: /node_modules\/@prisma\/instrumentation/ },
