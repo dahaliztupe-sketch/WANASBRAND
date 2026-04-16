@@ -3,7 +3,6 @@ import { Playfair_Display, Montserrat, Tajawal } from "next/font/google";
 import { cookies } from "next/headers";
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { Toaster } from "sonner";
-import { Analytics } from '@vercel/analytics/react';
 
 import { LanguageWrapper } from "@/components/LanguageWrapper";
 import { StructuredData } from "@/components/StructuredData";
@@ -188,7 +187,6 @@ export default async function RootLayout({
                     <InstallPrompt />
                     <GlobalConcierge />
                     <Toaster position="bottom-center" toastOptions={{ className: 'font-sans text-sm rounded-sm border border-primary/10 shadow-xl' }} />
-                    <Analytics />
                   </PreloaderWrapper>
                 </ErrorBoundary>
               </SmoothScrolling>
