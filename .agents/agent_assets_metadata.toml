@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "f9SOebejidJZ7tnL0GbdN"
+uri = "file://docs/WANAS-Audit-Report-2026.md"
+type = "text"
+title = "تقرير التدقيق الشامل — WANAS 2026"
