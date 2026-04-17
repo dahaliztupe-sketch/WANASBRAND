@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, query, getDocs, doc, updateDoc, orderBy } from 'firebase/firestore';
+import { collection, query, getDocs, doc, updateDoc, orderBy, limit } from 'firebase/firestore';
 import { 
   Users, 
   Search, 
@@ -35,7 +35,7 @@ export default function CustomerCRM() {
   useEffect(() => {
     const fetchCustomers = async () => {
       try {
-        const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+        const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'), limit(500));
         const snapshot = await getDocs(q);
         const customerList = snapshot.docs.map(doc => {
           const data = doc.data() as Customer;

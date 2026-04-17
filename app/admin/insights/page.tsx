@@ -72,7 +72,7 @@ export default function InsightsPage() {
 
     // 2. Fetch Low Stock Products
     const fetchLowStock = async () => {
-      const qProducts = query(collection(db, 'products'));
+      const qProducts = query(collection(db, 'products'), limit(500));
       const snapshot = await getDocs(qProducts);
       const lowStock = snapshot.docs.map(doc => ({
         id: doc.id,

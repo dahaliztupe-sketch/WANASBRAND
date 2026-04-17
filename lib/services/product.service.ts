@@ -43,7 +43,7 @@ export const getProducts = async (
 
 export const checkInventory = async (sku: string) => {
   try {
-    const q = query(collection(db, 'products'), where('status', '==', 'Published'));
+    const q = query(collection(db, 'products'), where('status', '==', 'Published'), limit(500));
     const snapshot = await getDocs(q);
     
     for (const doc of snapshot.docs) {

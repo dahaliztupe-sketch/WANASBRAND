@@ -40,7 +40,28 @@ Set these in Replit Secrets (see .env.example):
 - `NEXT_PUBLIC_GEMINI_API_KEY`
 - `CRON_SECRET`
 
-## Security Fixes Applied (April 2026)
+## Comprehensive Audit & Fixes (April 2026 — Session 2)
+
+### Fixed (Critical)
+- `app/api/cron/update-analytics/route.ts` — Rewrote to use Admin SDK syntax (was mixing client SDK functions with Admin SDK `db`, guaranteed runtime crash)
+- `firestore.rules` — `isValidWaitlist` now correctly makes `userId` optional with type validation; `waitlist` create rule enforces ownership when userId provided; read rule guards with `'userId' in resource.data` check to prevent undefined field errors
+- `next.config.ts` — Removed `ignoreBuildErrors: true` (was silently swallowing TypeScript errors in production builds)
+- `next.config.ts` — Fixed `X-Frame-Options: DENY` conflict with `proxy.ts SAMEORIGIN`; both now unified to `SAMEORIGIN`
+
+### Fixed (High)
+- `next.config.ts` — Consolidated all security headers: added HSTS, Referrer-Policy, Permissions-Policy, X-DNS-Prefetch-Control
+- `proxy.ts` — Removed duplicate security headers (now handled entirely by next.config.ts); proxy handles only JWT auth and redirects
+- `next.config.ts` — Added `allowedDevOrigins` with `REPLIT_DEV_DOMAIN` to fix cross-origin HMR warning in Replit
+
+### Fixed (Medium — Firestore Cost/Performance)
+- `app/admin/customers/page.tsx` — Added `limit(500)` to unbounded users query
+- `app/admin/waitlist/page.tsx` — Added `limit(500)` to unbounded waitlist query
+- `app/admin/insights/page.tsx` — Added `limit(500)` to unbounded products query
+- `app/admin/products/page.tsx` — Added `limit(1000)` to both product queries
+- `lib/services/product.service.ts` — Added `limit(500)` to `checkInventory` query
+- `lib/services/analytics.ts` — Removed debug `console.log('Analyzing checkout funnel...')`
+
+## Security Fixes Applied (April 2026 — Session 1)
 - `proxy.ts` now verifies JWT admin sessions before allowing access to `/admin` routes
 - `SESSION_SECRET` no longer has a hardcoded fallback — centralized via `lib/utils/session.ts`
 - `GEMINI_API_KEY` (private) replaces `NEXT_PUBLIC_GEMINI_API_KEY` for all server-side AI usage

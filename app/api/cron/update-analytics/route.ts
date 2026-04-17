@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { collection, getDocs, setDoc, doc, serverTimestamp } from 'firebase/firestore';
+import { FieldValue } from 'firebase-admin/firestore';
 
 import { db } from '@/lib/firebase/server';
 
@@ -14,29 +14,28 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
     }
 
-    // 1. Aggregate Reservations & Revenue
-    const reservationsSnap = await getDocs(collection(db, 'reservations'));
+    // 1. Aggregate Reservations & Revenue using Admin SDK syntax
+    const reservationsSnap = await db.collection('reservations').get();
     const totalReservations = reservationsSnap.size;
     let totalRevenue = 0;
-    
-    reservationsSnap.forEach(doc => {
-      const data = doc.data();
+
+    reservationsSnap.forEach(docSnap => {
+      const data = docSnap.data();
       if (data.status === 'deposit_paid' || data.status === 'delivered' || data.status === 'shipped') {
         totalRevenue += data.financials?.total || data.totalAmount || 0;
       }
     });
 
-    // 2. Aggregate Users
-    const usersSnap = await getDocs(collection(db, 'users'));
+    // 2. Aggregate Users using Admin SDK syntax
+    const usersSnap = await db.collection('users').get();
     const totalUsers = usersSnap.size;
 
-    // 3. Write to stats/latest
-    const statsRef = doc(db, 'stats', 'latest');
-    await setDoc(statsRef, {
+    // 3. Write to stats/latest using Admin SDK syntax
+    await db.collection('stats').doc('latest').set({
       totalReservations,
       totalRevenue,
       totalUsers,
-      updatedAt: serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
     }, { merge: true });
 
     return NextResponse.json({

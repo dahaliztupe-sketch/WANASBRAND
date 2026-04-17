@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, query, orderBy, getDocs, doc, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs, doc, updateDoc, Timestamp, limit } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -28,7 +28,7 @@ export default function WaitlistPage() {
 
   const fetchWaitlist = async () => {
     try {
-      const q = query(collection(db, 'waitlist'), orderBy('createdAt', 'desc'));
+      const q = query(collection(db, 'waitlist'), orderBy('createdAt', 'desc'), limit(500));
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(doc => ({
         id: doc.id,

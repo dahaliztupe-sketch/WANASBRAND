@@ -30,7 +30,6 @@ export const getBusinessDashboard = async () => {
 
 export const analyzeCheckoutFunnel = async () => {
   // Tracking events: product_viewed -> item_added -> checkout_started -> reservation_created
-  console.log('Analyzing checkout funnel...');
   return {
     productViewed: 1000,
     itemAdded: 400,

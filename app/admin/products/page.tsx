@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, query, orderBy, getDocs, doc, updateDoc, writeBatch } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs, doc, updateDoc, writeBatch, limit } from 'firebase/firestore';
 import { ref, deleteObject } from 'firebase/storage';
 import { Plus, Search, Archive, Package, Eye, EyeOff, MoreHorizontal, CheckSquare, Square, Trash2, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
@@ -61,7 +61,7 @@ export default function AdminProductsPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const q = query(collection(db, 'products'), orderBy('name'));
+        const q = query(collection(db, 'products'), orderBy('name'), limit(1000));
         const snapshot = await getDocs(q);
         const data = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
         setProducts(data);
@@ -120,7 +120,7 @@ export default function AdminProductsPage() {
       toast.success(`Bulk ${action} completed for ${selectedIds.length} items.`);
       
       // Refresh products list
-      const q = query(collection(db, 'products'), orderBy('name'));
+      const q = query(collection(db, 'products'), orderBy('name'), limit(1000));
       const snapshot = await getDocs(q);
       const data = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Product));
       setProducts(data);

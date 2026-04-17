@@ -114,6 +114,8 @@ service cloud.firestore {
              isValidDateString(data.updatedAt);
     }
 
+    // FIX: userId is optional (waitlist can be created anonymously via server API)
+    // but when present it must be valid so the per-user read rule works correctly.
     function isValidWaitlist(data) {
       return data.keys().hasAll(['productId', 'variantId', 'productName', 'variantName', 'contactInfo', 'status', 'createdAt']) &&
              data.productId is string && data.productId.size() < 100 &&
@@ -123,7 +125,7 @@ service cloud.firestore {
              data.contactInfo is string && data.contactInfo.size() > 5 && data.contactInfo.size() < 255 &&
              data.status == 'pending' &&
              isValidDateString(data.createdAt) &&
-             data.keys().hasOnly(['productId', 'variantId', 'productName', 'variantName', 'contactInfo', 'status', 'createdAt']);
+             (!('userId' in data) || (data.userId is string && data.userId.size() < 100));
     }
 
     // ===============================================================
@@ -172,9 +174,11 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // FIX: create enforces userId == request.auth.uid when userId is provided
     match /waitlist/{entryId} {
-      allow create: if isAuthenticated() && isValidWaitlist(request.resource.data);
-      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow create: if isAuthenticated() && isValidWaitlist(request.resource.data) &&
+                    (!('userId' in request.resource.data) || request.resource.data.userId == request.auth.uid);
+      allow read: if isAdmin() || (isAuthenticated() && 'userId' in resource.data && resource.data.userId == request.auth.uid);
       allow update, delete: if isAdmin();
     }
 
