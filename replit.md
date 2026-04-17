@@ -40,6 +40,15 @@ Set these in Replit Secrets (see .env.example):
 - `NEXT_PUBLIC_GEMINI_API_KEY`
 - `CRON_SECRET`
 
+## Security Fixes Applied (April 2026)
+- `proxy.ts` now verifies JWT admin sessions before allowing access to `/admin` routes
+- `SESSION_SECRET` no longer has a hardcoded fallback — centralized via `lib/utils/session.ts`
+- `GEMINI_API_KEY` (private) replaces `NEXT_PUBLIC_GEMINI_API_KEY` for all server-side AI usage
+- AI Report generation moved to server-side `/api/admin/insights/ai-report` route
+- Firestore waitlist rule updated to allow users to read their own entries
+- Security headers (HSTS, X-Frame-Options, Permissions-Policy, etc.) now properly applied via proxy.ts
+- `lib/utils/session.ts` — centralized JWT session creation/verification utility
+
 ## Migration Notes (Vercel → Replit)
 - Dev/start scripts updated to use `-p 5000 -H 0.0.0.0`
 - `turbopack: {}` removed from next.config.ts (caused Turbopack root detection issues)

@@ -174,7 +174,8 @@ service cloud.firestore {
 
     match /waitlist/{entryId} {
       allow create: if isAuthenticated() && isValidWaitlist(request.resource.data);
-      allow read, update, delete: if isAdmin();
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.userId == request.auth.uid);
+      allow update, delete: if isAdmin();
     }
 
     match /concierge_chats/{chatId} {

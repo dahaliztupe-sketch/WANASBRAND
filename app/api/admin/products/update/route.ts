@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
-import { jwtVerify } from 'jose';
 
 import { db } from '@/lib/firebase/server';
 import { logAdminAction } from '@/lib/services/audit.service';
 import { ProductSchema } from '@/lib/schemas';
 import { adminRateLimit } from '@/lib/upstash';
-
-const SESSION_SECRET = process.env.SESSION_SECRET || 'default_session_secret_change_me_in_production';
-const secret = new TextEncoder().encode(SESSION_SECRET);
+import { verifyAdminSession, extractSessionToken } from '@/lib/utils/session';
 
 export async function POST(req: Request) {
   if (!db) {
@@ -23,13 +20,15 @@ export async function POST(req: Request) {
       }
     }
 
-    const sessionToken = req.headers.get('cookie')?.split('session=')[1]?.split(';')[0];
+    const sessionToken = extractSessionToken(req.headers.get('cookie'));
     if (!sessionToken) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { payload } = await jwtVerify(sessionToken, secret);
-    const adminId = payload.uid as string;
+    const { uid: adminId, isAdmin } = await verifyAdminSession(sessionToken);
+    if (!isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const body = await req.json();
     const { id, updates } = body;

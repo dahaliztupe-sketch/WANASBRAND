@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
-import { SignJWT } from 'jose';
 import { cookies } from 'next/headers';
 
 import { auth, db } from '@/lib/firebase/server';
+import { createAdminSession } from '@/lib/utils/session';
 
 export const runtime = 'nodejs';
-
-const SESSION_SECRET = process.env.SESSION_SECRET || 'default_session_secret_change_me_in_production';
-const secret = new TextEncoder().encode(SESSION_SECRET);
 
 export async function POST(req: Request) {
   try {
@@ -37,11 +34,7 @@ export async function POST(req: Request) {
     }
 
     // Create a session JWT
-    const sessionToken = await new SignJWT({ uid, isAdmin: true })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setIssuedAt()
-      .setExpirationTime('24h')
-      .sign(secret);
+    const sessionToken = await createAdminSession(uid);
 
     // Set session cookie
     const cookieStore = await cookies();

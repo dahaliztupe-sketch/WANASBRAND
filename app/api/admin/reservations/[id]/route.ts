@@ -1,13 +1,10 @@
 import { NextResponse } from 'next/server';
-import { jwtVerify } from 'jose';
 
 import { db } from '@/lib/firebase/server';
 import { decryptPII } from '@/lib/utils/encryption';
 import { Reservation } from '@/types';
 import { logAdminAction } from '@/lib/services/audit.service';
-
-const SESSION_SECRET = process.env.SESSION_SECRET || 'default_session_secret_change_me_in_production';
-const secret = new TextEncoder().encode(SESSION_SECRET);
+import { verifyAdminSession, extractSessionToken } from '@/lib/utils/session';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,13 +51,15 @@ export async function PATCH(
   }
 
   try {
-    const sessionToken = request.headers.get('cookie')?.split('session=')[1]?.split(';')[0];
+    const sessionToken = extractSessionToken(request.headers.get('cookie'));
     if (!sessionToken) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { payload } = await jwtVerify(sessionToken, secret);
-    const adminId = payload.uid as string;
+    const { uid: adminId, isAdmin } = await verifyAdminSession(sessionToken);
+    if (!isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const { id } = await params;
     const { status } = await request.json();

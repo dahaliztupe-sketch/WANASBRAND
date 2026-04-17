@@ -2,20 +2,15 @@
 
 import { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, limit, getDocs } from 'firebase/firestore';
-import { GoogleGenAI } from '@google/genai';
 import { AlertTriangle, ChevronRight, Clock, Loader2, Mail, MessageCircle, ShoppingBag, Sparkles, TrendingUp, User } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { 
-  FunnelChart, Funnel, LabelList, ResponsiveContainer, Tooltip 
-} from 'recharts';
+import { FunnelChart, Funnel, LabelList, ResponsiveContainer, Tooltip } from 'recharts';
 
 import { auth, db } from '@/lib/firebase/client';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { Product } from '@/types';
-
-const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || '' });
 
 interface Cart {
   id: string;
@@ -37,35 +32,21 @@ export default function InsightsPage() {
   const generateAIReport = async () => {
     setIsGeneratingReport(true);
     try {
-      const chatsSnap = await getDocs(query(collection(db, 'concierge_chats'), limit(10)));
-      const chatLogs = chatsSnap.docs.map(doc => {
-        const data = doc.data();
-        return data.messages.map((m: { role: string; content: string }) => `${m.role}: ${m.content}`).join('\n');
-      }).join('\n---\n');
-      
-      const prompt = `
-        You are a strategic fashion consultant for WANAS, a luxury fashion house.
-        Analyze the following data and provide a concise, sophisticated report for the management.
-        
-        Data Context:
-        - Low Stock Products: ${JSON.stringify(lowStockProducts.map(p => p.name))}
-        - Abandoned Selections: ${abandonedCarts.length} active carts.
-        - Recent Customer Conversations:
-        ${chatLogs}
-        
-        Report Requirements:
-        1. Mood & Trend Forecasting: What are customers asking for?
-        2. Operational Recommendations: Which products need restocking or promotion?
-        3. Strategic Insight: One high-level advice to improve conversion.
-        
-        Keep the tone professional, elegant, and insightful.
-      `;
-
-      const response = await ai.models.generateContent({ 
-        model: 'gemini-3.1-pro-preview',
-        contents: prompt
+      const response = await fetch('/api/admin/insights/ai-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lowStockProducts: lowStockProducts.map(p => p.name),
+          abandonedCartsCount: abandonedCarts.length,
+        }),
       });
-      setAiReport(response.text || '');
+
+      if (!response.ok) {
+        throw new Error('Failed to generate report');
+      }
+
+      const data = await response.json();
+      setAiReport(data.report || '');
     } catch (error) {
       console.error('Error generating AI report:', error);
     } finally {
