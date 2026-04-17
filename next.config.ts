@@ -3,8 +3,7 @@ const nextConfig = {
   typescript: { ignoreBuildErrors: true },
   productionBrowserSourceMaps: false,
   compress: true,
-  turbopack: {},
-  serverExternalPackages: ['firebase-admin', 'sharp'],
+  serverExternalPackages: ['firebase-admin', 'sharp', '@opentelemetry/api', '@grpc/grpc-js', '@grpc/proto-loader', 'protobufjs'],
   webpack: (config, { isServer: _isServer }) => {
     config.ignoreWarnings = [
       { module: /node_modules\/@opentelemetry\/instrumentation/ },
