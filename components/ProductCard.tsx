@@ -2,12 +2,14 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart } from 'lucide-react';
+import { Heart, Eye, GitCompare } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Product } from '@/types';
 import { formatPrice } from '@/lib/utils';
 import { useWishlistStore } from '@/store/useWishlistStore';
+import { useQuickViewStore } from '@/store/useQuickViewStore';
+import { useCompareStore } from '@/store/useCompareStore';
 import { triggerHaptic } from '@/lib/utils/haptics';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 
@@ -19,10 +21,13 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, viewMode = 'grid', idx }: ProductCardProps) {
   const { isInWishlist, addItem, removeItem } = useWishlistStore();
+  const { open: openQuickView } = useQuickViewStore();
+  const { addItem: addToCompare, removeItem: removeFromCompare, isInCompare } = useCompareStore();
   const { t } = useTranslation();
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     if (isInWishlist(product.id)) {
       removeItem(product.id);
       toast(t.featuredProducts.removedFromVault);
@@ -30,6 +35,24 @@ export default function ProductCard({ product, viewMode = 'grid', idx }: Product
       addItem(product);
       triggerHaptic();
       toast(t.featuredProducts.addedToVault);
+    }
+  };
+
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    triggerHaptic();
+    openQuickView(product);
+  };
+
+  const handleCompare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isInCompare(product.id)) {
+      removeFromCompare(product.id);
+    } else {
+      addToCompare(product);
+      triggerHaptic();
     }
   };
 
@@ -58,12 +81,37 @@ export default function ProductCard({ product, viewMode = 'grid', idx }: Product
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700" />
         
-        <button 
-          onClick={handleWishlistToggle} 
-          className="absolute top-6 end-6 z-10 p-3 bg-[#FDFBF7]/90 backdrop-blur-md rounded-full hover:bg-[#FDFBF7] transition-colors opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-500"
-        >
-          <Heart strokeWidth={1} className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-[#D4AF37] text-[#D4AF37]' : 'text-[#1A1A1A]'}`} />
-        </button>
+        {/* Action buttons */}
+        <div className="absolute top-4 end-4 z-10 flex flex-col gap-2">
+          <button 
+            onClick={handleWishlistToggle} 
+            className="p-2.5 bg-[#FDFBF7]/90 backdrop-blur-md rounded-full hover:bg-[#FDFBF7] transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-500"
+            aria-label="Toggle wishlist"
+          >
+            <Heart strokeWidth={1} className={`w-4 h-4 ${isInWishlist(product.id) ? 'fill-[#D4AF37] text-[#D4AF37]' : 'text-[#1A1A1A]'}`} />
+          </button>
+
+          <button
+            onClick={handleQuickView}
+            className="p-2.5 bg-[#FDFBF7]/90 backdrop-blur-md rounded-full hover:bg-[#FDFBF7] transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-500 delay-75"
+            aria-label="Quick View"
+          >
+            <Eye strokeWidth={1} className="w-4 h-4 text-[#1A1A1A]" />
+          </button>
+
+          <button
+            onClick={handleCompare}
+            className="p-2.5 bg-[#FDFBF7]/90 backdrop-blur-md rounded-full hover:bg-[#FDFBF7] transition-all opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 duration-500 delay-150"
+            aria-label="Add to Compare"
+          >
+            <GitCompare strokeWidth={1} className={`w-4 h-4 ${isInCompare(product.id) ? 'text-[#D4AF37]' : 'text-[#1A1A1A]'}`} />
+          </button>
+        </div>
+
+        {/* Quick View label at bottom */}
+        <div className="absolute bottom-0 inset-x-0 py-2.5 bg-[#1A1A1A]/80 backdrop-blur-sm text-center opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0 transition-all duration-500">
+          <span className="text-[9px] uppercase tracking-[0.4em] text-[#FDFBF7]/90 font-bold">Quick View</span>
+        </div>
       </div>
 
       <div className={`flex ${viewMode === 'grid' ? 'flex-col md:flex-row md:items-end justify-between gap-4 w-full' : 'flex-col items-center text-center gap-2'}`}>

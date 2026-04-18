@@ -25,6 +25,8 @@ import { SmoothScrolling } from "@/components/SmoothScrolling";
 import { SelectionBag } from "@/components/SelectionBag";
 import AudioBranding from "@/components/AudioBranding";
 import { PreloaderWrapper } from "@/components/PreloaderWrapper";
+import { QuickViewProvider } from "@/components/QuickViewProvider";
+import { ComparePanel } from "@/components/ComparePanel";
 
 import "./globals.css";
 
@@ -186,6 +188,8 @@ export default async function RootLayout({
                     <ServiceWorkerRegistration />
                     <InstallPrompt />
                     <GlobalConcierge />
+                    <QuickViewProvider />
+                    <ComparePanel />
                     <Toaster position="bottom-center" toastOptions={{ className: 'font-sans text-sm rounded-sm border border-primary/10 shadow-xl' }} />
                   </PreloaderWrapper>
                 </ErrorBoundary>

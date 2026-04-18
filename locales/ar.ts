@@ -37,6 +37,22 @@ export const ar = {
       facebook: 'فيسبوك',
     }
   },
+  orders: {
+    back: 'العودة إلى المجموعة',
+    order: 'حجز',
+    acquired: 'تم الحجز في',
+    certificate: 'عرض شهادة الأصالة',
+    pieces: 'القطع المحجوزة',
+    size: 'المقاس',
+    color: 'اللون',
+    quantity: 'الكمية',
+    summary: 'الملخص المالي',
+    subtotal: 'المجموع الفرعي',
+    vat: 'ضريبة القيمة المضافة (14%)',
+    shipping: 'الشحن',
+    total: 'الإجمالي',
+    delivery: 'تفاصيل التوصيل',
+  },
   common: {
     language: 'اللغة',
     english: 'الإنجليزية',
@@ -127,7 +143,16 @@ export const ar = {
       placeInBasket: 'أضيفي للسلة',
       pleaseSelectSize: 'الرجاء اختيار المقاس',
       addedToSelection: 'تمت الإضافة لاختياراتك',
-    }
+    },
+    recentlyViewed: 'شاهدتِ مؤخراً',
+    notifyMe: 'أبلغيني عند التوفر',
+    notifyMeDesc: 'سنُبلغكِ فور عودة هذه القطعة للمخزون.',
+    notifyMeEmail: 'بريدك الإلكتروني',
+    notifyMeSubmit: 'تنبيهي',
+    notifyMeSuccess: 'سنُبلغكِ حال التوفر.',
+    share: 'مشاركة',
+    copyLink: 'نسخ الرابط',
+    linkCopied: 'تم نسخ الرابط',
   },
   featuredProducts: {
     removedFromVault: 'تمت الإزالة من الخزنة',
@@ -359,6 +384,61 @@ export const ar = {
       title: 'الإرجاع والاستبدال',
       content: 'نظراً للطبيعة الرقيقة لأقمشتنا، يتم قبول المرتجعات في غضون 14 يوماً من الاستلام، بشرط أن تكون العناصر في حالتها الأصلية.',
     }
+  },
+  styleQuiz: {
+    title: 'اكتشفي أسلوبك',
+    subtitle: 'أجيبي على بضعة أسئلة لنقترح عليك القطع المثالية',
+    next: 'التالي',
+    back: 'السابق',
+    seeResults: 'اكتشفي اختياراتك',
+    restart: 'إعادة الاختبار',
+    resultsTitle: 'قطعك المقترحة',
+    resultsSubtitle: 'بناءً على ذوقك الرفيع، نقترح عليك',
+    noResults: 'سنتواصل معك لإيجاد قطعتك المثالية',
+    viewProduct: 'اكتشفي القطعة',
+    contactConcierge: 'تحدثي مع المستشارة',
+    questions: {
+      occasion: {
+        title: 'ما المناسبة؟',
+        subtitle: 'أخبرينا عن مناسبتك المقبلة',
+        options: {
+          wedding: 'حفل زفاف أو خطوبة',
+          formal: 'مناسبة رسمية أو عمل',
+          casual: 'إطلالة يومية راقية',
+          party: 'حفلة أو تجمع عائلي',
+        },
+      },
+      palette: {
+        title: 'ما لونك المفضل؟',
+        subtitle: 'اختاري الألوان التي تناسب روحك',
+        options: {
+          neutral: 'الأبيض والكريمي والبيج',
+          earth: 'الأسود والكاكي والبني',
+          jewel: 'الأزرق والأخضر والبنفسجي',
+          warm: 'الذهبي والبرتقالي والأحمر',
+        },
+      },
+      silhouette: {
+        title: 'ما القصة المفضلة لديك؟',
+        subtitle: 'اختاري ما يمنحك الثقة والأناقة',
+        options: {
+          fitted: 'قريبة من الجسم وشارحة للقوام',
+          flowy: 'منسابة وخفيفة',
+          structured: 'كلاسيكية ومنظمة',
+          dramatic: 'مسرحية ومبهرة',
+        },
+      },
+      budget: {
+        title: 'ما ميزانيتك التقريبية؟',
+        subtitle: 'لنساعدك في إيجاد الخيار الأمثل',
+        options: {
+          under5k: 'أقل من 5,000 جنيه',
+          range5to10: '5,000 - 10,000 جنيه',
+          range10to20: '10,000 - 20,000 جنيه',
+          above20k: 'أكثر من 20,000 جنيه',
+        },
+      },
+    },
   },
   sizeGuide: {
     title: 'دليل مقاسات الأزياء الراقية',

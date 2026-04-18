@@ -236,6 +236,7 @@ export interface Translations {
   conciergeModal: Record<string, unknown>;
   pushNotificationModal: Record<string, unknown>;
   styleProfileQuiz: Record<string, unknown>;
+  styleQuiz: Record<string, unknown>;
   selectionBag: Record<string, unknown>;
   cookieBanner: Record<string, unknown>;
   emptyStates: Record<string, unknown>;

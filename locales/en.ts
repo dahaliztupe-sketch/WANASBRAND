@@ -136,6 +136,15 @@ export const en = {
       subtitle: 'Silhouette Study',
       instruction: 'Move your device to scan the floor and place the silhouette.',
     },
+    recentlyViewed: 'Recently Viewed',
+    notifyMe: 'Notify Me When Available',
+    notifyMeDesc: 'We will notify you the moment this piece is back in stock.',
+    notifyMeEmail: 'Your email address',
+    notifyMeSubmit: 'Notify Me',
+    notifyMeSuccess: 'We will notify you when this piece is available.',
+    share: 'Share',
+    copyLink: 'Copy Link',
+    linkCopied: 'Link copied',
     variantSelector: {
       selectSize: 'Select Silhouette Size',
       sizeGuide: 'Size Guide',
@@ -401,6 +410,61 @@ export const en = {
       title: 'Returns & Exchanges',
       content: 'Due to the delicate nature of our fabrics, returns are accepted within 14 days of receipt, provided items are in their original condition.',
     }
+  },
+  styleQuiz: {
+    title: 'Discover Your Style',
+    subtitle: 'Answer a few questions and we\'ll curate the perfect pieces for you',
+    next: 'Next',
+    back: 'Back',
+    seeResults: 'See My Curation',
+    restart: 'Start Over',
+    resultsTitle: 'Your Curated Edit',
+    resultsSubtitle: 'Based on your refined taste, we recommend',
+    noResults: 'Our concierge will help you find your perfect piece',
+    viewProduct: 'Discover This Piece',
+    contactConcierge: 'Speak with Concierge',
+    questions: {
+      occasion: {
+        title: 'What\'s the occasion?',
+        subtitle: 'Tell us about your upcoming event',
+        options: {
+          wedding: 'Wedding or Engagement',
+          formal: 'Formal Event or Work',
+          casual: 'Elevated Everyday',
+          party: 'Party or Family Gathering',
+        },
+      },
+      palette: {
+        title: 'What\'s your colour palette?',
+        subtitle: 'Choose colours that speak to your soul',
+        options: {
+          neutral: 'White, Cream & Beige',
+          earth: 'Black, Khaki & Brown',
+          jewel: 'Blue, Green & Purple',
+          warm: 'Gold, Orange & Red',
+        },
+      },
+      silhouette: {
+        title: 'Which silhouette suits you?',
+        subtitle: 'Choose what makes you feel confident and elegant',
+        options: {
+          fitted: 'Fitted & Figure-Defining',
+          flowy: 'Flowing & Ethereal',
+          structured: 'Classic & Structured',
+          dramatic: 'Dramatic & Statement-Making',
+        },
+      },
+      budget: {
+        title: 'What\'s your approximate budget?',
+        subtitle: 'We\'ll help you find the best option',
+        options: {
+          under5k: 'Under 5,000 EGP',
+          range5to10: '5,000 – 10,000 EGP',
+          range10to20: '10,000 – 20,000 EGP',
+          above20k: 'Above 20,000 EGP',
+        },
+      },
+    },
   },
   sizeGuide: {
     title: 'Haute Couture Size Guide',

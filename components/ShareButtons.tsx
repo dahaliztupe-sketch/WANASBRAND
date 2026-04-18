@@ -1,6 +1,6 @@
 'use client';
 
-import { Facebook, Instagram, MessageCircle } from 'lucide-react';
+import { Facebook, Instagram, MessageCircle, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ShareButtonsProps {
@@ -8,13 +8,25 @@ interface ShareButtonsProps {
   title: string;
 }
 
-export function ShareButtons({ url, title: _title }: ShareButtonsProps) {
+export function ShareButtons({ url, title }: ShareButtonsProps) {
+  const handleNativeShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+        return;
+      } catch {
+        // cancelled — fall through to clipboard
+      }
+    }
+    await navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard!');
+  };
+
   const handleShare = (platform: string) => {
     const encodedUrl = encodeURIComponent(url);
     const message = encodeURIComponent(`شاهدي هذا المنتج من WANAS: ${url}`);
 
     let shareUrl = '';
-
     switch (platform) {
       case 'whatsapp':
         shareUrl = `https://wa.me/?text=${message}`;
@@ -23,22 +35,26 @@ export function ShareButtons({ url, title: _title }: ShareButtonsProps) {
         shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
         break;
       case 'instagram':
-        // Instagram doesn't have a direct web share intent for links, so we copy to clipboard
         navigator.clipboard.writeText(url).then(() => {
-          toast.success('Link copied to clipboard! You can now paste it in Instagram.');
+          toast.success('Link copied! Paste it in Instagram.');
         });
         return;
     }
-
-    if (shareUrl) {
-      window.open(shareUrl, '_blank', 'noopener,noreferrer');
-    }
+    if (shareUrl) window.open(shareUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
     <div className="flex items-center gap-4 mt-6 pt-6 border-t border-primary/10">
       <span className="text-xs uppercase tracking-widest text-primary/60">Share</span>
-      <div className="flex gap-3">
+      <div className="flex gap-2">
+        <button
+          onClick={handleNativeShare}
+          className="p-2 rounded-full hover:bg-primary/5 transition-colors text-primary/80 hover:text-primary"
+          aria-label="Share"
+          title="Share this product"
+        >
+          <Share2 className="w-4 h-4" strokeWidth={1.5} />
+        </button>
         <button
           onClick={() => handleShare('whatsapp')}
           className="p-2 rounded-full hover:bg-primary/5 transition-colors text-primary/80 hover:text-primary"

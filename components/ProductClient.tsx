@@ -10,8 +10,10 @@ import { VariantSelector } from '@/components/VariantSelector';
 import FeaturedProducts from '@/components/FeaturedProducts';
 import { RevealOnScroll } from '@/components/RevealOnScroll';
 import { ShareButtons } from '@/components/ShareButtons';
+import { RecentlyViewed } from '@/components/RecentlyViewed';
 import { Product } from '@/types';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useRecentlyViewedStore } from '@/store/useRecentlyViewedStore';
 
 const ARViewer = dynamic(() => import('@/components/ARViewer'), {
   ssr: false,
@@ -25,6 +27,11 @@ interface ProductClientProps {
 export default function ProductClient({ product }: ProductClientProps) {
   const [isAROpen, setIsAROpen] = useState(false);
   const { t } = useTranslation();
+  const trackView = useRecentlyViewedStore((s) => s.trackView);
+
+  useEffect(() => {
+    trackView(product);
+  }, [product.id]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -242,6 +249,8 @@ export default function ProductClient({ product }: ProductClientProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <RecentlyViewed excludeId={product.id} />
     </main>
   );
 }

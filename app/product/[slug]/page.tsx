@@ -8,6 +8,8 @@ import ProductClient from '@/components/ProductClient';
 import { StructuredData } from '@/components/StructuredData';
 import ARViewerWrapper from '@/components/ARViewerWrapper';
 
+export const revalidate = 3600;
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

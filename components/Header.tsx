@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { User, Search, X, Package, Sun, Moon, Globe } from 'lucide-react';
+import { User, Search, X, Package, Sun, Moon, Globe, Heart } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTheme } from 'next-themes';
 import { doc, getDoc, collection, getDocs, where, query } from 'firebase/firestore';
@@ -12,6 +12,7 @@ import { auth, db } from '@/lib/firebase/client';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useLanguageStore } from '@/lib/store/useLanguageStore';
+import { useWishlistStore } from '@/store/useWishlistStore';
 import { User as UserType, Product } from '@/types';
 
 import { Logo } from './Logo';
@@ -25,6 +26,7 @@ export function Header() {
   const { theme, setTheme } = useTheme();
   const { t, language } = useTranslation();
   const { setLanguage } = useLanguageStore();
+  const { items: wishlistItems } = useWishlistStore();
 
   useEffect(() => {
     setMounted(true);
@@ -60,12 +62,32 @@ export function Header() {
     return () => unsubscribe();
   }, []);
 
+  const normalizeArabic = (text: string): string => {
+    return text
+      .toLowerCase()
+      .normalize('NFC')
+      .replace(/[\u064B-\u065F\u0670]/g, '')
+      .replace(/[أإآا]/g, 'ا')
+      .replace(/[ىئ]/g, 'ي')
+      .replace(/ة/g, 'ه')
+      .replace(/^ال/, '')
+      .replace(/\s+ال/g, ' ')
+      .trim();
+  };
+
   const filteredProducts = useMemo(() => {
     if (!searchQuery) return [];
-    return products.filter(p => 
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      p.category.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const normalizedQuery = normalizeArabic(searchQuery);
+    return products.filter(p => {
+      const normalizedName = normalizeArabic(p.name);
+      const normalizedCategory = normalizeArabic(p.category);
+      return (
+        normalizedName.includes(normalizedQuery) ||
+        normalizedCategory.includes(normalizedQuery) ||
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.category.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
   }, [searchQuery, products]);
 
   return (
@@ -87,7 +109,7 @@ export function Header() {
           </Link>
         </div>
 
-        {/* Right: Search, Language, and Theme Toggle */}
+        {/* Right: Search, Wishlist, Language, and Theme Toggle */}
         <div className="flex gap-4 items-center justify-end text-primary min-w-[120px]">
           <Suspense fallback={<div className="w-24 h-8" />}>
             <button 
@@ -97,6 +119,15 @@ export function Header() {
             >
               <Search className="w-4 h-4" strokeWidth={1} />
             </button>
+
+            <Link href="/account/wishlist" className="p-2 hover:text-accent-primary transition-colors relative" aria-label="Wishlist">
+              <Heart className="w-4 h-4" strokeWidth={1} />
+              {mounted && wishlistItems.length > 0 && (
+                <span className="absolute -top-0.5 -end-0.5 bg-accent-primary text-primary text-[8px] font-bold w-3.5 h-3.5 flex items-center justify-center rounded-full">
+                  {wishlistItems.length > 9 ? '9+' : wishlistItems.length}
+                </span>
+              )}
+            </Link>
 
             <div className="w-8 h-8 flex items-center justify-center">
               <button 

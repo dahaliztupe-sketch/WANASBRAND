@@ -43,23 +43,27 @@ export const getProducts = async (
 
 export const checkInventory = async (sku: string) => {
   try {
-    const q = query(collection(db, 'products'), where('status', '==', 'Published'), limit(500));
+    const q = query(
+      collection(db, 'products'),
+      where('status', '==', 'Published'),
+      where('variantSkus', 'array-contains', sku),
+      limit(1)
+    );
     const snapshot = await getDocs(q);
-    
-    for (const doc of snapshot.docs) {
-      const product = doc.data() as Product;
-      const variant = product.variants.find(v => v.sku === sku);
-      if (variant) {
-        return {
-          productName: product.name,
-          stock: variant.stock,
-          size: variant.size,
-          color: variant.color,
-          price: product.price
-        };
-      }
-    }
-    return null;
+
+    if (snapshot.empty) return null;
+
+    const product = snapshot.docs[0].data() as Product;
+    const variant = product.variants.find(v => v.sku === sku);
+    if (!variant) return null;
+
+    return {
+      productName: product.name,
+      stock: variant.stock,
+      size: variant.size,
+      color: variant.color,
+      price: product.price
+    };
   } catch (error) {
     console.error('Error checking inventory:', error);
     return null;

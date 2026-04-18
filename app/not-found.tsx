@@ -1,37 +1,31 @@
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-[#FDFCFB] flex flex-col items-center justify-center px-4 text-center">
-      <div className="mb-8">
-        <Image
-          src="https://picsum.photos/seed/wanas-logo/200/200"
-          alt="WANAS"
-          width={120}
-          height={120}
-          className="opacity-80"
-          referrerPolicy="no-referrer"
-        />
-      </div>
-      
-      <h1 className="text-4xl md:text-5xl font-serif text-[#2C2C2C] mb-4 tracking-tight">
+    <div className="min-h-screen bg-primary flex flex-col items-center justify-center px-6 text-center">
+      <p className="text-[10px] uppercase tracking-[0.4em] text-accent-primary font-bold mb-8">
+        404
+      </p>
+
+      <h1 className="text-5xl md:text-7xl font-serif text-primary mb-6 tracking-tight">
         Page Not Found
       </h1>
-      
-      <p className="text-lg text-[#666666] max-w-md mb-10 font-light leading-relaxed">
-        The sanctuary you are looking for does not exist or has been moved to a new location.
+
+      <div className="w-16 h-px bg-accent-primary/40 mb-8" />
+
+      <p className="text-base text-secondary max-w-sm mb-12 leading-relaxed font-light">
+        The sanctuary you are looking for does not exist or has been moved. Allow us to guide you back.
       </p>
-      
-      <Link 
+
+      <Link
         href="/"
-        className="px-8 py-3 bg-[#2C2C2C] text-white text-sm tracking-[0.2em] uppercase hover:bg-black transition-colors duration-300"
+        className="px-10 py-3.5 bg-primary text-inverted text-[10px] tracking-[0.3em] uppercase hover:bg-accent-primary transition-colors duration-300"
       >
-        Back to Home
+        Return to Atelier
       </Link>
-      
-      <div className="mt-20 text-[10px] tracking-[0.3em] uppercase text-[#999999] font-light">
-        © WANAS PLATFORM
+
+      <div className="mt-24 text-[9px] tracking-[0.4em] uppercase text-primary/30 font-light">
+        © WANAS Atelier
       </div>
     </div>
   );

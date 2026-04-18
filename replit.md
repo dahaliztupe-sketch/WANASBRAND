@@ -61,6 +61,37 @@ Set these in Replit Secrets (see .env.example):
 - `lib/services/product.service.ts` — Added `limit(500)` to `checkInventory` query
 - `lib/services/analytics.ts` — Removed debug `console.log('Analyzing checkout funnel...')`
 
+## Feature Development (April 2026 — Session 3)
+
+### New Features Built
+- **Quick View Modal** (`components/QuickViewModal.tsx`) — Slide-up modal for rapid product preview without page navigation; triggered from ProductCard hover; uses `useQuickViewStore` Zustand store; integrated globally via `components/QuickViewProvider.tsx` in layout
+- **Style Quiz** (`app/style-quiz/page.tsx`) — 4-step quiz (occasion, colour palette, silhouette, budget) that scores and recommends products from Firestore; full Arabic/English bilingual support with translations added to both locale files
+- **Compare Products** — `store/useCompareStore.ts` (Zustand + persist, max 3 items); `components/ComparePanel.tsx` (sticky floating panel with mini-product images + "Compare Now" link); `app/compare/page.tsx` (side-by-side attribute table)
+- **ProductCard enhanced** — Now has 3 hover-action buttons: Wishlist (Heart), Quick View (Eye), Compare (GitCompare); "Quick View" label strip at card bottom
+- **Wishlist Badge in Header** — Heart icon with item count badge in desktop header (`components/Header.tsx`)
+- **Style Quiz Promo Section** — Added to `components/HomeClient.tsx` between Philosophy and Concierge sections
+- **ShareButtons improved** (`components/ShareButtons.tsx`) — Now uses native Web Share API first, falls back to clipboard copy; WhatsApp, Instagram, Facebook sharing retained
+- **Footer** — Added Style Quiz link to Client Services column
+
+### Bug Fixes
+- `components/CollectionsClient.tsx` — Fixed missing `idx` prop passed to `<ProductCard>`
+- `next.config.ts` CSP — Added `https://www.transparenttextures.com` to `img-src` to fix background texture CSP violation
+
+### Environment Variables
+- `NEXT_PUBLIC_FIREBASE_API_KEY` — Migrated from `firebase-applet-config.json` to Replit shared environment variable (security improvement)
+
+### New Pages
+- `/style-quiz` — Interactive style profile quiz
+- `/compare` — Product comparison page (requires `?ids=id1,id2,id3` query params)
+
+### New Stores
+- `store/useQuickViewStore.ts`
+- `store/useCompareStore.ts`
+- `store/useRecentlyViewedStore.ts`
+
+### New Translations Added (ar + en)
+- `styleQuiz` — Full quiz translations (title, steps, options, results)
+
 ## Security Fixes Applied (April 2026 — Session 1)
 - `proxy.ts` now verifies JWT admin sessions before allowing access to `/admin` routes
 - `SESSION_SECRET` no longer has a hardcoded fallback — centralized via `lib/utils/session.ts`

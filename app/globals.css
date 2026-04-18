@@ -30,6 +30,20 @@
     font-variant-numeric: lining-nums;
   }
 
+  [dir="rtl"] h1,
+  [dir="rtl"] h2,
+  [dir="rtl"] h3 {
+    line-height: 1.35;
+    letter-spacing: 0;
+  }
+
+  [dir="rtl"] h4,
+  [dir="rtl"] h5,
+  [dir="rtl"] h6 {
+    line-height: 1.45;
+    letter-spacing: 0;
+  }
+
   /* Custom Scrollbar */
   ::-webkit-scrollbar {
     width: 6px;

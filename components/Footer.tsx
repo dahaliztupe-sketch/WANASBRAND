@@ -12,7 +12,7 @@ import { ThemeToggle } from './ThemeToggle';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { isMuted, toggleMute } = useAudioStore();
 
   return (
@@ -64,6 +64,7 @@ export function Footer() {
               <li><Link href="/contact" className="text-primary/80 hover:text-accent-primary text-sm tracking-wide transition-colors">{t.nav.contact}</Link></li>
               <li><Link href="/faq" className="text-primary/80 hover:text-accent-primary text-sm tracking-wide transition-colors">{t.nav.faq}</Link></li>
               <li><Link href="/size-guide" className="text-primary/80 hover:text-accent-primary text-sm tracking-wide transition-colors">{t.nav.size_guide}</Link></li>
+              <li><Link href="/style-quiz" className="text-primary/80 hover:text-accent-primary text-sm tracking-wide transition-colors">{language === 'ar' ? 'اكتشفي أسلوبك' : 'Style Quiz'}</Link></li>
               <li><Link href="/returns" className="text-primary/80 hover:text-accent-primary text-sm tracking-wide transition-colors">{t.nav.returns}</Link></li>
             </ul>
           </div>

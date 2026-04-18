@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'motion/react';
-import { Star, ShieldCheck } from 'lucide-react';
+import { Star, ShieldCheck, Sparkles, ArrowRight } from 'lucide-react';
 import { Suspense } from 'react';
 
 import FeaturedProducts from '@/components/FeaturedProducts';
@@ -12,7 +12,7 @@ import { useTranslation } from '@/lib/hooks/useTranslation';
 import { Product } from '@/types';
 
 export default function HomeClient({ featuredProductsPromise }: { featuredProductsPromise: Promise<Product[]> }) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   return (
     <main className="min-h-screen bg-primary text-primary overflow-hidden">
@@ -184,6 +184,34 @@ export default function HomeClient({ featuredProductsPromise }: { featuredProduc
               referrerPolicy="no-referrer"
             />
           </div>
+        </RevealOnScroll>
+      </section>
+
+      {/* Style Quiz Promo Section */}
+      <section className="relative py-24 px-6 overflow-hidden bg-secondary">
+        <div className="absolute inset-0 opacity-10 bg-cover bg-center" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=1400&auto=format&fit=crop)' }} />
+        <RevealOnScroll className="relative max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 text-accent-primary mb-6">
+            <Sparkles size={14} strokeWidth={1.5} />
+            <span className="text-[9px] uppercase tracking-[0.5em] font-bold">Style Profile</span>
+            <Sparkles size={14} strokeWidth={1.5} />
+          </div>
+          <h2 className="font-serif text-4xl md:text-5xl text-primary mb-6 leading-tight">
+            {language === 'ar' ? 'اكتشفي أسلوبك الخاص' : 'Discover Your Signature Style'}
+          </h2>
+          <p className="text-primary/60 text-sm md:text-base leading-relaxed max-w-2xl mx-auto mb-10">
+            {language === 'ar'
+              ? 'أجيبي على بضعة أسئلة وسنختار لك القطع الأكثر انسجاماً مع روحك وأناقتك'
+              : 'Answer a few questions and let us curate the perfect pieces for your unique aesthetic'
+            }
+          </p>
+          <Link
+            href="/style-quiz"
+            className="inline-flex items-center gap-3 py-4 px-10 bg-primary text-inverted text-[10px] uppercase tracking-[0.4em] hover:bg-accent-primary transition-colors duration-500 group"
+          >
+            {language === 'ar' ? 'ابدئي الاختبار' : 'Take the Quiz'}
+            <ArrowRight size={14} strokeWidth={1.5} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
         </RevealOnScroll>
       </section>
 
