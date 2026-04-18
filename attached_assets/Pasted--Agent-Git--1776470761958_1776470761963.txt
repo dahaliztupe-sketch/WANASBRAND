@@ -1,0 +1,85 @@
+
+Agent، قم بتنفيذ المهام التالية بالتسلسل. أريد تقريرًا موجزًا بعد كل مهمة. لا تقم بأي أوامر Git (رفع، commit، push). سأقوم أنا بذلك يدويًا لاحقًا.
+
+---
+
+المهمة 1: إصلاح الثغرات الأمنية (الأولوية القصوى)
+
+1.1 تحديث nodemailer:
+
+· في Terminal، نفذ: npm install nodemailer@7.0.11
+· هذا يعالج الثغرة الأمنية في الإصدار القديم.
+
+1.2 إصلاح ثغرة createDecipheriv في lib/utils/encryption.ts:
+
+· افحص السطر 83 وما حوله.
+· تأكد من أن الكود يستدعي decipher.setAuthTag(authTag) قبل decipher.update().
+· النمط الصحيح هو:
+  ```typescript
+  decipher.setAuthTag(authTag);
+  let decrypted = decipher.update(encryptedData);
+  decrypted = Buffer.concat([decrypted, decipher.final()]);
+  ```
+· إذا كان الكود الحالي لا يفعل ذلك، قم بتصحيحه.
+
+1.3 نقل مفاتيح API المكشوفة من frebase-applet-config.json:
+
+· افحص محتوى هذا الملف. استخرج جميع المفاتيح (مثل apiKey).
+· احذف الملف frebase-applet-config.json بالكامل من المستودع (rm frebase-applet-config.json).
+· تأكد من أن .gitignore يحتوي على frebase-applet-config.json. إذا لم يكن كذلك، أضفه.
+· أخبرني بالمفاتيح التي تم العثور عليها، وسأقوم أنا بإضافتها يدويًا إلى Replit Secrets.
+
+---
+
+المهمة 2: إصلاح أخطاء TypeScript النهائية
+
+2.1 إصلاح خطأ reservationRateLimit في app/api/reservation/route.ts:
+
+· افحص استيراد reservationRateLimit من @/lib/upstash.
+· إذا كانت الدالة غير موجودة في lib/upstash.ts، قم بتعريفها داخل route.ts مباشرة باستخدام new Ratelimit({...}).
+· المهم أن يختفي خطأ الاستيراد.
+
+2.2 إصلاح خطأ conciergeSchema في app/reservation/page.tsx:
+
+· ابحث عن export const conciergeSchema أو export { conciergeSchema }.
+· احذف هذا التصدير تمامًا. المخطط مخصص للتحقق من الصحة فقط، وليس للتصدير من ملف الصفحة.
+
+---
+
+المهمة 3: الترحيل الكامل والدائم إلى Turbopack (الحل النهائي)
+
+الهدف: اعتماد Turbopack كمجمّع افتراضي للمشروع بدلاً من Webpack، دون الحاجة للرجوع إلى --webpack.
+
+3.1 حذف تكوين webpack القديم من next.config.ts:
+
+· افحص ملف next.config.ts.
+· ابحث عن أي تكوين مخصص لـ webpack (غالبًا داخل webpack: (config, options) => { ... }).
+· احذف هذا التكوين بالكامل أو قم بالتعليق عليه.
+
+3.2 إضافة تكوين turbopack الجديد:
+
+· في نفس الملف next.config.ts، أضف تكوين turbopack (حتى لو كان فارغًا) إلى كائن nextConfig:
+  ```typescript
+  const nextConfig = {
+    // ... باقي الإعدادات
+    turbopack: {},
+  };
+  ```
+· هذا يؤكد لـ Next.js أننا نستخدم Turbopack بشكل صريح.
+
+3.3 إعادة أمر البناء إلى الوضع الافتراضي:
+
+· في package.json، أعد سكريبت build إلى "next build" (احذف العلامة --webpack التي أضفناها سابقًا).
+· يمكنك تحقيق ذلك باستخدام الأمر: sed -i 's/"build": "next build --webpack"/"build": "next build"/' package.json
+
+3.4 تنظيف أي تكوينات متبقية (إن وجدت):
+
+· إذا كان هناك أي إعدادات قديمة تحت experimental.turbopack، انقلها إلى المستوى الأعلى turbopack. في Next.js 16، تم نقل تكوين Turbopack من experimental.turbopack إلى المستوى الأعلى.
+
+---
+
+التقرير النهائي:
+بعد تنفيذ جميع المهام، قدّم لي ملخصًا نهائيًا يتضمن:
+
+· ما تم إصلاحه بنجاح.
+· أي أخطاء واجهتها أثناء الترحيل إلى Turbopack
