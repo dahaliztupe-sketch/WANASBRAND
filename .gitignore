@@ -9,3 +9,4 @@ coverage/
 *.key
 keys.txt
 serviceAccount.json
+firebase-applet-config.json
