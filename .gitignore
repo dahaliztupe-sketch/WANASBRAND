@@ -10,3 +10,4 @@ coverage/
 keys.txt
 serviceAccount.json
 firebase-applet-config.json
+*.tsbuildinfo
