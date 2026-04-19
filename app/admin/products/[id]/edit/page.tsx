@@ -131,7 +131,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     try {
       const newImages = [...images];
       for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+        const file = files[i]!;
         const storageRef = ref(storage, `products/${Date.now()}_${file.name}`);
         const snapshot = await uploadBytes(storageRef, file);
         const downloadURL = await getDownloadURL(snapshot.ref);
@@ -190,7 +190,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
       }
 
       try {
-        blurDataURL = await generateBlurDataURL(mainImageUrl);
+        blurDataURL = await generateBlurDataURL(mainImageUrl!);
       } catch (err) {
         console.error('Failed to generate blurDataURL:', err);
       }
@@ -202,7 +202,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
         fitNotes: formData.fitNotes,
         price: Number(formData.price),
         category: formData.category,
-        images: images.length > 0 ? images : [mainImageUrl],
+        images: images.length > 0 ? images : (mainImageUrl ? [mainImageUrl] : []),
         blurDataURL,
         variants: finalVariants,
         status: formData.status as 'Draft' | 'Published' | 'Archived',

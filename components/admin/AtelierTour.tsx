@@ -26,7 +26,7 @@ export function AtelierTour() {
     if (!isActive) return;
 
     const updatePosition = () => {
-      const element = document.querySelector(`[data-tour-id="${TOUR_STEPS[currentStep].id}"]`);
+      const element = document.querySelector(`[data-tour-id="${TOUR_STEPS[currentStep]?.id}"]`);
       if (element) {
         setTargetRect(element.getBoundingClientRect());
       }
@@ -72,8 +72,8 @@ export function AtelierTour() {
         }}
       >
         <button onClick={endTour} className="absolute top-2 right-2 text-primary/50 hover:text-primary"><X size={16} /></button>
-        <h3 className="font-serif text-xl text-primary mb-2">{step.title}</h3>
-        <p className="text-sm text-primary/70 mb-6">{step.description}</p>
+        <h3 className="font-serif text-xl text-primary mb-2">{step?.title}</h3>
+        <p className="text-sm text-primary/70 mb-6">{step?.description}</p>
         <div className="flex justify-between items-center">
           <span className="text-[10px] uppercase tracking-widest text-primary/40">{currentStep + 1} / {TOUR_STEPS.length}</span>
           <div className="flex gap-2">

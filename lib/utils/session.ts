@@ -29,5 +29,5 @@ export async function createAdminSession(uid: string): Promise<string> {
 export function extractSessionToken(cookieHeader: string | null): string | null {
   if (!cookieHeader) return null;
   const match = cookieHeader.match(/(?:^|;\s*)session=([^;]+)/);
-  return match ? match[1] : null;
+  return match ? match[1] ?? null : null;
 }

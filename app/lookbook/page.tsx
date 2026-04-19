@@ -14,7 +14,7 @@ export default function LookbookPage() {
         <h1 className="font-serif text-5xl text-primary mb-4 italic">{t.lookbook.title}</h1>
         <p className="text-primary/60 text-sm uppercase tracking-widest">{t.lookbook.subtitle}</p>
         {!isLoading && artT && (
-          <p className="text-primary/40 text-xs mt-4">{artT.lookbook.mood} - {artT.lookbook.architecture}</p>
+          <p className="text-primary/40 text-xs mt-4">{(artT as Record<string, Record<string, string>>).lookbook?.mood} - {(artT as Record<string, Record<string, string>>).lookbook?.architecture}</p>
         )}
       </header>
       <ShoppableLookbook />

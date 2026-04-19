@@ -112,7 +112,7 @@ export async function POST(req: Request) {
           toolResponseContent = "Database is currently offline.";
         } else {
           if (call.name === 'checkInventory') {
-            const { productId, size, color } = call.args as Record<string, string>;
+            const { productId, size, color } = call.args as { productId: string; size: string; color: string };
             const doc = await db.collection('products').doc(productId).get();
             if (!doc.exists) {
               toolResponseContent = "Product not found.";
@@ -129,7 +129,7 @@ export async function POST(req: Request) {
               }
             }
           } else if (call.name === 'addToWaitlist') {
-            const { productId, email, size, color } = call.args as Record<string, string>;
+            const { productId, email, size, color } = call.args as { productId: string; email: string; size: string; color: string };
             const doc = await db.collection('products').doc(productId).get();
             if (!doc.exists) {
               toolResponseContent = "Product not found.";
@@ -147,7 +147,7 @@ export async function POST(req: Request) {
               toolResponseContent = "Successfully added to waitlist.";
             }
           } else if (call.name === 'getProductDetails') {
-            const { productId } = call.args as Record<string, string>;
+            const { productId } = call.args as { productId: string };
             const doc = await db.collection('products').doc(productId).get();
             if (!doc.exists) {
               toolResponseContent = "Product not found.";

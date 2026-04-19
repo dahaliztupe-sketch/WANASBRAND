@@ -43,7 +43,7 @@ async function getInitialProducts(): Promise<{ products: Product[], lastDocId: s
       ...doc.data()
     })) as Product[];
     
-    const lastDocId = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1].id : null;
+    const lastDocId = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1]!.id : null;
     
     return { products, lastDocId };
   } catch (error) {

@@ -4,6 +4,7 @@ import { db } from '../firebase/server';
 
 export const checkInventoryServer = async (sku: string) => {
   try {
+    if (!db) return null;
     const snapshot = await db.collection('products').where('status', '==', 'Published').get();
     
     for (const doc of snapshot.docs) {
@@ -28,6 +29,7 @@ export const checkInventoryServer = async (sku: string) => {
 
 export const addToWaitlistServer = async (userId: string, sku: string) => {
   try {
+    if (!db) return { success: false };
     const waitlistRef = db.collection('waitlist');
     await waitlistRef.add({
       userId,

@@ -16,7 +16,7 @@ let auth: Auth | null = null;
 
 function initializeAdmin(): App | null {
   if (getApps().length > 0) {
-    const app = getApps()[0];
+    const app = getApps()[0] ?? null;
     return app;
   }
 

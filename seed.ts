@@ -27,7 +27,7 @@ async function seed() {
 
   const envDbId = process.env.NEXT_PUBLIC_FIRESTORE_DATABASE_ID;
   const databaseId = (envDbId && envDbId !== '(default)') ? envDbId : firebaseConfig.firestoreDatabaseId;
-  const db = getFirestore(app, databaseId);
+  const db = getFirestore(app!, databaseId);
 
   console.log('Seeding counters/reservations...');
   await db.collection('counters').doc('reservations').set({ current: 10000 });

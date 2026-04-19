@@ -34,7 +34,7 @@ export function VariantSelector({ product, recommendedByAI }: { product: Product
       variant: selectedVariant,
       quantity: 1,
       priceAtPurchase: product.price,
-      image: product.images[0],
+      image: product.images[0]!,
       recommendedByAI,
     });
     triggerHaptic();

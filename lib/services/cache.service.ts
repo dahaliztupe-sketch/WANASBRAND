@@ -23,7 +23,7 @@ export async function getCachedProduct(slug: string) {
     const snapshot = await db.collection('products').where('slug', '==', slug).limit(1).get();
     if (snapshot.empty) return null;
     
-    const product = snapshot.docs[0].data();
+    const product = snapshot.docs[0]!.data();
     
     // 3. Save to Redis (Cache for 1 hour)
     await redis.setex(cacheKey, 3600, product);
@@ -34,6 +34,6 @@ export async function getCachedProduct(slug: string) {
     // Fallback to direct DB query if Redis fails
     if (!db) return null;
     const snapshot = await db.collection('products').where('slug', '==', slug).limit(1).get();
-    return snapshot.empty ? null : snapshot.docs[0].data();
+    return snapshot.empty ? null : snapshot.docs[0]!.data();
   }
 }

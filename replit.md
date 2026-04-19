@@ -40,6 +40,32 @@ Set these in Replit Secrets (see .env.example):
 - `NEXT_PUBLIC_GEMINI_API_KEY`
 - `CRON_SECRET`
 
+## Comprehensive Upgrade (April 2026 — Session 4)
+
+### TypeScript — Zero Errors Achieved (421 → 0)
+- `lib/firebase.ts` — Cast JSON config as `Record<string, string>`, used `getApps()[0]!`
+- `components/KanbanBoard.tsx` — Used `DragEndEvent`, cast `UniqueIdentifier` to string
+- `locales/en.ts` — Merged duplicate `waitlistModal` key
+- `tsconfig.json` — Set `target: ES2024`, `noUncheckedIndexedAccess`, `downlevelIteration`
+- `lib/encryption.ts` — Fixed index access with `!` non-null assertions
+- `lib/services/*.ts` — Added `db` null checks, fixed Google AI `as any` casts
+- All 40+ remaining type errors fixed batch-by-batch
+
+### Infrastructure
+- `package.json` — Added `engines: { node: ">=25.0.0" }`, Vitest/Playwright test scripts
+- `vitest.config.ts` — Created full Vitest configuration (jsdom, coverage via v8, alias @/)
+- `vitest.setup.ts` — Jest-DOM matchers setup
+- `next.config.ts` — Moved `reactCompiler: true` out of `experimental` to root level (Next.js 16 API)
+
+### Design — Bento Grid Redesign (Group C)
+- `components/ProductCard.tsx` — Added `BentoSize` prop (`hero|tall|wide|compact|feature`) with full-bleed dark overlay mode, gradient fade, `ArrowUpRight` CTA
+- `components/CollectionsClient.tsx` — Redesigned with 12-col Bento Grid (`auto-rows-[340px]`), 6-item repeating pattern (hero 7col/2row, tall 5/2, compact 4/1, wide 8/1, feature 5/2)
+- `components/FeaturedProducts.tsx` — Rewrote to use Bento-style `ProductCard` with `hero/tall/wide` sizes and matching grid layout
+- `components/HomeClient.tsx` — Updated Suspense fallback to match new Bento skeleton layout
+
+### Testing Packages Installed
+- `vitest`, `@vitejs/plugin-react`, `@testing-library/react`, `@testing-library/jest-dom`
+
 ## Comprehensive Audit & Fixes (April 2026 — Session 2)
 
 ### Fixed (Critical)

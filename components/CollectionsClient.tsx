@@ -4,9 +4,7 @@ import { useState, useMemo, use } from 'react';
 import { ChevronDown, X, SlidersHorizontal } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 
-import ProductCard from '@/components/ProductCard';
-import { ProductSkeleton } from '@/components/ProductSkeleton';
-import { RevealOnScroll } from '@/components/RevealOnScroll';
+import ProductCard, { type BentoSize } from '@/components/ProductCard';
 import { Product } from '@/types';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { getProducts } from '@/lib/services/product.service';
@@ -14,6 +12,26 @@ import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError'
 import { auth } from '@/lib/firebase/client';
 
 type SortOption = 'newest' | 'price_asc' | 'price_desc';
+
+function getBentoSize(idx: number): BentoSize {
+  const pos = idx % 6;
+  if (pos === 0) return 'hero';
+  if (pos === 1) return 'tall';
+  if (pos === 2) return 'compact';
+  if (pos === 3) return 'wide';
+  if (pos === 4) return 'feature';
+  return 'hero';
+}
+
+function getBentoClass(idx: number): string {
+  const pos = idx % 6;
+  if (pos === 0) return 'col-span-12 md:col-span-7 row-span-2';
+  if (pos === 1) return 'col-span-12 md:col-span-5 row-span-2';
+  if (pos === 2) return 'col-span-12 md:col-span-4 row-span-1';
+  if (pos === 3) return 'col-span-12 md:col-span-8 row-span-1';
+  if (pos === 4) return 'col-span-12 md:col-span-5 row-span-2';
+  return 'col-span-12 md:col-span-7 row-span-2';
+}
 
 interface FilterState {
   category: string | null;
@@ -63,7 +81,7 @@ function ProductGridFiltered({
       const data = await getProducts(12, lastCreatedAt);
       if (data) {
         setAllProducts((prev) => [...prev, ...data.products]);
-        setLastCreatedAt(data.lastVisible);
+        setLastCreatedAt(typeof data.lastVisible === 'string' ? data.lastVisible : null);
         if (data.products.length < 12) setHasMore(false);
       }
     } catch (err) {
@@ -87,24 +105,31 @@ function ProductGridFiltered({
   return (
     <div className="flex flex-col items-center">
       <AnimatePresence mode="popLayout">
-        <div className={`grid gap-y-32 gap-x-8 w-full ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-12' : 'grid-cols-1 md:grid-cols-2'}`}>
-          {filtered.map((product, idx) => (
-            <motion.div
-              key={product.id}
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.4, delay: (idx % 6) * 0.05 }}
-              className={viewMode === 'grid' ? `group flex flex-col items-start cursor-pointer ${
-                idx % 3 === 0 ? 'md:col-span-6 md:col-start-1' :
-                idx % 3 === 1 ? 'md:col-span-4 md:col-start-8 md:mt-48' :
-                'md:col-span-8 md:col-start-3 md:mt-32'
-              }` : 'group flex flex-col items-center cursor-pointer'}
-            >
-              <ProductCard product={product} viewMode={viewMode} idx={idx} />
-            </motion.div>
-          ))}
+        <div className={viewMode === 'grid'
+          ? 'grid grid-cols-12 gap-1 md:gap-1.5 w-full auto-rows-[260px] md:auto-rows-[340px] lg:auto-rows-[380px]'
+          : 'grid grid-cols-1 md:grid-cols-2 gap-8 w-full'}>
+          {filtered.map((product, idx) => {
+            const bentoSize = getBentoSize(idx);
+            const bentoClass = getBentoClass(idx);
+            return (
+              <motion.div
+                key={product.id}
+                layout
+                initial={{ opacity: 0, scale: 0.97 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.5, delay: (idx % 6) * 0.06 }}
+                className={viewMode === 'grid' ? bentoClass : ''}
+              >
+                <ProductCard
+                  product={product}
+                  viewMode={viewMode}
+                  idx={idx}
+                  bentoSize={viewMode === 'grid' ? bentoSize : undefined}
+                />
+              </motion.div>
+            );
+          })}
         </div>
       </AnimatePresence>
 

@@ -1,7 +1,7 @@
 import { createClient } from '@sanity/client';
 
-import ar from '@/locales/ar';
-import en from '@/locales/en';
+import { ar } from '@/locales/ar';
+import { en } from '@/locales/en';
 
 export const sanityClient = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'demo',

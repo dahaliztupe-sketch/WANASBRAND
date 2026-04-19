@@ -8,6 +8,19 @@ import { toast } from 'sonner';
 import Image from 'next/image';
 
 import { trackReservation, trackByToken } from './actions';
+import { ReservationItem } from '@/types';
+
+interface TrackingStep {
+  status: string;
+  completed: boolean;
+}
+
+interface TrackingData {
+  id: string;
+  status: string;
+  steps: TrackingStep[];
+  items?: ReservationItem[];
+}
 
 function TrackContent() {
   const searchParams = useSearchParams();
@@ -15,7 +28,7 @@ function TrackContent() {
   
   const [reservationId, setReservationId] = useState('');
   const [privacyKey, setPrivacyKey] = useState('');
-  const [trackingData, setTrackingData] = useState<Record<string, unknown> | null>(null);
+  const [trackingData, setTrackingData] = useState<TrackingData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,7 +48,7 @@ function TrackContent() {
           setReservationId(result.data.reservationNumber);
           toast.info('Please enter the last 4 digits of your phone number to unlock tracking.');
         } else {
-          setTrackingData(result.data);
+          setTrackingData(result.data as unknown as TrackingData);
         }
       } else {
         setError(result.error || 'Failed to track reservation.');
@@ -57,7 +70,7 @@ function TrackContent() {
     try {
       const result = await trackReservation(reservationId, privacyKey);
       if (result.success) {
-        setTrackingData(result.data);
+        setTrackingData(result.data as TrackingData);
       } else {
         setError(result.error || 'Failed to track reservation.');
         toast.error(result.error);
@@ -144,7 +157,7 @@ function TrackContent() {
             {/* Timeline */}
             <div className="space-y-0 relative">
               <div className="absolute left-[5.5px] top-2 bottom-2 w-[1px] bg-primary/10" />
-              {trackingData.steps.map((step: Record<string, unknown>, i: number) => {
+              {trackingData.steps.map((step, i) => {
                 const isActive = step.completed && (i === trackingData.steps.length - 1 || !trackingData.steps[i + 1]?.completed);
                 return (
                   <div key={i} className="flex items-start gap-8 pb-12 last:pb-0 relative">
@@ -169,7 +182,7 @@ function TrackContent() {
                 <h3 className="text-xs uppercase tracking-[0.2em] text-primary/40 font-bold">Your Selection</h3>
               </div>
               <div className="space-y-6">
-                {trackingData.items?.map((item: Record<string, unknown>) => (
+                {trackingData.items?.map((item) => (
                   <div key={item.variant.sku} className="flex gap-6 items-center">
                     <div className="w-16 h-20 bg-inverted/5 relative overflow-hidden flex-shrink-0">
                       {item.coverImageURL ? (

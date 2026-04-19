@@ -24,6 +24,12 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   tourStatus?: 'pending' | 'completed' | 'skipped';
+  styleProfile?: {
+    preferredColors?: string[];
+    preferredSilhouettes?: string[];
+    bodyType?: string;
+    preferredOccasions?: string[];
+  };
 }
 
 export interface ProductVariant {
@@ -68,6 +74,7 @@ export interface ReservationItem {
   quantity: number;
   priceAtPurchase: number;
   image: string; // Keeping image for UI convenience
+  coverImageURL?: string; // Snapshot URL for tracking/order pages
   holdExpiresAt?: string; // ISO string
   recommendedByAI?: boolean;
 }

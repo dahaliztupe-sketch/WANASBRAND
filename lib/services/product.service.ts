@@ -33,7 +33,7 @@ export const getProducts = async (
       return { ...data, id: doc.id };
     });
 
-    const lastVisible = products.length > 0 ? products[products.length - 1].createdAt : null;
+    const lastVisible = products.length > 0 ? products[products.length - 1]!.createdAt : null;
 
     return { products, lastVisible };
   } catch (error) {
@@ -53,7 +53,7 @@ export const checkInventory = async (sku: string) => {
 
     if (snapshot.empty) return null;
 
-    const product = snapshot.docs[0].data() as Product;
+    const product = snapshot.docs[0]!.data() as Product;
     const variant = product.variants.find(v => v.sku === sku);
     if (!variant) return null;
 

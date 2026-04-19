@@ -123,21 +123,13 @@ export default function HomeClient({ featuredProductsPromise }: { featuredProduc
           </div>
 
           <Suspense fallback={
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-y-16 md:gap-x-8">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className={`flex flex-col items-start ${
-                  i === 0 ? 'md:col-span-6 md:col-start-1' :
-                  i === 1 ? 'md:col-span-4 md:col-start-8 md:mt-48' :
-                  'md:col-span-8 md:col-start-3 md:mt-32'
-                }`}>
-                  <div className={`w-full ${
-                    i === 0 ? 'aspect-[3/4]' :
-                    i === 1 ? 'aspect-[4/5]' :
-                    'aspect-[16/9]'
-                  } mb-8 bg-primary/5 animate-pulse rounded-sm`}></div>
-                  <div className="h-6 bg-primary/5 animate-pulse rounded-sm w-3/4 mb-2"></div>
-                  <div className="h-4 bg-primary/5 animate-pulse rounded-sm w-1/4"></div>
-                </div>
+            <div className="grid grid-cols-12 gap-1 md:gap-1.5 auto-rows-[260px] md:auto-rows-[340px] lg:auto-rows-[380px]">
+              {[
+                'col-span-12 md:col-span-7 row-span-2',
+                'col-span-12 md:col-span-5 row-span-2',
+                'col-span-12 row-span-1',
+              ].map((cls, i) => (
+                <div key={i} className={`${cls} bg-primary/5 animate-pulse`} />
               ))}
             </div>
           }>

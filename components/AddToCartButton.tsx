@@ -9,7 +9,7 @@ import { triggerHaptic } from '@/lib/utils/haptics';
 export function AddToCartButton({ sku, userId }: { sku: string, userId: string }) {
   const [, startTransition] = useTransition();
   const [showSuccess, setShowSuccess] = useState(false);
-  const [optimisticStatus, setOptimisticStatus] = useOptimistic<'idle' | 'adding'>('idle', (_, action: 'idle' | 'adding') => action);
+  const [optimisticStatus, setOptimisticStatus] = useOptimistic<'idle' | 'adding', 'idle' | 'adding'>('idle', (_, action) => action);
 
   const handleAdd = async () => {
     triggerHaptic(20);

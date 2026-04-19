@@ -75,7 +75,9 @@ export function decrypt(encryptedText: string): string {
       return encryptedText; // Not in our expected format
     }
 
-    const [ivHex, authTagHex, encryptedData] = parts;
+    const ivHex = parts[0]!;
+    const authTagHex = parts[1]!;
+    const encryptedData = parts[2]!;
     const key = Buffer.from(ENCRYPTION_KEY, 'hex');
     const iv = Buffer.from(ivHex, 'hex');
     const authTag = Buffer.from(authTagHex, 'hex');

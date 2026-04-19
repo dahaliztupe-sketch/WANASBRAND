@@ -64,7 +64,7 @@ export async function POST(req: Request) {
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return NextResponse.json({ error: 'Unauthorized: Missing or invalid token' }, { status: 401 });
       }
-      const idToken = authHeader.split('Bearer ')[1];
+      const idToken = authHeader.split('Bearer ')[1]!;
       try {
         if (!auth) throw new Error('Auth not initialized');
         const decodedToken = await auth.verifyIdToken(idToken);

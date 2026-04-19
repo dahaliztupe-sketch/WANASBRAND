@@ -32,11 +32,11 @@ export default function ShoppableLookbook() {
     e.stopPropagation(); // Prevent opening the drawer when clicking wishlist
     if (isInWishlist(product.id)) {
       removeFromWishlist(product.id);
-      toast(t.productGrid.removedFromVault);
+      toast(t.featuredProducts.removedFromVault);
     } else {
       addToWishlist(product);
       triggerHaptic();
-      toast(t.productGrid.addedToVault);
+      toast(t.featuredProducts.addedToVault);
     }
   };
 
@@ -124,7 +124,7 @@ export default function ShoppableLookbook() {
                   viewport={{ once: true }}
                   transition={{ duration: 1, delay: 0.2 }}
                   className="relative z-10 ml-auto w-4/5 shadow-diffused bg-primary p-6 group cursor-pointer"
-                  onClick={() => handleProductClick(products[0])}
+                  onClick={() => handleProductClick(products[0]!)}
                 >
                   <div className="relative block">
                     <div className="aspect-[3/4] bg-primary/5 mb-6 overflow-hidden relative">
@@ -140,7 +140,7 @@ export default function ShoppableLookbook() {
                         className="object-cover transition-transform duration-1000 group-hover:scale-105"
                       />
                       <button 
-                        onClick={(e) => handleWishlistToggle(e, products[0])} 
+                        onClick={(e) => handleWishlistToggle(e, products[0]!)} 
                         className="absolute top-4 right-4 z-10 p-2 bg-primary/80 rounded-full hover:bg-primary transition-colors"
                       >
                         <Heart strokeWidth={1} className={`w-4 h-4 ${isInWishlist(products[0].id) ? 'fill-accent-primary text-accent-primary' : 'text-primary'}`} />
@@ -159,7 +159,7 @@ export default function ShoppableLookbook() {
                   viewport={{ once: true }}
                   transition={{ duration: 1, delay: 0.4 }}
                   className="relative z-20 -mt-32 mr-auto w-4/5 shadow-diffused bg-primary p-6 group cursor-pointer"
-                  onClick={() => handleProductClick(products[1])}
+                  onClick={() => handleProductClick(products[1]!)}
                 >
                   <div className="relative block">
                     <div className="aspect-[3/4] bg-primary/5 mb-6 overflow-hidden relative">
@@ -174,7 +174,7 @@ export default function ShoppableLookbook() {
                         className="object-cover transition-transform duration-1000 group-hover:scale-105"
                       />
                       <button 
-                        onClick={(e) => handleWishlistToggle(e, products[1])} 
+                        onClick={(e) => handleWishlistToggle(e, products[1]!)} 
                         className="absolute top-4 right-4 z-10 p-2 bg-primary/80 rounded-full hover:bg-primary transition-colors"
                       >
                         <Heart strokeWidth={1} className={`w-4 h-4 ${isInWishlist(products[1].id) ? 'fill-accent-primary text-accent-primary' : 'text-primary'}`} />

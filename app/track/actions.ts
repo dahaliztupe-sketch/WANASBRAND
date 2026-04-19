@@ -15,7 +15,7 @@ export async function trackByToken(token: string) {
       return { success: false, error: 'Invalid tracking token.' };
     }
 
-    const doc = snapshot.docs[0];
+    const doc = snapshot.docs[0]!;
     const data = doc.data();
     
     // For token tracking, we might still want to verify phone last 4 digits for extra security
@@ -46,7 +46,7 @@ export async function trackReservation(reservationNumber: string, last4Digits: s
       return { success: false, error: 'Reservation not found.' };
     }
 
-    const doc = snapshot.docs[0];
+    const doc = snapshot.docs[0]!;
     const reservation = { id: doc.id, ...doc.data() } as Reservation;
 
     // Decrypt phone number
@@ -90,7 +90,7 @@ export async function verifyGuestTracking(token: string, last4Digits: string) {
       throw new Error('Invalid tracking token.');
     }
 
-    const doc = snapshot.docs[0];
+    const doc = snapshot.docs[0]!;
     const reservation = { id: doc.id, ...doc.data() } as Reservation;
 
     // Decrypt phone number

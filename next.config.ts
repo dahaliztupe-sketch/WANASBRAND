@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: { reactCompiler: true },
+  reactCompiler: true,
   typescript: { ignoreBuildErrors: false },
   allowedDevOrigins: [
     process.env.REPLIT_DEV_DOMAIN ?? '',
@@ -8,7 +8,7 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
   compress: true,
   serverExternalPackages: ['firebase-admin', 'sharp', '@opentelemetry/api', '@grpc/grpc-js', '@grpc/proto-loader', 'protobufjs'],
-  webpack: (config, { isServer: _isServer }) => {
+  webpack: (config: import('webpack').Configuration, { isServer: _isServer }: { isServer: boolean; buildId: string; dev: boolean; defaultLoaders: unknown; nextRuntime: string }) => {
     config.ignoreWarnings = [
       { module: /node_modules\/@opentelemetry\/instrumentation/ },
       { module: /node_modules\/@prisma\/instrumentation/ },

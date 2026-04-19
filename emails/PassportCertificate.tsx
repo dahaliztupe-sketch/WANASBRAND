@@ -1,9 +1,5 @@
 import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
 
-// Register a serif font if needed, otherwise use default
-Font.register({
-  family: 'Times-Roman',
-});
 
 const styles = StyleSheet.create({
   page: {

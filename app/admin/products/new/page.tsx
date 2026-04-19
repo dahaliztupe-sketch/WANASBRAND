@@ -74,23 +74,23 @@ export default function NewProductPage() {
           <div key={i} className="flex gap-4">
             <input placeholder="Size" onChange={(e) => {
               const variants = [...product.variants];
-              variants[i].size = e.target.value;
+              variants[i]!.size = e.target.value;
               setProduct({...product, variants});
             }} className="p-2 bg-secondary border border-primary/10" />
             <input placeholder="Color" onChange={(e) => {
               const variants = [...product.variants];
-              variants[i].color = e.target.value;
+              variants[i]!.color = e.target.value;
               setProduct({...product, variants});
             }} className="p-2 bg-secondary border border-primary/10" />
             <input type="number" placeholder="Stock" onChange={(e) => {
               const variants = [...product.variants];
-              variants[i].stock = Number(e.target.value);
+              variants[i]!.stock = Number(e.target.value);
               setProduct({...product, variants});
             }} className="p-2 bg-secondary border border-primary/10" />
             <div className="flex items-center gap-2">
               <input type="checkbox" checked={v.isActive !== false} onChange={(e) => {
                 const variants = [...product.variants];
-                variants[i].isActive = e.target.checked;
+                variants[i]!.isActive = e.target.checked;
                 setProduct({...product, variants});
               }} />
               <span className="text-xs uppercase tracking-widest text-primary/40">Active</span>

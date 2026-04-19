@@ -73,7 +73,7 @@ export default function WishlistPage() {
           >
             <div className="relative aspect-[3/4] overflow-hidden bg-inverted/5">
               <Image
-                src={product.images[0]}
+                src={product.images[0]!}
                 alt={product.name}
                 fill
                 className="object-cover transition-transform duration-1000 group-hover:scale-105"

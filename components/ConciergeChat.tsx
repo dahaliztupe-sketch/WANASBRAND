@@ -46,7 +46,7 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
       try {
         const userDoc = await getDoc(doc(db, 'users', auth.currentUser!.uid));
         if (userDoc.exists()) {
-          setUserProfile(userDoc.data());
+          setUserProfile(userDoc.data() as User);
         }
       } catch (error) {
         handleFirestoreError(error, OperationType.GET, 'users/' + auth.currentUser!.uid, auth);
@@ -82,7 +82,7 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
 
     const unsubscribe = onSnapshot(qChat, (snapshot) => {
       if (!snapshot.empty) {
-        const chatData = snapshot.docs[0].data();
+        const chatData = snapshot.docs[0]!.data();
         setMessages(chatData.messages || []);
       }
     }, (error) => {
@@ -153,7 +153,7 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
       let imageBase64: string | undefined;
       let imageMimeType: string | undefined;
       if (userMessage.imageUrl) {
-        imageMimeType = userMessage.imageUrl.split(';')[0].split(':')[1];
+        imageMimeType = userMessage.imageUrl.split(';')[0]!.split(':')[1];
         imageBase64 = userMessage.imageUrl.split(',')[1];
       }
 
@@ -214,7 +214,7 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
               v.color.toLowerCase() === toolArgs.color.toLowerCase()
             );
             if (variant && variant.stock > 0) {
-              useShoppingBagStore.getState().addItem({ id: productDoc.id, ...productData }, variant, 1);
+              useShoppingBagStore.getState().addItem({ ...productData, id: productDoc.id }, variant, 1);
               assistantMessage.content = `Excellent choice. I have added the ${productData.name} (Size: ${toolArgs.size}, Color: ${toolArgs.color}) to your shopping bag. Is there anything else I can assist you with?`;
             } else {
               assistantMessage.content = `I apologize, but the ${productData.name} in ${toolArgs.color} size ${toolArgs.size} is currently unavailable.`;
@@ -283,8 +283,8 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
                     <div className="relative h-80 bg-primary/5">
                       {msg.productRecommendation.images?.[0] && (
                         <Image 
-                          src={msg.productRecommendation.images[0]} 
-                          alt={msg.productRecommendation.name} 
+                          src={msg.productRecommendation.images[0]!} 
+                          alt={msg.productRecommendation.name ?? ''} 
                           fill 
                           className="object-cover transition-transform duration-700 group-hover:scale-105" 
                         />
@@ -292,7 +292,7 @@ export default function ConciergeChat({ onClose }: ConciergeChatProps) {
                     </div>
                     <div className="p-4 space-y-2">
                       <h3 className="font-serif text-primary truncate">{msg.productRecommendation.name}</h3>
-                      <p className="text-xs text-primary/60">EGP {msg.productRecommendation.price.toLocaleString()}</p>
+                      <p className="text-xs text-primary/60">EGP {msg.productRecommendation.price?.toLocaleString() ?? '—'}</p>
                       <Link 
                         href={`/product/${msg.productRecommendation.id}`}
                         onClick={onClose}

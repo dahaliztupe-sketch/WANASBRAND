@@ -11,10 +11,10 @@ export default function ConciergePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (data: Record<string, unknown>) => {
+  const handleSubmit = async (data: unknown) => {
     setIsSubmitting(true);
     try {
-      await createConciergeRequest(data);
+      await (createConciergeRequest as (d: unknown) => Promise<{ success: boolean; id: string }>)(data);
       router.push('/reservation/success?type=concierge');
     } catch (error) {
       console.error('Error:', error);

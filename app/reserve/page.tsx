@@ -10,6 +10,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { db } from '@/lib/firebase/client';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useSelectionStore } from '@/store/useSelectionStore';
+import { User } from '@/types';
 import { triggerHaptic } from '@/lib/utils/haptics';
 
 export default function ReservePage() {
@@ -20,7 +21,7 @@ export default function ReservePage() {
   const [shippingFee, setShippingFee] = useState(0);
   const [settings, setSettings] = useState<Record<string, unknown> | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [userData, setUserData] = useState<Record<string, unknown> | null>(null);
+  const [userData, setUserData] = useState<User | null>(null);
   const [idempotencyKey, setIdempotencyKey] = useState('');
   const [website, setWebsite] = useState(''); // Honeypot state
   const { t } = useTranslation();
@@ -47,7 +48,7 @@ export default function ReservePage() {
         if (user) {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
           if (userDoc.exists()) {
-            setUserData(userDoc.data());
+            setUserData(userDoc.data() as User);
           }
         }
       });

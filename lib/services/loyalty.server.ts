@@ -14,6 +14,7 @@ export const addPointsServer = async (userId: string, points: number) => {
   if (!userId || userId === 'guest') return;
   
   try {
+    if (!db) return;
     const userRef = db.collection('users').doc(userId);
     const userSnap = await userRef.get();
     

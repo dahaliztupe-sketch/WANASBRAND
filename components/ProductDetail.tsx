@@ -6,7 +6,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { notFound } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
-const ARViewer = dynamic(() => import('./ARViewer').then(mod => mod.ARViewer), {
+const ARViewer = dynamic(() => import('./ARViewer'), {
   ssr: false,
   loading: () => <div className="animate-pulse bg-primary/10 w-full h-full" />
 });

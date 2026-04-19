@@ -6,6 +6,7 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  type DragEndEvent,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
@@ -30,7 +31,7 @@ function SortableCard({ reservation }: { reservation: Record<string, unknown> })
     setNodeRef,
     transform,
     transition,
-  } = useSortable({ id: reservation.id });
+  } = useSortable({ id: reservation.id as string });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -38,7 +39,7 @@ function SortableCard({ reservation }: { reservation: Record<string, unknown> })
   };
 
   const handleNotesChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    await updateDoc(doc(db, 'reservations', reservation.id), { notes: e.target.value });
+    await updateDoc(doc(db, 'reservations', reservation.id as string), { notes: e.target.value });
   };
 
   return (
@@ -48,19 +49,19 @@ function SortableCard({ reservation }: { reservation: Record<string, unknown> })
       className="p-4 bg-primary border border-primary/10 text-xs text-primary shadow-sm hover:border-accent-primary transition-colors"
     >
       <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing mb-2">
-        <div className="font-bold">#{reservation.reservationNumber || reservation.id.slice(0, 8)}</div>
-        <div>{reservation.customerInfo?.fullName || 'Unknown Customer'}</div>
-        <div className="text-secondary/60">EGP {reservation.totalAmount?.toLocaleString()}</div>
+        <div className="font-bold">#{(reservation.reservationNumber as string) || (reservation.id as string).slice(0, 8)}</div>
+        <div>{(reservation.customerInfo as Record<string, unknown>)?.fullName as string || 'Unknown Customer'}</div>
+        <div className="text-secondary/60">EGP {(reservation.totalAmount as number | undefined)?.toLocaleString()}</div>
       </div>
       <textarea
-        defaultValue={reservation.notes || ''}
+        defaultValue={(reservation.notes as string) || ''}
         onBlur={handleNotesChange}
         placeholder="Add concierge notes..."
         className="w-full mt-2 p-2 bg-secondary/50 border border-primary/5 text-[10px] resize-none focus:outline-none focus:border-accent-primary"
         rows={3}
       />
       <div className="mt-2 text-[10px] text-secondary/40">
-        {reservation.createdAt?.toDate ? new Date(reservation.createdAt.toDate()).toLocaleDateString() : 'N/A'}
+        {(reservation.createdAt as { toDate?: () => Date } | undefined)?.toDate ? new Date((reservation.createdAt as { toDate: () => Date }).toDate()).toLocaleDateString() : 'N/A'}
       </div>
     </div>
   );
@@ -82,8 +83,8 @@ export function KanbanBoard() {
     return () => unsubscribe();
   }, []);
 
-  const handleDragEnd = async (event: Record<string, unknown>) => {
-    const { active, over } = event as { active: { id: string }, over: { id: string } | null };
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
     if (!over) return;
 
     const activeId = active.id;
@@ -93,11 +94,11 @@ export function KanbanBoard() {
       const overReservation = reservations.find(r => r.id === overId);
       
       // If dropped on a column, update status
-      if (COLUMNS.includes(overId)) {
-        await updateDoc(doc(db, 'reservations', activeId), { status: overId });
+      if (COLUMNS.includes(overId as string)) {
+        await updateDoc(doc(db, 'reservations', activeId as string), { status: overId as string });
       } else if (overReservation) {
         // If dropped on a card, update status to match that card's status
-        await updateDoc(doc(db, 'reservations', activeId), { status: overReservation.status });
+        await updateDoc(doc(db, 'reservations', activeId as string), { status: overReservation.status });
       }
     }
   };
@@ -108,10 +109,10 @@ export function KanbanBoard() {
         {COLUMNS.map((col) => (
           <div key={col} className="bg-secondary p-4 rounded-sm border border-primary/5">
             <h3 className="text-xs uppercase tracking-widest font-bold mb-4 text-primary/60">{col}</h3>
-            <SortableContext items={reservations.filter(r => r.status === col).map(r => r.id)} strategy={verticalListSortingStrategy}>
+            <SortableContext items={reservations.filter(r => r.status === col).map(r => r.id as string)} strategy={verticalListSortingStrategy}>
               <div className="space-y-2 min-h-[200px]">
                 {reservations.filter(r => r.status === col).map((res) => (
-                  <SortableCard key={res.id} reservation={res} />
+                  <SortableCard key={res.id as string} reservation={res} />
                 ))}
               </div>
             </SortableContext>

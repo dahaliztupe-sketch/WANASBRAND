@@ -10,7 +10,6 @@ export function Logo({ className = "w-32 h-auto" }: { className?: string }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      dir="ltr"
     >
       {/* The Monogram 'W' */}
       <path

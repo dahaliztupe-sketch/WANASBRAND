@@ -145,7 +145,7 @@ Always maintain sophistication. Respond concisely. If recommending, explain why 
     const functionCalls = response.functionCalls;
 
     if (functionCalls && functionCalls.length > 0) {
-      const call = functionCalls[0];
+      const call = functionCalls[0]!;
       return NextResponse.json({
         type: 'tool_call',
         toolName: call.name,

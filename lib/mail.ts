@@ -51,7 +51,7 @@ async function sendWithRetry(params: Record<string, unknown>, maxRetries = 2): P
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       if (!resend) throw new Error('Resend not initialized');
-      return await resend.emails.send(params);
+      return await resend.emails.send(params as never);
     } catch (error) {
       lastError = error;
       if (attempt < maxRetries) {

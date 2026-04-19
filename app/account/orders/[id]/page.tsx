@@ -193,7 +193,7 @@ export default function ReservationDetailsPage({ params }: { params: Promise<{ i
                 <div className="space-y-8">
                   <h3 className="text-6xl font-serif text-[#1A1A1A] italic">{t.orderDetails.certificate.atelier}</h3>
                   <p className="max-w-xl mx-auto text-sm text-[#4A4A4A] leading-relaxed font-light italic">
-                    {t.orderDetails.certificate.description.replace('{orderNumber}', reservation.reservationNumber || reservation.orderNumber)}
+                    {t.orderDetails.certificate.description.replace('{orderNumber}', reservation.reservationNumber || reservation.orderNumber || '')}
                   </p>
                 </div>
 

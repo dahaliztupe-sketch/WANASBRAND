@@ -26,7 +26,7 @@ export default function ProductGrid({ viewMode = 'grid', initialProductsPromise 
     try {
       const { products: moreProducts, lastVisible } = await getProducts(12, lastCreatedAt);
       setProducts(prev => [...prev, ...moreProducts]);
-      setLastCreatedAt(lastVisible);
+      setLastCreatedAt(typeof lastVisible === 'string' ? lastVisible : null);
       if (moreProducts.length < 12) setHasMore(false);
     } catch (err: unknown) {
       handleFirestoreError(err, OperationType.LIST, 'products', auth);

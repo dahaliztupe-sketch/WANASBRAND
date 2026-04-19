@@ -161,7 +161,7 @@ export default function ProductClient({ product }: ProductClientProps) {
             >
               <div className="relative w-full h-full overflow-hidden bg-secondary">
                 <Image
-                  src={product.images[1]}
+                  src={product.images[1]!}
                   alt={`${product.name} Detail`}
                   fill
                   className="object-cover transition-transform duration-[3s] hover:scale-110"

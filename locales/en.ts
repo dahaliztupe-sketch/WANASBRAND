@@ -479,10 +479,15 @@ export const en = {
     subtitle: '{productName} - {variantName}',
     contactLabel: 'Email or Phone Number',
     placeholder: 'Enter your contact info',
+    contactPlaceholder: 'Enter your contact info',
     submit: 'Join Waitlist',
     submitting: 'Joining...',
+    joining: 'Joining...',
+    join: 'Join Waitlist',
     success: 'You have been added to the waitlist.',
     error: 'Failed to join waitlist. Please try again.',
+    successToast: 'You have been added to the waitlist.',
+    errorToast: 'Failed to join waitlist. Please try again.',
   },
   conciergeModal: {
     title: 'A piece of art requires a personal touch.',
@@ -574,15 +579,6 @@ export const en = {
       tooLong: 'Your message is too long. Please keep it under 500 characters.',
       tooLarge: 'Image must be less than 5MB',
     }
-  },
-  waitlistModal: {
-    title: 'Join the Waitlist',
-    contactLabel: 'Email or Phone Number',
-    contactPlaceholder: 'Enter your contact info',
-    joining: 'Joining...',
-    join: 'Join Waitlist',
-    successToast: 'You have been added to the waitlist.',
-    errorToast: 'Failed to join waitlist. Please try again.',
   },
   admin: {
     layout: {
