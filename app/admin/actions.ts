@@ -10,7 +10,10 @@ import { decryptPII } from '@/lib/utils/encryption';
 import { logAdminAction } from '@/lib/services/audit.service';
 import { Reservation } from '@/types';
 
-const SESSION_SECRET = process.env.SESSION_SECRET || 'default_session_secret_change_me_in_production';
+const SESSION_SECRET = process.env.SESSION_SECRET;
+if (!SESSION_SECRET) {
+  throw new Error('CRITICAL: SESSION_SECRET environment variable is not set');
+}
 const secret = new TextEncoder().encode(SESSION_SECRET);
 
 async function getAdminFromSession() {

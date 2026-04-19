@@ -5,7 +5,11 @@
 
 import { SignJWT, jwtVerify } from 'jose';
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'wanas-luxury-secret-key-2026');
+const JWT_SECRET_VALUE = process.env.JWT_SECRET;
+if (!JWT_SECRET_VALUE) {
+  throw new Error('CRITICAL: JWT_SECRET environment variable is not set');
+}
+const JWT_SECRET = new TextEncoder().encode(JWT_SECRET_VALUE);
 
 interface WhatsAppMessage {
   to: string;
