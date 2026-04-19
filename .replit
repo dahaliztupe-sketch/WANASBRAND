@@ -37,3 +37,8 @@ externalPort = 80
 
 [userenv.shared]
 NEXT_PUBLIC_FIREBASE_API_KEY = "AIzaSyBLVuRyOiw0IMEzU7ialYqCrPFZ7gO4z4s"
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["node", "./dist/index.cjs"]
+build = ["npm", "run", "build"]
