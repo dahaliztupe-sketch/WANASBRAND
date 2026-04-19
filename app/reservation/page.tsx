@@ -21,7 +21,7 @@ export default function ReservationPage() {
 
   const totalAmount = items.reduce((sum, item) => sum + item.priceAtPurchase * item.quantity, 0);
 
-  const handleSubmit = async (formData: z.infer<typeof z.object({
+  const reservationSchema = z.object({
     fullName: z.string().min(2, 'Name must be at least 2 characters'),
     phone: z.string().min(10, 'Phone number must be at least 10 digits'),
     contactMethod: z.enum(['whatsapp', 'phone']),
@@ -29,7 +29,9 @@ export default function ReservationPage() {
     consent: z.literal(true, {
       message: 'You must consent to data processing',
     }),
-  })>) => {
+  });
+
+  const handleSubmit = async (formData: z.infer<typeof reservationSchema>) => {
     setError(null);
 
     if (!auth.currentUser) {
