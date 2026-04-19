@@ -25,7 +25,7 @@ export default function AccountDashboard() {
       // Fetch User Data for Tier
       const userDoc = await getDocs(query(collection(db, 'users'), where('uid', '==', uid)));
       if (!userDoc.empty) {
-        setUserData(userDoc.docs[0].data());
+        setUserData(userDoc.docs[0]!.data() as User);
       }
 
       // Fetch Recent Reservations

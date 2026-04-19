@@ -17,7 +17,7 @@ export default async function PassportPage({ params }: { params: Promise<{ certi
   const snapshot = await db.collection('passports').where('certificateNumber', '==', certificateNumber).limit(1).get();
   if (snapshot.empty) notFound();
   
-  const passport = snapshot.docs[0].data();
+  const passport = snapshot.docs[0]!.data();
   const qrDataUrl = await QRCode.toDataURL(`https://wanasbrand.com/passport/${passport.certificateNumber}`);
 
   return (

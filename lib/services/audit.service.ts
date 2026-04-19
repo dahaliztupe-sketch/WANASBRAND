@@ -12,7 +12,7 @@ export async function logAdminAction(
   
   try {
     const adminDoc = await db.collection('users').doc(adminId).get();
-    const adminName = adminDoc.exists ? adminDoc.data()?.fullName || 'Unknown' : 'Unknown';
+    const adminName = adminDoc.exists ? (adminDoc.data()?.fullName as string) || 'Unknown' : 'Unknown';
     
     await db.collection('audit_logs').add({
       adminId,

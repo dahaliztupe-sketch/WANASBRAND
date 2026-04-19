@@ -90,7 +90,9 @@ export async function POST(req: Request) {
 
     // Handle AI Chat
     if (message) {
-      const model = ai.getGenerativeModel({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const aiAny = ai as any;
+      const model = aiAny.getGenerativeModel({
         model: 'gemini-2.5-flash',
         systemInstruction: `You are the WANAS AI Concierge, a luxury fashion expert. 
         Your goal is to assist customers with inventory inquiries, product details, and waitlist management.
@@ -103,7 +105,7 @@ export async function POST(req: Request) {
       let response = await chat.sendMessage(message);
 
       if (response.functionCalls && response.functionCalls.length > 0) {
-        const call = response.functionCalls[0];
+        const call = response.functionCalls[0]!;
         let toolResponseContent = "";
 
         if (!db) {

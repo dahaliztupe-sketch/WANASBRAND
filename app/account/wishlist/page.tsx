@@ -19,14 +19,14 @@ export default function WishlistPage() {
     triggerHaptic();
     // Default to first variant if available
     if (product.variants && product.variants.length > 0) {
-      const variant = product.variants[0];
+      const variant = product.variants[0]!;
       addItem({
         productId: product.id,
         productName: product.name,
         variant: variant,
         quantity: 1,
         priceAtPurchase: product.price,
-        image: product.images[0],
+        image: product.images[0]!,
       });
       removeItem(product.id);
       toast.success(`${product.name} moved to your bag.`);

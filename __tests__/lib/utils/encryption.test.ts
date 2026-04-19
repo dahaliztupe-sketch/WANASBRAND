@@ -57,7 +57,7 @@ describe('Encryption Utility', () => {
   it('should use fallback in non-production if key is missing', () => {
     jest.resetModules();
     delete process.env.ENCRYPTION_KEY;
-    process.env.NODE_ENV = 'development';
+    Object.defineProperty(process.env, 'NODE_ENV', { value: 'development', configurable: true, writable: true });
     
     const { encrypt: devEncrypt, decrypt: devDecrypt } = require('@/lib/utils/encryption');
     

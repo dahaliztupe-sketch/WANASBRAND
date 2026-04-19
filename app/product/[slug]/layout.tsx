@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       return { title: 'Product Not Found' };
     }
 
-    const product = snapshot.docs[0].data();
+    const product = snapshot.docs[0]!.data();
 
     return {
       title: `${product.name} | WANAS`,

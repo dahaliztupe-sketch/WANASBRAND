@@ -35,8 +35,9 @@ export async function POST(request: Request) {
       .webp({ quality: 80 })
       .toBuffer();
 
-    // Use db.app to access the initialized admin app
-    const bucket = getStorage(db.app).bucket();
+    // Use getStorage with the default app
+    const { getApp } = await import('firebase-admin/app');
+    const bucket = getStorage(getApp()).bucket();
     
     const filename = `products/${Date.now()}_${file.name.replace(/\.[^/.]+$/, "")}.webp`;
     const fileRef = bucket.file(filename);

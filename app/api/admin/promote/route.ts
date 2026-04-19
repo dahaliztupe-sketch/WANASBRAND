@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const userDoc = snapshot.docs[0];
+    const userDoc = snapshot.docs[0]!;
     
     // Set custom claim
     await firebaseAuth.setCustomUserClaims(userDoc.id, { admin: true });

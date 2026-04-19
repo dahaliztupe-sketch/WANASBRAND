@@ -145,7 +145,7 @@ function TrackContent() {
             <div className="space-y-0 relative">
               <div className="absolute left-[5.5px] top-2 bottom-2 w-[1px] bg-primary/10" />
               {trackingData.steps.map((step: Record<string, unknown>, i: number) => {
-                const isActive = step.completed && (i === trackingData.steps.length - 1 || !trackingData.steps[i + 1].completed);
+                const isActive = step.completed && (i === trackingData.steps.length - 1 || !trackingData.steps[i + 1]?.completed);
                 return (
                   <div key={i} className="flex items-start gap-8 pb-12 last:pb-0 relative">
                     <div className={`w-3 h-3 rounded-full mt-1.5 z-10 ${isActive ? 'bg-accent-primary ring-4 ring-accent-primary/20' : step.completed ? 'bg-inverted' : 'bg-primary/10'}`} />

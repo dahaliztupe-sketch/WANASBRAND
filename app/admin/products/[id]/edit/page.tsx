@@ -109,7 +109,7 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
 
   const handleVariantChange = (index: number, field: keyof ProductVariant, value: string | number | boolean) => {
     const newVariants = [...variants];
-    newVariants[index] = { ...newVariants[index], [field]: value };
+    newVariants[index] = { ...newVariants[index]!, [field]: value };
     setVariants(newVariants);
   };
 

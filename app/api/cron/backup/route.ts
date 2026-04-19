@@ -24,9 +24,9 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
     }
 
-    const client = (db as unknown as Record<string, unknown>)._firestoreClient || (db as unknown as Record<string, unknown>).client;
+    const client = ((db as unknown as Record<string, unknown>)._firestoreClient || (db as unknown as Record<string, unknown>).client) as Record<string, unknown> | undefined;
     
-    if (!client || !client.exportDocuments) {
+    if (!client || !client['exportDocuments']) {
       // Fallback: Use the REST API if the client doesn't expose exportDocuments
       const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
       const bucket = process.env.FIREBASE_BACKUP_BUCKET; // e.g., gs://wanas-backups

@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: { reactCompiler: true },
   typescript: { ignoreBuildErrors: false },
   allowedDevOrigins: [
     process.env.REPLIT_DEV_DOMAIN ?? '',

@@ -100,7 +100,7 @@ export default async function ReservationDetailsAdminPage({ params }: { params: 
               Selection Details
             </h2>
             <div className="space-y-6">
-              {reservation.items.map((item, idx) => (
+              {reservation.items.map((item: import('@/types').ReservationItem, idx: number) => (
                 <div key={idx} className="flex gap-8 p-6 bg-secondary border border-primary/5 group">
                   <div className="relative w-32 h-40 bg-primary/5 overflow-hidden">
                     <Image

@@ -19,7 +19,7 @@ async function getProduct(slug: string): Promise<Product | null> {
     const q = query(collection(db, 'products'), where('slug', '==', slug));
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) return null;
-    const doc = querySnapshot.docs[0];
+    const doc = querySnapshot.docs[0]!;
     return { id: doc.id, ...doc.data() } as Product;
   } catch (error) {
     console.error("Error fetching product:", error);

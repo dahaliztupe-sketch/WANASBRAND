@@ -59,9 +59,9 @@ export default function ReservePage() {
     if (!settings) return;
     
     if (governorate === 'Cairo' || governorate === 'Giza') {
-      setShippingFee(settings.shippingRateCairoGiza || 0);
+      setShippingFee((settings.shippingRateCairoGiza as number) || 0);
     } else if (governorate) {
-      setShippingFee(settings.shippingRateOther || 0);
+      setShippingFee((settings.shippingRateOther as number) || 0);
     } else {
       setShippingFee(0);
     }

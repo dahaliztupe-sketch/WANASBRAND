@@ -109,7 +109,7 @@ export async function POST(req: Request) {
           .get();
 
         if (!existingQuery.empty) {
-          const existingDoc = existingQuery.docs[0].data();
+          const existingDoc = existingQuery.docs[0]!.data();
           const createdAt = new Date(existingDoc.createdAt).getTime();
           const now = Date.now();
           
@@ -173,7 +173,7 @@ export async function POST(req: Request) {
           throw new Error(`Variant not found for product ${productInfo.name}`);
         }
 
-        if (productInfo.variants[variantIndex].stock < item.quantity) {
+        if (productInfo.variants[variantIndex]!.stock < item.quantity) {
           throw new Error(`Insufficient stock for ${productInfo.name} (${item.variant.sku})`);
         }
 
@@ -181,7 +181,7 @@ export async function POST(req: Request) {
         calculatedSubtotal += productInfo.price * item.quantity;
 
         // Decrement Stock in the cached variants array
-        productInfo.variants[variantIndex].stock -= item.quantity;
+        productInfo.variants[variantIndex]!.stock -= item.quantity;
         
         // Store validated item
         validatedItems.push({

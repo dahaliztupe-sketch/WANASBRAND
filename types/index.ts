@@ -75,6 +75,7 @@ export interface ReservationItem {
 export interface Reservation {
   id: string;
   reservationNumber: string; // Mandatory
+  orderNumber?: string; // Legacy alias
   customerInfo: {
     fullName: string;
     phone: string; // MUST BE ENCRYPTED
@@ -212,35 +213,5 @@ export interface AuthTranslations {
   digitalAtelier: string;
 }
 
-export interface Translations {
-  nav: Record<string, unknown>;
-  common: Record<string, unknown>;
-  home: Record<string, unknown>;
-  collections: Record<string, unknown>;
-  product: Record<string, unknown>;
-  about: About;
-  contact: Record<string, unknown>;
-  account: Record<string, unknown>;
-  ordersList: Record<string, unknown>;
-  orderDetails: ReservationDetailsTranslations;
-  auth: AuthTranslations;
-  reserve: Record<string, unknown>;
-  reserveSuccess: Record<string, unknown>;
-  faq: Record<string, unknown>;
-  lookbook: Record<string, unknown>;
-  privacy: Record<string, unknown>;
-  returns: Record<string, unknown>;
-  shippingReturns: Record<string, unknown>;
-  sizeGuide: Record<string, unknown>;
-  waitlistModal: Record<string, unknown>;
-  conciergeModal: Record<string, unknown>;
-  pushNotificationModal: Record<string, unknown>;
-  styleProfileQuiz: Record<string, unknown>;
-  styleQuiz: Record<string, unknown>;
-  selectionBag: Record<string, unknown>;
-  cookieBanner: Record<string, unknown>;
-  emptyStates: Record<string, unknown>;
-  digitalCertificate: Record<string, unknown>;
-  conciergeChat: Record<string, unknown>;
-  admin: Record<string, unknown>;
-}
+import { en } from '@/locales/en';
+export type Translations = typeof en;

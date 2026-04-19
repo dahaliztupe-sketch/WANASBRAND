@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ 
         success: true, 
         message: 'Reservation already processed', 
-        reservationId: existingReservationQuery.docs[0].id,
+        reservationId: existingReservationQuery.docs[0]!.id,
         isDuplicate: true 
       });
     }

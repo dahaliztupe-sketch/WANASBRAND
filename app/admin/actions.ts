@@ -116,10 +116,9 @@ export async function updateConciergeNotes(id: string, notes: string) {
 
     await logAdminAction(
       admin.uid,
-      admin.name,
       'update_concierge_notes',
-      id,
       'reservation',
+      id,
       { notes: oldData?.conciergeNotes },
       { notes }
     );
@@ -242,10 +241,9 @@ export async function updateReservationStatus(id: string, status: Reservation['s
 
     await logAdminAction(
       admin.uid,
-      admin.name,
       'update_reservation_status',
-      id,
       'reservation',
+      id,
       { status: oldStatus },
       { status }
     );
@@ -317,10 +315,9 @@ export async function bulkUpdateReservations(ids: string[], status: Reservation[
     // Log bulk action
     await logAdminAction(
       admin.uid,
-      admin.name,
       'bulk_update_reservations',
-      ids.join(','),
       'reservation',
+      ids.join(','),
       { count: ids.length },
       { status }
     );

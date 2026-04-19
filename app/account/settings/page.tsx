@@ -21,7 +21,7 @@ export default function SettingsPage() {
         const q = query(collection(db, 'users'), where('uid', '==', auth.currentUser.uid));
         const snapshot = await getDocs(q);
         if (!snapshot.empty) {
-          setUserData({ id: snapshot.docs[0].id, ...snapshot.docs[0].data() });
+          setUserData({ id: snapshot.docs[0]!.id, ...snapshot.docs[0]!.data() } as User);
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
