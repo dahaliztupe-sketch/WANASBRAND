@@ -12,17 +12,6 @@ import { ConciergeModal } from '@/components/ConciergeModal';
 import { formatPrice } from '@/lib/utils';
 import { triggerHaptic } from '@/lib/utils/haptics';
 
-// Re-defining schema for type inference if not exported from component
-export const conciergeSchema = z.object({
-  fullName: z.string().min(2, 'Name must be at least 2 characters'),
-  phone: z.string().min(10, 'Phone number must be at least 10 digits'),
-  contactMethod: z.enum(['whatsapp', 'phone']),
-  vibe: z.enum(['styling', 'sizing']),
-  consent: z.literal(true, {
-    message: 'You must consent to data processing',
-  }),
-});
-
 export default function ReservationPage() {
   const router = useRouter();
   const { items, clearSelection } = useSelectionStore();
@@ -32,7 +21,15 @@ export default function ReservationPage() {
 
   const totalAmount = items.reduce((sum, item) => sum + item.priceAtPurchase * item.quantity, 0);
 
-  const handleSubmit = async (formData: z.infer<typeof conciergeSchema>) => {
+  const handleSubmit = async (formData: z.infer<typeof z.object({
+    fullName: z.string().min(2, 'Name must be at least 2 characters'),
+    phone: z.string().min(10, 'Phone number must be at least 10 digits'),
+    contactMethod: z.enum(['whatsapp', 'phone']),
+    vibe: z.enum(['styling', 'sizing']),
+    consent: z.literal(true, {
+      message: 'You must consent to data processing',
+    }),
+  })>) => {
     setError(null);
 
     if (!auth.currentUser) {

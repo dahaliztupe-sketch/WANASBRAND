@@ -8,10 +8,20 @@ import { ReservationSchema } from '@/lib/schemas';
 import { ProductVariant } from '@/types';
 import { encryptPII } from '@/lib/utils/encryption';
 import { addPointsServer } from '@/lib/services/loyalty.server';
-import { reservationRateLimit } from '@/lib/upstash';
+import { redis } from '@/lib/upstash';
+import { Ratelimit } from '@upstash/ratelimit';
 
 
 export const runtime = 'nodejs';
+
+const reservationRateLimit = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, '1 m'),
+      analytics: true,
+      prefix: '@upstash/ratelimit/reservation',
+    })
+  : null;
 
 /**
  * Handles the reservation POST request.
