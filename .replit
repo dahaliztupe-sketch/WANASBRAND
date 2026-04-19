@@ -36,7 +36,6 @@ externalPort = 80
 [userenv]
 
 [userenv.shared]
-NEXT_PUBLIC_FIREBASE_API_KEY = "AIzaSyBLVuRyOiw0IMEzU7ialYqCrPFZ7gO4z4s"
 
 [deployment]
 deploymentTarget = "autoscale"
