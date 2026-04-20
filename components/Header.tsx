@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { User, Search, X, Package, Sun, Moon, Globe, Heart } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTheme } from 'next-themes';
-import { doc, getDoc, collection, getDocs, where, query } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs, where, query, limit } from 'firebase/firestore';
 
 import { auth, db } from '@/lib/firebase/client';
 import { handleFirestoreError, OperationType } from '@/lib/utils/firestoreError';
@@ -50,7 +50,11 @@ export function Header() {
 
     const fetchProducts = async () => {
       try {
-        const q = query(collection(db, 'products'), where('status', '==', 'Published'));
+        const q = query(
+          collection(db, 'products'),
+          where('status', '==', 'Published'),
+          limit(100)
+        );
         const snapshot = await getDocs(q);
         setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product)));
       } catch (error) {

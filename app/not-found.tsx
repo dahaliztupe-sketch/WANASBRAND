@@ -19,7 +19,7 @@ export default function NotFound() {
 
       <Link
         href="/"
-        className="px-10 py-3.5 bg-primary text-inverted text-[10px] tracking-[0.3em] uppercase hover:bg-accent-primary transition-colors duration-300"
+        className="px-10 py-3.5 bg-inverted text-inverted text-[10px] tracking-[0.3em] uppercase hover:bg-accent-primary transition-colors duration-300"
       >
         Return to Atelier
       </Link>

@@ -11,6 +11,7 @@ import FeaturedProducts from '@/components/FeaturedProducts';
 import { RevealOnScroll } from '@/components/RevealOnScroll';
 import { ShareButtons } from '@/components/ShareButtons';
 import { RecentlyViewed } from '@/components/RecentlyViewed';
+import RecommendedProducts from '@/components/RecommendedProducts';
 import { Product } from '@/types';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useRecentlyViewedStore } from '@/store/useRecentlyViewedStore';
@@ -31,7 +32,8 @@ export default function ProductClient({ product }: ProductClientProps) {
 
   useEffect(() => {
     trackView(product);
-  }, [product.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product.id, trackView]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -81,7 +83,7 @@ export default function ProductClient({ product }: ProductClientProps) {
               </p>
               
               {/* Stylist Note */}
-              <blockquote className="border-l border-accent-primary pl-8 py-2 italic text-primary/60 text-lg font-serif max-w-sm">
+              <blockquote className="border-s border-accent-primary ps-8 py-2 italic text-primary/60 text-lg font-serif max-w-sm">
                 {t.product.stylistNote}
               </blockquote>
             </div>
@@ -250,6 +252,7 @@ export default function ProductClient({ product }: ProductClientProps) {
         )}
       </AnimatePresence>
 
+      <RecommendedProducts currentProductId={product.id} maxItems={4} />
       <RecentlyViewed excludeId={product.id} />
     </main>
   );

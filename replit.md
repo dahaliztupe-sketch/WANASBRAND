@@ -1,4 +1,6 @@
-# Wanas — Next.js App on Replit
+# WANAS Atelier — Luxury Fashion Platform
+
+> Last comprehensive upgrade: April 2026 — Holistic Transformation Session
 
 ## Overview
 Wanas is a Next.js 16 e-commerce / brand platform using Firebase, Sanity, Sentry, Resend, and Upstash Redis.
@@ -39,6 +41,44 @@ Set these in Replit Secrets (see .env.example):
 - `NEXT_PUBLIC_SANITY_PROJECT_ID`
 - `NEXT_PUBLIC_GEMINI_API_KEY`
 - `CRON_SECRET`
+
+## Holistic Transformation (April 2026 — Session 5)
+
+### Design System (TypeUI — "Refined")
+- `.agents/skills/design-system/SKILL.md` — Comprehensively updated with WANAS brand identity:
+  - Color tokens (gold #D4AF37, cream #FDFBF7, black #1A1A1A) for light & dark modes
+  - Typography rules: Tajawal for Arabic, Playfair Display for EN headings
+  - Motion system: "Slow & Confident" — spring config `stiffness: 100, damping: 20`
+  - Full RTL logical property rules and QA checklist
+
+### Critical Bug Fixes
+- `app/sitemap.ts` — Rewrote to use Admin SDK (server-side Firebase) instead of client SDK; added `limit(500)`, ISR revalidation, `updatedAt` timestamps, 5 new static routes
+- `app/not-found.tsx` — Fixed invisible button: `bg-primary text-inverted` → `bg-inverted text-inverted` (was cream-on-cream / black-on-black)
+- `app/error.tsx` — Same invisible button fix applied
+- `app/product/[slug]/page.tsx` — Rewrote to use Admin SDK for server-side data fetching (client SDK with `persistentLocalCache` is browser-only); added `limit(1)`, improved structured data, bilingual `alternates`
+- `lib/services/ai-recommendations.ts` — Fixed hacky `as any` cast; rewrote using proper `@google/genai` API with `ai.models.generateContent()`; added `generateProductDescription()` function
+- `components/Header.tsx` — Added `limit(100)` to unbounded products Firestore query
+
+### RTL Fixes (Logical CSS Properties)
+- `components/MobileMenu.tsx` — `right-8` → `end-8` (close button)
+- `components/CookieConsent.tsx` — `left-0 right-0` → `inset-x-0`; `ml-2` → `ms-2`
+- `components/ProductClient.tsx` — `border-l/pl-8` → `border-s/ps-8` (blockquote)
+- `app/auth/page.tsx` — `left-12/right-12` → `start-12/end-12` (decorative elements); `left-4` → `start-4` (form icons)
+
+### New Features
+- `components/RecommendedProducts.tsx` — New "You May Also Like / قد يعجبكِ أيضاً" component with carousel navigation, personalized recommendations, skeleton loading, motion animations
+- `components/ProductClient.tsx` — Now includes `<RecommendedProducts>` section before "Recently Viewed"
+- `lib/services/personalization.ts` — Fully implemented recommendation engine: category affinity, price-range matching, fallback to trending, `getTrendingProducts()` helper
+
+### Enhancements
+- `app/admin/reservations/ExportButton.tsx` — Two export modes: "Accounting Export" (confirmed only, financial summary) and "Full Export" (all reservations with items, tracking, notes); proper CSV escaping; UTF-8 BOM for Excel Arabic compatibility
+- `app/passport/[certificateNumber]/page.tsx` — Enhanced DPP with: craftsmanship journey timeline, fabric composition progress bars, care icons, sustainability section, print-optimized layout, `generateMetadata()`
+- `tsconfig.json` — Target updated to ES2025
+
+### Code Quality
+- `lib/services/personalization.ts` — Replaced stub implementation with real recommendation logic
+
+---
 
 ## Comprehensive Upgrade (April 2026 — Session 4)
 

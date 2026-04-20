@@ -21,10 +21,10 @@ export function CookieConsent() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-primary border-t border-accent-primary/20 p-4 z-50 flex items-center justify-between gap-4 shadow-2xl">
+    <div className="fixed bottom-0 inset-x-0 bg-primary border-t border-accent-primary/20 p-4 z-50 flex items-center justify-between gap-4 shadow-2xl">
       <p className="text-xs text-primary/70 leading-relaxed">
         We use cookies to enhance your experience. By continuing to browse, you agree to our use of cookies. 
-        <Link href="/privacy" className="underline underline-offset-4 ml-2">Learn more</Link>.
+        <Link href="/privacy" className="underline underline-offset-4 ms-2">Learn more</Link>.
       </p>
       <button 
         onClick={accept}

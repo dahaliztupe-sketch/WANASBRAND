@@ -43,7 +43,7 @@ export function MobileMenu({ user }: { user: Record<string, unknown> }) {
           >
             <button 
               onClick={() => setIsOpen(false)} 
-              className="absolute top-8 right-8 p-2 text-primary hover:text-accent-primary transition-colors"
+              className="absolute top-8 end-8 p-2 text-primary hover:text-accent-primary transition-colors"
             >
               <X strokeWidth={1} className="w-8 h-8" />
             </button>

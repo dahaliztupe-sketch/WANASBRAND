@@ -122,10 +122,10 @@ export default function AuthPage() {
         </div>
         
         {/* Decorative Line Art */}
-        <div className="absolute top-12 left-12">
+        <div className="absolute top-12 start-12">
           <Sparkles strokeWidth={1} className="w-6 h-6 text-primary/10 stroke-[1px]" />
         </div>
-        <div className="absolute bottom-12 right-12">
+        <div className="absolute bottom-12 end-12">
           <Moon strokeWidth={1} className="w-6 h-6 text-primary/10 stroke-[1px]" />
         </div>
       </div>
@@ -145,7 +145,7 @@ export default function AuthPage() {
           <form onSubmit={handleEmailAuth} className="space-y-6">
             <div className="space-y-4">
               <div className="relative group">
-                <Mail strokeWidth={1} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/30 group-focus-within:text-accent-primary transition-colors" />
+                <Mail strokeWidth={1} className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/30 group-focus-within:text-accent-primary transition-colors" />
                 <input
                   type="email"
                   placeholder={t.auth.emailAddress}
@@ -156,7 +156,7 @@ export default function AuthPage() {
                 />
               </div>
               <div className="relative group">
-                <Lock strokeWidth={1} className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/30 group-focus-within:text-accent-primary transition-colors" />
+                <Lock strokeWidth={1} className="absolute start-4 top-1/2 -translate-y-1/2 w-4 h-4 text-primary/30 group-focus-within:text-accent-primary transition-colors" />
                 <input
                   type="password"
                   placeholder={t.auth.password}

@@ -32,7 +32,7 @@ export default function Error({ error, reset }: ErrorProps) {
       <div className="flex flex-col sm:flex-row gap-4 items-center">
         <button
           onClick={reset}
-          className="px-10 py-3.5 bg-primary text-inverted text-[10px] tracking-[0.3em] uppercase hover:bg-accent-primary transition-colors duration-300 min-w-[180px]"
+          className="px-10 py-3.5 bg-inverted text-inverted text-[10px] tracking-[0.3em] uppercase hover:bg-accent-primary transition-colors duration-300 min-w-[180px]"
         >
           Try Again
         </button>
