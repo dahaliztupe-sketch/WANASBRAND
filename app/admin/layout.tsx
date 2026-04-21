@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { Home, Inbox, Tag, Users, LogOut, Menu, X, Settings, BarChart3, Clock } from 'lucide-react';
+import { Home, Inbox, Tag, Users, LogOut, Menu, X, Settings, BarChart3, Clock, Zap, ScrollText } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 
@@ -51,13 +51,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   const navigation = [
-    { name: 'Overview', href: '/admin', icon: Home },
-    { name: 'Reservations', href: '/admin/reservations', icon: Inbox },
-    { name: 'Products', href: '/admin/products', icon: Tag },
-    { name: 'Customers', href: '/admin/customers', icon: Users },
-    { name: 'Insights', href: '/admin/insights', icon: BarChart3 },
-    { name: 'Waitlist', href: '/admin/waitlist', icon: Clock },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
+    { name: 'Overview',     href: '/admin',                icon: Home      },
+    { name: 'Reservations', href: '/admin/reservations',   icon: Inbox     },
+    { name: 'Products',     href: '/admin/products',       icon: Tag       },
+    { name: 'Customers',    href: '/admin/customers',      icon: Users     },
+    { name: 'Insights',     href: '/admin/insights',       icon: BarChart3 },
+    { name: 'AI Agents',    href: '/admin/agents',         icon: Zap       },
+    { name: 'Audit Logs',   href: '/admin/audit-logs',     icon: ScrollText},
+    { name: 'Waitlist',     href: '/admin/waitlist',       icon: Clock     },
+    { name: 'Settings',     href: '/admin/settings',       icon: Settings  },
   ];
 
   const getPageTitle = () => {

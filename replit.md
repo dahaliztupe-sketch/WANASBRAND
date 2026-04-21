@@ -42,6 +42,27 @@ Set these in Replit Secrets (see .env.example):
 - `NEXT_PUBLIC_GEMINI_API_KEY`
 - `CRON_SECRET`
 
+## Session 6 Additions (April 2026 — Comprehensive Platform Upgrade)
+
+### New Features Implemented
+- **Shipping Integration** (`lib/integrations/shipping.ts`) — Real Aramex REST API + Bosta API with fallback stub. Set `SHIPPING_PROVIDER=aramex|bosta|stub`.
+- **Social Commerce** (`lib/services/social-commerce.ts`) — Full referral cycle: 150 pts referrer + 50 pts referee + 5% discount voucher auto-generated.
+- **AI Size Recommendation** (`lib/services/size-recommendation.ts`) — Gemini-powered + algorithmic fallback. 5 categories: abaya, kaftan, evening_gown, wedding, casual. API at `/api/size-recommendation`.
+- **Social Proof** (`components/SocialProof.tsx`) — SocialProofBanner, ViewerPulse, LowStockBadge, UrgencyTimer. Integrated in ProductClient.
+- **Live Shopping Frontend** (`app/live/[id]/page.tsx`) — Real-time event display with live chat, viewer count, product highlights.
+- **Audit Logs Admin Page** (`app/admin/audit-logs/page.tsx`) — Paginated, filterable by type, live Firestore reads.
+- **Admin Navigation** — Added "AI Agents" (/admin/agents) and "Audit Logs" (/admin/audit-logs) to sidebar.
+- **Welcome Page Token Verification** (`app/welcome/[token]/page.tsx`) — Calls `/api/welcome/verify` for real Firestore token validation.
+- **Firestore Backup Cron** (`app/api/cron/backup/route.ts`) — Real Google Cloud Firestore exportDocuments API using JWT auth from service account.
+- **ROADMAP.md** — Comprehensive 12-month roadmap: Week 1, Week 2, Month 1–3, Q3-Q4 2026 with competitive analysis vs Farfetch/Net-a-Porter/Ounass.
+
+### New Env Vars (Optional)
+- `SHIPPING_PROVIDER` — `aramex` | `bosta` | `stub`
+- `ARAMEX_ACCOUNT_NUMBER`, `ARAMEX_ACCOUNT_PIN`, `ARAMEX_ACCOUNT_ENTITY`, `ARAMEX_ACCOUNT_PREFIX`
+- `BOSTA_API_KEY`
+- `ATELIER_ADDRESS`, `ATELIER_PHONE`
+- `FIREBASE_BACKUP_BUCKET` — e.g. `gs://wanas-backups`
+
 ## Holistic Transformation (April 2026 — Session 5)
 
 ### Design System (TypeUI — "Refined")

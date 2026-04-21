@@ -12,6 +12,7 @@ import { RevealOnScroll } from '@/components/RevealOnScroll';
 import { ShareButtons } from '@/components/ShareButtons';
 import { RecentlyViewed } from '@/components/RecentlyViewed';
 import RecommendedProducts from '@/components/RecommendedProducts';
+import { SocialProofBanner, LowStockBadge } from '@/components/SocialProof';
 import { Product } from '@/types';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useRecentlyViewedStore } from '@/store/useRecentlyViewedStore';
@@ -132,6 +133,14 @@ export default function ProductClient({ product }: ProductClientProps) {
             </div>
 
             <ShareButtons url={`https://wanasbrand.com/product/${product.slug || product.id}`} title={product.name} />
+
+            {/* Social Proof */}
+            <div className="space-y-3 pt-2">
+              {(product.stock !== undefined && product.stock < 6) && (
+                <LowStockBadge stock={product.stock} />
+              )}
+              <SocialProofBanner productId={product.id} />
+            </div>
           </div>
         </div>
 

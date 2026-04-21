@@ -1,65 +1,150 @@
 import { NextResponse } from 'next/server';
 
-import { db } from '@/lib/firebase/server';
-
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 /**
- * Vercel Cron Job: Trigger Firestore Export to Google Cloud Storage
- * 
- * Requirements:
- * 1. Enable Cloud Firestore API
- * 2. Grant 'Cloud Datastore Import Export Admin' role to the service account
- * 3. Create a GCS bucket for backups (e.g., gs://wanas-backups)
+ * Firestore Backup Cron — via Google Cloud Firestore REST API
+ * Requires:
+ *   - CRON_SECRET: Authorization header
+ *   - FIREBASE_BACKUP_BUCKET: gs://your-bucket
+ *   - FIREBASE_SERVICE_ACCOUNT_BASE64: Full service account JSON (base64)
+ *
+ * Schedule: daily at 2 AM Cairo time (recommended)
  */
+
+async function getAccessToken(): Promise<string | null> {
+  const base64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+  if (!base64) return null;
+
+  try {
+    const sa = JSON.parse(Buffer.from(base64, 'base64').toString('utf-8')) as {
+      client_email: string;
+      private_key: string;
+    };
+
+    const now   = Math.floor(Date.now() / 1000);
+    const claim = {
+      iss: sa.client_email,
+      scope: 'https://www.googleapis.com/auth/datastore https://www.googleapis.com/auth/cloud-platform',
+      aud: 'https://oauth2.googleapis.com/token',
+      exp: now + 3600,
+      iat: now,
+    };
+
+    const header  = btoa(JSON.stringify({ alg: 'RS256', typ: 'JWT' }));
+    const payload = btoa(JSON.stringify(claim));
+    const toSign  = `${header}.${payload}`;
+
+    const privateKey = sa.private_key.replace(/\\n/g, '\n');
+    const keyData = await crypto.subtle.importKey(
+      'pkcs8',
+      pemToArrayBuffer(privateKey),
+      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+
+    const signature = await crypto.subtle.sign(
+      'RSASSA-PKCS1-v1_5',
+      keyData,
+      new TextEncoder().encode(toSign)
+    );
+
+    const jwt = `${toSign}.${arrayBufferToBase64Url(signature)}`;
+
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        assertion: jwt,
+      }),
+    });
+
+    const tokenData = await tokenRes.json() as { access_token?: string };
+    return tokenData.access_token ?? null;
+  } catch (e) {
+    console.error('[Backup] Token error:', e);
+    return null;
+  }
+}
+
+function pemToArrayBuffer(pem: string): ArrayBuffer {
+  const b64 = pem.replace(/-----[A-Z ]+-----/g, '').replace(/\s/g, '');
+  const binary = atob(b64);
+  const buf = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) buf[i] = binary.charCodeAt(i);
+  return buf.buffer;
+}
+
+function arrayBufferToBase64Url(buf: ArrayBuffer): string {
+  const bytes = new Uint8Array(buf);
+  let b64 = '';
+  bytes.forEach(b => { b64 += String.fromCharCode(b); });
+  return btoa(b64).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
 export async function GET(req: Request) {
-  // Verify Vercel Cron Secret
   const authHeader = req.headers.get('authorization');
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new Response('Unauthorized', { status: 401 });
   }
 
+  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+  const bucket    = process.env.FIREBASE_BACKUP_BUCKET;
+
+  if (!projectId || !bucket) {
+    return NextResponse.json({
+      error: 'Missing NEXT_PUBLIC_FIREBASE_PROJECT_ID or FIREBASE_BACKUP_BUCKET',
+    }, { status: 503 });
+  }
+
   try {
-    if (!db) {
-      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
-    }
+    const token = await getAccessToken();
 
-    const client = ((db as unknown as Record<string, unknown>)._firestoreClient || (db as unknown as Record<string, unknown>).client) as Record<string, unknown> | undefined;
-    
-    if (!client || !client['exportDocuments']) {
-      // Fallback: Use the REST API if the client doesn't expose exportDocuments
-      const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-      const bucket = process.env.FIREBASE_BACKUP_BUCKET; // e.g., gs://wanas-backups
-
-      if (!bucket) {
-        throw new Error('FIREBASE_BACKUP_BUCKET environment variable is not set');
-      }
-
-      const databaseName = `projects/${projectId}/databases/(default)`;
-      
-      // Note: In a real production environment, you'd use the google-auth-library
-      // but here we are providing the structure for the user to finalize.
-      console.info(`Triggering Firestore export for ${databaseName} to ${bucket}`);
-      
-      // This is a placeholder for the actual export call which usually requires 
-      // the @google-cloud/firestore or googleapis package.
-      return NextResponse.json({ 
-        success: true, 
-        message: 'Backup triggered (Simulated - requires @google-cloud/firestore)',
-        details: { databaseName, bucket }
+    if (!token) {
+      return NextResponse.json({
+        success: false,
+        message: 'No service account — backup skipped. Set FIREBASE_SERVICE_ACCOUNT_BASE64.',
+        timestamp: new Date().toISOString(),
       });
     }
 
-    // If using the official client that supports it:
-    // const [operation] = await client.exportDocuments({
-    //   name: client.databasePath(projectId, '(default)'),
-    //   outputUriPrefix: bucket,
-    //   collectionIds: [] // Export all
-    // });
+    const outputUriPrefix = `${bucket}/backups/${new Date().toISOString().split('T')[0]}`;
 
-    return NextResponse.json({ success: true, message: 'Backup operation initiated' });
-  } catch (error: unknown) {
-    console.error('Backup Cron Error:', error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
+    const res = await fetch(
+      `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default):exportDocuments`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          outputUriPrefix,
+          collectionIds: [],
+        }),
+      }
+    );
+
+    const data = await res.json() as { name?: string; error?: unknown };
+
+    if (!res.ok) {
+      console.error('[Backup] Export failed:', data);
+      return NextResponse.json({ success: false, error: data }, { status: 500 });
+    }
+
+    console.info(`[Backup] Export initiated: ${data.name} → ${outputUriPrefix}`);
+
+    return NextResponse.json({
+      success: true,
+      operation: data.name,
+      outputUri: outputUriPrefix,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('[Backup] Cron error:', error);
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Unknown' }, { status: 500 });
   }
 }
